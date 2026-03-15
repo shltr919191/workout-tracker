@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0f0f0f" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Workout" />
+  <title>Workout Tracker</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="header-logo">
+        <span class="logo-text">WORKOUT TRACKER</span>
+      </div>
+      <div class="header-meta" id="headerMeta">
+        <span class="header-date" id="headerDate"></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="app-main" id="appMain">
+
+    <!-- HOME SCREEN -->
+    <section class="screen active" id="screenHome">
+      <div class="screen-inner">
+
+        <div class="workout-header">
+          <div class="phase-badge" id="phaseBadge">PHASE 1 · WEEK 1</div>
+          <h1 class="workout-title" id="workoutTitle">WORKOUT A</h1>
+          <p class="workout-subtitle" id="workoutSubtitle">Strength Block</p>
+        </div>
+
+        <div class="exercise-list" id="exerciseList">
+          <!-- Rendered by JS -->
+        </div>
+
+        <div class="finish-zone">
+          <button class="btn-finish" id="btnFinish" onclick="finishWorkout()">
+            <span class="btn-finish-icon">✓</span>
+            <span class="btn-finish-label">FINISH WORKOUT</span>
+          </button>
+          <button class="btn-skip" onclick="skipWorkout()">Skip to next workout →</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- HISTORY SCREEN -->
+    <section class="screen" id="screenHistory">
+      <div class="screen-inner">
+
+        <div class="page-header">
+          <h2 class="page-title">HISTORY</h2>
+          <span class="page-count" id="historyCount">0 sessions</span>
+        </div>
+
+        <div class="history-list" id="historyList">
+          <!-- Rendered by JS -->
+        </div>
+
+        <div class="empty-state hidden" id="historyEmpty">
+          <div class="empty-icon">◈</div>
+          <p>No workouts logged yet.<br/>Finish your first session to see it here.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- PROGRESS SCREEN -->
+    <section class="screen" id="screenProgress">
+      <div class="screen-inner">
+
+        <div class="page-header">
+          <h2 class="page-title">PROGRESS</h2>
+        </div>
+
+        <div class="chart-section">
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <span class="chart-label">WORKOUTS / WEEK</span>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="chartWeekly"></canvas>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <span class="chart-label">EXERCISE PROGRESS</span>
+              <select class="chart-select" id="exerciseSelect" onchange="renderExerciseChart()">
+              </select>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="chartExercise"></canvas>
+            </div>
+          </div>
+
+          <div class="stats-row" id="statsRow">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <div class="empty-state hidden" id="progressEmpty">
+          <div class="empty-icon">◈</div>
+          <p>Complete workouts to track progress.</p>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- WORKOUT DETAIL MODAL -->
+  <div class="modal-overlay hidden" id="modalOverlay" onclick="closeModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <div class="modal-date" id="modalDate"></div>
+          <div class="modal-title" id="modalTitle"></div>
+        </div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast hidden" id="toast"></div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" id="navHome" onclick="switchTab('Home')">
+      <span class="nav-icon">⊞</span>
+      <span class="nav-label">HOME</span>
+    </button>
+    <button class="nav-btn" id="navHistory" onclick="switchTab('History')">
+      <span class="nav-icon">◷</span>
+      <span class="nav-label">HISTORY</span>
+    </button>
+    <button class="nav-btn" id="navProgress" onclick="switchTab('Progress')">
+      <span class="nav-icon">↗</span>
+      <span class="nav-label">PROGRESS</span>
+    </button>
+  </nav>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <script src="app.js"></script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js');
+      });
+    }
+  </script>
+</body>
+</html>
