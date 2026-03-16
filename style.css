@@ -602,7 +602,7 @@ body {
 }
 .nav-btn {
   flex: 1;
-  max-width: 160px;
+  max-width: 120px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -900,4 +900,123 @@ body {
   font-size: 10px;
   color: var(--text-3);
   margin-top: 2px;
+}
+
+/* ── PLAN OVERVIEW ── */
+.plan-phase-section {
+  margin-bottom: 20px;
+}
+.plan-phase-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+.plan-phase-header.hyp  { background: rgba(245,166,35,.07);  border-color: rgba(245,166,35,.25); }
+.plan-phase-header.str  { background: rgba(76,175,125,.07);  border-color: rgba(76,175,125,.25); }
+.plan-phase-header.peak { background: rgba(224,85,85,.07);   border-color: rgba(224,85,85,.25);  }
+.plan-phase-name {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: .06em;
+  flex: 1;
+}
+.plan-phase-header.hyp  .plan-phase-name { color: #f5a623; }
+.plan-phase-header.str  .plan-phase-name { color: #4caf7d; }
+.plan-phase-header.peak .plan-phase-name { color: #e05555; }
+.plan-phase-weeks {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-3);
+}
+
+.plan-week-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+  overflow: hidden;
+  transition: border-color var(--transition);
+}
+.plan-week-card.current {
+  border-color: var(--accent);
+}
+.plan-week-card.completed {
+  opacity: .6;
+}
+.plan-week-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  cursor: pointer;
+  user-select: none;
+}
+.plan-week-label {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: .04em;
+  color: var(--text-1);
+}
+.plan-week-card.current .plan-week-label { color: var(--accent); }
+.plan-week-meta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+.plan-week-badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: .06em;
+  padding: 3px 7px;
+  border-radius: 3px;
+}
+.plan-week-badge.current  { background: var(--accent-glow); color: var(--accent); border: 1px solid rgba(245,166,35,.3); }
+.plan-week-badge.done     { background: var(--success-dim);  color: var(--success); border: 1px solid rgba(76,175,125,.3); }
+.plan-week-badge.upcoming { background: var(--bg-input);     color: var(--text-3);  border: 1px solid var(--border); }
+
+.plan-week-body {
+  border-top: 1px solid var(--border);
+  padding: 10px 14px 12px;
+  display: none;
+}
+.plan-week-body.open { display: block; }
+
+.plan-workout-section {
+  margin-bottom: 10px;
+}
+.plan-workout-section:last-child { margin-bottom: 0; }
+.plan-workout-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: .08em;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+.plan-ex-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(42,42,42,.6);
+}
+.plan-ex-row:last-child { border-bottom: none; }
+.plan-ex-name {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--text-2);
+  font-weight: 400;
+}
+.plan-ex-scheme {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+  flex-shrink: 0;
+  margin-left: 8px;
 }

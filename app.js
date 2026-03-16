@@ -238,6 +238,7 @@ function switchTab(tab) {
   document.getElementById('screen' + tab).classList.add('active');
   document.getElementById('nav' + tab).classList.add('active');
   if (tab === 'History')  renderHistory();
+  if (tab === 'Plan')     renderPlan();
   if (tab === 'Progress') renderProgress();
 }
 
@@ -509,6 +510,83 @@ function deleteHistoryEntry(idx) {
 }
 
 // ─── PROGRESS ────────────────────────────────
+
+// ─── PLAN OVERVIEW ───────────────────────────
+function renderPlan() {
+  const container = document.getElementById('planOverview');
+  if (!container) return;
+
+  const phases = [];
+  let lastPhase = null;
+  SESSIONS.forEach((sess, idx) => {
+    if (sess.phase !== lastPhase) {
+      phases.push({ phase: sess.phase, sessions: [] });
+      lastPhase = sess.phase;
+    }
+    phases[phases.length - 1].sessions.push({ ...sess, globalIdx: idx });
+  });
+
+  const completedIdxs = new Set(state.history.map(l => l.sessionIndex));
+  const currentIdx = state.sessionIndex;
+
+  const phaseClass = p =>
+    p === 'Hypertrophy' ? 'hyp' :
+    p === 'Strength'    ? 'str' : 'peak';
+
+  container.innerHTML = phases.map(p => {
+    const weeks = [...new Set(p.sessions.map(s => s.week))];
+    const weekRange = `Woche ${Math.min(...weeks)}–${Math.max(...weeks)}`;
+
+    const byWeek = {};
+    p.sessions.forEach(s => { if (!byWeek[s.week]) byWeek[s.week] = []; byWeek[s.week].push(s); });
+
+    const weekCards = Object.entries(byWeek).map(([week, sessions]) => {
+      const isCurrent = sessions.some(s => s.globalIdx === currentIdx);
+      const isDone    = sessions.every(s => completedIdxs.has(s.globalIdx));
+      const badgeCls  = isCurrent ? 'current' : isDone ? 'done' : 'upcoming';
+      const badgeTxt  = isCurrent ? 'AKTUELL' : isDone ? '\u2713 DONE' : 'AUSSTEHEND';
+      const cardCls   = isCurrent ? 'current' : isDone ? 'completed' : '';
+      const bodyOpen  = isCurrent ? 'open' : '';
+
+      const workoutSections = sessions.map(s => `
+        <div class="plan-workout-section">
+          <div class="plan-workout-label">WORKOUT ${s.workout}</div>
+          ${s.exercises.map(ex =>
+            `<div class="plan-ex-row"><span class="plan-ex-name">${ex.name}</span><span class="plan-ex-scheme">${ex.sets} \u00d7 ${ex.repRange}</span></div>`
+          ).join('')}
+        </div>`).join('');
+
+      return `
+        <div class="plan-week-card ${cardCls}">
+          <div class="plan-week-header" onclick="togglePlanWeek(this)">
+            <div>
+              <div class="plan-week-label">WOCHE ${week}</div>
+              <div class="plan-week-meta">${sessions.length} Workouts \u00b7 ${sessions.map(s => 'Workout ' + s.workout).join(', ')}</div>
+            </div>
+            <span class="plan-week-badge ${badgeCls}">${badgeTxt}</span>
+          </div>
+          <div class="plan-week-body ${bodyOpen}">${workoutSections}</div>
+        </div>`;
+    }).join('');
+
+    return `
+      <div class="plan-phase-section">
+        <div class="plan-phase-header ${phaseClass(p.phase)}">
+          <div>
+            <div class="plan-phase-name">${p.phase.toUpperCase()}</div>
+            <div class="plan-phase-weeks">${weekRange}</div>
+          </div>
+        </div>
+        ${weekCards}
+      </div>`;
+  }).join('');
+}
+
+function togglePlanWeek(header) {
+  const body = header.nextElementSibling;
+  body.classList.toggle('open');
+}
+
 function populateExerciseSelect() {
   const names = [...new Set(SESSIONS.flatMap(s => s.exercises.map(e => e.name)))];
   document.getElementById('exerciseSelect').innerHTML =
