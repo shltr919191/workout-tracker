@@ -1,0 +1,1022 @@
+[
+  {
+    "phase": "Hypertrophy",
+    "week": 1,
+    "workouts": [
+      {
+        "name": "A",
+        "exercises": [
+          {
+            "exercise": "Trap Bar Deadlift",
+            "sets_reps": "3x6-8"
+          },
+          {
+            "exercise": "DB Bench Press",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x12-15"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x12-15"
+          }
+        ]
+      },
+      {
+        "name": "B",
+        "exercises": [
+          {
+            "exercise": "DB Bench Press",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x12-15"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x12-15"
+          }
+        ]
+      },
+      {
+        "name": "C",
+        "exercises": [
+          {
+            "exercise": "Trap Bar Deadlift",
+            "sets_reps": "3x6-8"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x12-15"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x12-15"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "phase": "Hypertrophy",
+    "week": 2,
+    "workouts": [
+      {
+        "name": "A",
+        "exercises": [
+          {
+            "exercise": "Trap Bar Deadlift",
+            "sets_reps": "3x6-8"
+          },
+          {
+            "exercise": "DB Bench Press",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x12-15"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x12-15"
+          }
+        ]
+      },
+      {
+        "name": "B",
+        "exercises": [
+          {
+            "exercise": "DB Bench Press",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x12-15"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x12-15"
+          }
+        ]
+      },
+      {
+        "name": "C",
+        "exercises": [
+          {
+            "exercise": "Trap Bar Deadlift",
+            "sets_reps": "3x6-8"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x12-15"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x12-15"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "phase": "Hypertrophy",
+    "week": 3,
+    "workouts": [
+      {
+        "name": "A",
+        "exercises": [
+          {
+            "exercise": "Trap Bar Deadlift",
+            "sets_reps": "3x6-8"
+          },
+          {
+            "exercise": "DB Bench Press",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x12-15"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x12-15"
+          }
+        ]
+      },
+      {
+        "name": "B",
+        "exercises": [
+          {
+            "exercise": "DB Bench Press",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x12-15"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x12-15"
+          }
+        ]
+      },
+      {
+        "name": "C",
+        "exercises": [
+          {
+            "exercise": "Trap Bar Deadlift",
+            "sets_reps": "3x6-8"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x12-15"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x12-15"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "phase": "Hypertrophy",
+    "week": 4,
+    "workouts": [
+      {
+        "name": "A",
+        "exercises": [
+          {
+            "exercise": "Trap Bar Deadlift",
+            "sets_reps": "3x6-8"
+          },
+          {
+            "exercise": "DB Bench Press",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x12-15"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x12-15"
+          }
+        ]
+      },
+      {
+        "name": "B",
+        "exercises": [
+          {
+            "exercise": "DB Bench Press",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x12-15"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x12-15"
+          }
+        ]
+      },
+      {
+        "name": "C",
+        "exercises": [
+          {
+            "exercise": "Trap Bar Deadlift",
+            "sets_reps": "3x6-8"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x12-15"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x12-15"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "phase": "Strength",
+    "week": 5,
+    "workouts": [
+      {
+        "name": "A",
+        "exercises": [
+          {
+            "exercise": "Trap Bar Deadlift",
+            "sets_reps": "4x4-6"
+          },
+          {
+            "exercise": "DB Bench Press",
+            "sets_reps": "4x6-8"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "4x6-8"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x10-12"
+          }
+        ]
+      },
+      {
+        "name": "B",
+        "exercises": [
+          {
+            "exercise": "DB Bench Press",
+            "sets_reps": "4x6-8"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "4x6-8"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x10-12"
+          }
+        ]
+      },
+      {
+        "name": "C",
+        "exercises": [
+          {
+            "exercise": "Trap Bar Deadlift",
+            "sets_reps": "4x4-6"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "4x6-8"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x10-12"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "phase": "Strength",
+    "week": 6,
+    "workouts": [
+      {
+        "name": "A",
+        "exercises": [
+          {
+            "exercise": "Trap Bar Deadlift",
+            "sets_reps": "4x4-6"
+          },
+          {
+            "exercise": "DB Bench Press",
+            "sets_reps": "4x6-8"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "4x6-8"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x10-12"
+          }
+        ]
+      },
+      {
+        "name": "B",
+        "exercises": [
+          {
+            "exercise": "DB Bench Press",
+            "sets_reps": "4x6-8"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "4x6-8"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x10-12"
+          }
+        ]
+      },
+      {
+        "name": "C",
+        "exercises": [
+          {
+            "exercise": "Trap Bar Deadlift",
+            "sets_reps": "4x4-6"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "4x6-8"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x10-12"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "phase": "Strength",
+    "week": 7,
+    "workouts": [
+      {
+        "name": "A",
+        "exercises": [
+          {
+            "exercise": "Trap Bar Deadlift",
+            "sets_reps": "4x4-6"
+          },
+          {
+            "exercise": "DB Bench Press",
+            "sets_reps": "4x6-8"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "4x6-8"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x10-12"
+          }
+        ]
+      },
+      {
+        "name": "B",
+        "exercises": [
+          {
+            "exercise": "DB Bench Press",
+            "sets_reps": "4x6-8"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "4x6-8"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x10-12"
+          }
+        ]
+      },
+      {
+        "name": "C",
+        "exercises": [
+          {
+            "exercise": "Trap Bar Deadlift",
+            "sets_reps": "4x4-6"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "4x6-8"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x10-12"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "phase": "Strength",
+    "week": 8,
+    "workouts": [
+      {
+        "name": "A",
+        "exercises": [
+          {
+            "exercise": "Trap Bar Deadlift",
+            "sets_reps": "4x4-6"
+          },
+          {
+            "exercise": "DB Bench Press",
+            "sets_reps": "4x6-8"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "4x6-8"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x10-12"
+          }
+        ]
+      },
+      {
+        "name": "B",
+        "exercises": [
+          {
+            "exercise": "DB Bench Press",
+            "sets_reps": "4x6-8"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "4x6-8"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x10-12"
+          }
+        ]
+      },
+      {
+        "name": "C",
+        "exercises": [
+          {
+            "exercise": "Trap Bar Deadlift",
+            "sets_reps": "4x4-6"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "4x6-8"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x10-12"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "phase": "Peak / Performance",
+    "week": 9,
+    "workouts": [
+      {
+        "name": "A",
+        "exercises": [
+          {
+            "exercise": "Trap Bar Deadlift",
+            "sets_reps": "3x3-5"
+          },
+          {
+            "exercise": "DB Bench Press",
+            "sets_reps": "3x5-6"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "3x5-6"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x10-12"
+          }
+        ]
+      },
+      {
+        "name": "B",
+        "exercises": [
+          {
+            "exercise": "DB Bench Press",
+            "sets_reps": "3x5-6"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "3x5-6"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x10-12"
+          }
+        ]
+      },
+      {
+        "name": "C",
+        "exercises": [
+          {
+            "exercise": "Trap Bar Deadlift",
+            "sets_reps": "3x3-5"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "3x5-6"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x10-12"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "phase": "Peak / Performance",
+    "week": 10,
+    "workouts": [
+      {
+        "name": "A",
+        "exercises": [
+          {
+            "exercise": "Trap Bar Deadlift",
+            "sets_reps": "3x3-5"
+          },
+          {
+            "exercise": "DB Bench Press",
+            "sets_reps": "3x5-6"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "3x5-6"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x10-12"
+          }
+        ]
+      },
+      {
+        "name": "B",
+        "exercises": [
+          {
+            "exercise": "DB Bench Press",
+            "sets_reps": "3x5-6"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "3x5-6"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x10-12"
+          }
+        ]
+      },
+      {
+        "name": "C",
+        "exercises": [
+          {
+            "exercise": "Trap Bar Deadlift",
+            "sets_reps": "3x3-5"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "3x5-6"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x10-12"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "phase": "Peak / Performance",
+    "week": 11,
+    "workouts": [
+      {
+        "name": "A",
+        "exercises": [
+          {
+            "exercise": "Trap Bar Deadlift",
+            "sets_reps": "3x3-5"
+          },
+          {
+            "exercise": "DB Bench Press",
+            "sets_reps": "3x5-6"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "3x5-6"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x10-12"
+          }
+        ]
+      },
+      {
+        "name": "B",
+        "exercises": [
+          {
+            "exercise": "DB Bench Press",
+            "sets_reps": "3x5-6"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "3x5-6"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x10-12"
+          }
+        ]
+      },
+      {
+        "name": "C",
+        "exercises": [
+          {
+            "exercise": "Trap Bar Deadlift",
+            "sets_reps": "3x3-5"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "3x5-6"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x10-12"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "phase": "Peak / Performance",
+    "week": 12,
+    "workouts": [
+      {
+        "name": "A",
+        "exercises": [
+          {
+            "exercise": "Trap Bar Deadlift",
+            "sets_reps": "3x3-5"
+          },
+          {
+            "exercise": "DB Bench Press",
+            "sets_reps": "3x5-6"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "3x5-6"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x10-12"
+          }
+        ]
+      },
+      {
+        "name": "B",
+        "exercises": [
+          {
+            "exercise": "DB Bench Press",
+            "sets_reps": "3x5-6"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "3x5-6"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x10-12"
+          }
+        ]
+      },
+      {
+        "name": "C",
+        "exercises": [
+          {
+            "exercise": "Trap Bar Deadlift",
+            "sets_reps": "3x3-5"
+          },
+          {
+            "exercise": "Pull Ups",
+            "sets_reps": "3x5-6"
+          },
+          {
+            "exercise": "Cable Lateral Raise",
+            "sets_reps": "3x10-12"
+          },
+          {
+            "exercise": "Incline DB Curl",
+            "sets_reps": "3x8-10"
+          },
+          {
+            "exercise": "Core",
+            "sets_reps": "3x10-12"
+          }
+        ]
+      }
+    ]
+  }
+]

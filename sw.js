@@ -1,11 +1,12 @@
-const CACHE = 'workout-tracker-v2';
-const BASE = '/workout-tracker';
+const CACHE = 'workout-tracker-v3';
+const BASE  = '/workout-tracker';
 
 const ASSETS = [
   BASE + '/',
   BASE + '/index.html',
   BASE + '/style.css',
   BASE + '/app.js',
+  BASE + '/program.json',
   BASE + '/manifest.json',
   BASE + '/icon-192.png',
   BASE + '/icon-512.png',
