@@ -23,7 +23,7 @@
       <div class="header-logo">
         <span class="logo-text">WORKOUT TRACKER</span>
       </div>
-      <div class="header-meta" id="headerMeta">
+      <div class="header-meta">
         <span class="header-date" id="headerDate"></span>
       </div>
     </div>
@@ -36,18 +36,37 @@
     <section class="screen active" id="screenHome">
       <div class="screen-inner">
 
+        <!-- Workout Header -->
         <div class="workout-header">
-          <div class="phase-badge" id="phaseBadge">PHASE 1 · WEEK 1</div>
+          <div class="phase-badge" id="phaseBadge">HYPERTROPHY · WEEK 1</div>
           <h1 class="workout-title" id="workoutTitle">WORKOUT A</h1>
-          <p class="workout-subtitle" id="workoutSubtitle">Strength Block</p>
+          <p class="workout-subtitle" id="workoutSubtitle">Session 1 of 36</p>
         </div>
 
-        <div class="exercise-list" id="exerciseList">
-          <!-- Rendered by JS -->
+        <!-- Plan Progress Bar -->
+        <div class="plan-progress-wrap">
+          <div class="plan-progress-header">
+            <span class="plan-progress-label" id="planProgressLabel">PLAN PROGRESS</span>
+            <span class="plan-progress-pct" id="planProgressPct">0%</span>
+          </div>
+          <div class="plan-progress-track">
+            <div class="plan-progress-fill" id="planProgressFill" style="width:0%"></div>
+          </div>
+          <div class="plan-phase-blocks" id="planPhaseBlocks"></div>
         </div>
 
+        <!-- Workout Duration -->
+        <div class="workout-duration" id="workoutDuration" style="display:none">
+          <span class="duration-icon">◷</span>
+          <span class="duration-val" id="durationVal">0:00</span>
+        </div>
+
+        <!-- Exercise Cards -->
+        <div id="exerciseList"></div>
+
+        <!-- Finish Zone -->
         <div class="finish-zone">
-          <button class="btn-finish" id="btnFinish" onclick="finishWorkout()">
+          <button class="btn-finish" onclick="finishWorkout()">
             <span class="btn-finish-icon">✓</span>
             <span class="btn-finish-label">FINISH WORKOUT</span>
           </button>
@@ -66,10 +85,13 @@
           <span class="page-count" id="historyCount">0 sessions</span>
         </div>
 
-        <div class="history-list" id="historyList">
-          <!-- Rendered by JS -->
+        <!-- Weekly Summary Card -->
+        <div class="week-summary-card" id="weeklySummary" style="display:none">
+          <div class="week-summary-title">THIS WEEK</div>
+          <div class="week-summary-stats" id="weeklySummaryStats"></div>
         </div>
 
+        <div class="history-list" id="historyList"></div>
         <div class="empty-state hidden" id="historyEmpty">
           <div class="empty-icon">◈</div>
           <p>No workouts logged yet.<br/>Finish your first session to see it here.</p>
@@ -99,17 +121,14 @@
           <div class="chart-card">
             <div class="chart-card-header">
               <span class="chart-label">EXERCISE PROGRESS</span>
-              <select class="chart-select" id="exerciseSelect" onchange="renderExerciseChart()">
-              </select>
+              <select class="chart-select" id="exerciseSelect" onchange="renderExerciseChart()"></select>
             </div>
             <div class="chart-wrap">
               <canvas id="chartExercise"></canvas>
             </div>
           </div>
 
-          <div class="stats-row" id="statsRow">
-            <!-- Rendered by JS -->
-          </div>
+          <div class="stats-row" id="statsRow"></div>
         </div>
 
         <div class="empty-state hidden" id="progressEmpty">
@@ -122,7 +141,29 @@
 
   </main>
 
-  <!-- WORKOUT DETAIL MODAL -->
+  <!-- REST TIMER OVERLAY -->
+  <div class="rest-timer-overlay hidden" id="restTimerOverlay">
+    <div class="rest-timer-card">
+      <div class="rest-timer-label">REST</div>
+      <div class="rest-timer-display" id="restTimerDisplay">90</div>
+      <div class="rest-timer-ring">
+        <svg viewBox="0 0 120 120">
+          <circle class="rest-ring-bg"   cx="60" cy="60" r="54" stroke-width="6"/>
+          <circle class="rest-ring-fill" cx="60" cy="60" r="54" stroke-width="6"
+            id="restRingFill"
+            stroke-dasharray="339.3"
+            stroke-dashoffset="0"/>
+        </svg>
+      </div>
+      <div class="rest-timer-actions">
+        <button class="rest-btn-minus" onclick="adjustRestTimer(-15)">−15s</button>
+        <button class="rest-btn-skip"  onclick="stopRestTimer()">SKIP</button>
+        <button class="rest-btn-plus"  onclick="adjustRestTimer(+15)">+15s</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HISTORY DETAIL MODAL -->
   <div class="modal-overlay hidden" id="modalOverlay" onclick="closeModal()">
     <div class="modal" onclick="event.stopPropagation()">
       <div class="modal-header">
@@ -157,7 +198,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
   <script src="app.js"></script>
-
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {

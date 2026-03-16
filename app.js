@@ -1,9 +1,12 @@
 /* =============================================
    WORKOUT TRACKER — app.js
-   Program loaded from program.json
+   Features: weight suggestion, rest timer,
+             plan progress, workout duration,
+             weekly summary
    ============================================= */
 'use strict';
 
+// ─── CONFIG ──────────────────────────────────
 const DEFAULT_WEIGHTS = {
   'Trap Bar Deadlift':   100,
   'DB Bench Press':       30,
@@ -12,26 +15,25 @@ const DEFAULT_WEIGHTS = {
   'Incline DB Curl':      12,
   'Core':                  0,
 };
+const REST_DEFAULT = 90; // seconds
 
-function parseSetsReps(str) {
-  // "3x6-8" -> { sets: 3, reps: 8, repRange: "6-8" }
-  const [setsStr, repsStr] = str.split('x');
-  const sets = parseInt(setsStr);
-  const repRange = repsStr;
-  const reps = repRange.includes('-')
-    ? parseInt(repRange.split('-')[1])
-    : parseInt(repRange);
-  return { sets, reps, repRange };
-}
-
-// ─── STATE ───────────────────────────────────
-let SESSIONS = [];   // flat array of {phase, week, workout, exercises[]}
+// ─── GLOBALS ─────────────────────────────────
+let SESSIONS = [];
 let state = {
   sessionIndex: 0,
-  sets:    {},
-  history: [],
+  sets:         {},
+  history:      [],
 };
-let chartWeekly = null, chartExercise = null;
+
+// Timer state
+let durationStart   = null;
+let durationTimer   = null;
+let restTotal       = REST_DEFAULT;
+let restRemaining   = REST_DEFAULT;
+let restInterval    = null;
+
+let chartWeekly  = null;
+let chartExercise = null;
 
 // ─── STORAGE ─────────────────────────────────
 function saveToStorage() {
@@ -43,7 +45,6 @@ function saveToStorage() {
     }));
   } catch(e) {}
 }
-
 function loadFromStorage() {
   try {
     const saved = localStorage.getItem('wt_v4');
@@ -56,30 +57,33 @@ function loadFromStorage() {
   } catch(e) {}
 }
 
+// ─── PARSE ───────────────────────────────────
+function parseSetsReps(str) {
+  const [setsStr, repsStr] = str.split('x');
+  const sets     = parseInt(setsStr);
+  const repRange = repsStr;
+  const reps     = repRange.includes('-')
+    ? parseInt(repRange.split('-')[1])
+    : parseInt(repRange);
+  return { sets, reps, repRange };
+}
+
 // ─── LOAD PROGRAM ────────────────────────────
 async function loadProgram() {
   const res  = await fetch('./program.json');
   const data = await res.json();
-
-  // Flatten into ordered session list
-  SESSIONS = [];
+  SESSIONS   = [];
   data.forEach(week => {
     week.workouts.forEach(workout => {
-      const exercises = workout.exercises.map(ex => {
-        const { sets, reps, repRange } = parseSetsReps(ex.sets_reps);
-        return {
-          name:          ex.exercise,
-          sets,
-          reps,
-          repRange,
-          defaultWeight: DEFAULT_WEIGHTS[ex.exercise] ?? 0,
-        };
-      });
       SESSIONS.push({
         phase:    week.phase,
         week:     week.week,
         workout:  workout.name,
-        exercises,
+        exercises: workout.exercises.map(ex => {
+          const { sets, reps, repRange } = parseSetsReps(ex.sets_reps);
+          return { name: ex.exercise, sets, reps, repRange,
+                   defaultWeight: DEFAULT_WEIGHTS[ex.exercise] ?? 0 };
+        }),
       });
     });
   });
@@ -89,21 +93,133 @@ async function loadProgram() {
 function currentSession() {
   return SESSIONS[Math.min(state.sessionIndex, SESSIONS.length - 1)];
 }
-
 function setKey(exName) {
   return `${exName}__${state.sessionIndex}`;
 }
-
 function formatDate(iso) {
   return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 function todayISO() { return new Date().toISOString().split('T')[0]; }
-
 function setHeaderDate() {
   const el = document.getElementById('headerDate');
   if (el) el.textContent = new Date()
     .toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
     .toUpperCase();
+}
+
+// ─── WEIGHT SUGGESTION ───────────────────────
+// Returns the last logged weight for an exercise, or defaultWeight
+function suggestedWeight(exName, defaultWeight) {
+  for (const log of state.history) {
+    const ex = log.exercises.find(e => e.name === exName);
+    if (ex && ex.sets.length > 0) {
+      const w = ex.sets[0].weight;
+      if (w !== undefined) return w;
+    }
+  }
+  return defaultWeight;
+}
+
+// ─── WORKOUT DURATION ────────────────────────
+function startDurationTimer() {
+  if (durationTimer) return; // already running
+  durationStart = Date.now();
+  const el = document.getElementById('workoutDuration');
+  if (el) el.style.display = 'flex';
+  durationTimer = setInterval(updateDurationDisplay, 1000);
+}
+function updateDurationDisplay() {
+  if (!durationStart) return;
+  const secs  = Math.floor((Date.now() - durationStart) / 1000);
+  const m     = Math.floor(secs / 60);
+  const s     = secs % 60;
+  const el    = document.getElementById('durationVal');
+  if (el) el.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+}
+function stopDurationTimer() {
+  clearInterval(durationTimer);
+  durationTimer = null;
+  const elapsed = durationStart ? Math.floor((Date.now() - durationStart) / 1000) : 0;
+  durationStart = null;
+  const el = document.getElementById('workoutDuration');
+  if (el) el.style.display = 'none';
+  const valEl = document.getElementById('durationVal');
+  if (valEl) valEl.textContent = '0:00';
+  return elapsed;
+}
+function fmtDuration(secs) {
+  if (!secs) return null;
+  const m = Math.floor(secs / 60), s = secs % 60;
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+// ─── REST TIMER ──────────────────────────────
+function startRestTimer(duration = REST_DEFAULT) {
+  stopRestTimer();
+  restTotal     = duration;
+  restRemaining = duration;
+  document.getElementById('restTimerOverlay').classList.remove('hidden');
+  updateRestDisplay();
+  restInterval = setInterval(() => {
+    restRemaining--;
+    updateRestDisplay();
+    if (restRemaining <= 0) stopRestTimer();
+  }, 1000);
+}
+function updateRestDisplay() {
+  document.getElementById('restTimerDisplay').textContent = restRemaining;
+  const circ   = 2 * Math.PI * 54; // r=54
+  const offset = circ * (1 - restRemaining / restTotal);
+  document.getElementById('restRingFill').style.strokeDashoffset = offset;
+  // Pulse colour when low
+  const fill = document.getElementById('restRingFill');
+  if (restRemaining <= 10) fill.style.stroke = '#e05555';
+  else                      fill.style.stroke = '#f5a623';
+}
+function stopRestTimer() {
+  clearInterval(restInterval);
+  restInterval = null;
+  document.getElementById('restTimerOverlay').classList.add('hidden');
+}
+function adjustRestTimer(delta) {
+  restRemaining = Math.max(5, restRemaining + delta);
+  restTotal     = Math.max(restTotal, restRemaining);
+  updateRestDisplay();
+}
+
+// ─── PLAN PROGRESS ───────────────────────────
+function renderPlanProgress() {
+  const total   = SESSIONS.length;
+  const current = Math.min(state.sessionIndex, total - 1);
+  const pct     = Math.round((current / total) * 100);
+
+  document.getElementById('planProgressPct').textContent  = `${pct}%`;
+  document.getElementById('planProgressFill').style.width = `${pct}%`;
+
+  // Build phase blocks
+  // Group sessions by phase
+  const phases = [];
+  let lastPhase = null;
+  SESSIONS.forEach((s, i) => {
+    if (s.phase !== lastPhase) {
+      phases.push({ phase: s.phase, start: i, end: i });
+      lastPhase = s.phase;
+    } else {
+      phases[phases.length - 1].end = i;
+    }
+  });
+
+  const blocksEl = document.getElementById('planPhaseBlocks');
+  blocksEl.innerHTML = phases.map(p => {
+    const isDone   = current > p.end;
+    const isActive = current >= p.start && current <= p.end;
+    const cls      = isDone ? 'done' : isActive ? 'active' : '';
+    // Short label
+    const label = p.phase === 'Peak / Performance' ? 'PEAK' :
+                  p.phase === 'Hypertrophy'         ? 'HYP'  :
+                  p.phase === 'Strength'             ? 'STR'  : p.phase.slice(0,3).toUpperCase();
+    return `<div class="phase-block ${cls}">${label}</div>`;
+  }).join('');
 }
 
 // ─── TAB NAV ─────────────────────────────────
@@ -118,21 +234,22 @@ function switchTab(tab) {
 
 // ─── HOME ────────────────────────────────────
 function renderHome() {
-  const sess = currentSession();
-  if (!sess) return;
+  const sess = currentSession(); if (!sess) return;
   const { phase, week, workout, exercises } = sess;
 
-  document.getElementById('phaseBadge').textContent    = `${phase.toUpperCase()} · WEEK ${week}`;
-  document.getElementById('workoutTitle').textContent   = `WORKOUT ${workout}`;
+  document.getElementById('phaseBadge').textContent     = `${phase.toUpperCase()} · WEEK ${week}`;
+  document.getElementById('workoutTitle').textContent    = `WORKOUT ${workout}`;
   document.getElementById('workoutSubtitle').textContent =
     `Session ${state.sessionIndex + 1} of ${SESSIONS.length}`;
 
+  // Init sets using last-session weight suggestion
   let changed = false;
   exercises.forEach(ex => {
     const k = setKey(ex.name);
     if (!state.sets[k] || state.sets[k].length !== ex.sets) {
+      const suggested = suggestedWeight(ex.name, ex.defaultWeight);
       state.sets[k] = Array.from({ length: ex.sets }, () => ({
-        weight: ex.defaultWeight, reps: ex.reps, done: false,
+        weight: suggested, reps: ex.reps, done: false,
       }));
       changed = true;
     }
@@ -141,6 +258,8 @@ function renderHome() {
 
   document.getElementById('exerciseList').innerHTML =
     exercises.map((ex, ei) => renderCard(ex, ei)).join('');
+
+  renderPlanProgress();
   attachListeners();
 }
 
@@ -149,6 +268,13 @@ function renderCard(ex, ei) {
   const doneCount = sets.filter(s => s.done).length;
   const r = 14, circ = 2 * Math.PI * r;
   const offset = circ - (doneCount / sets.length) * circ;
+
+  // Check if this exercise has a suggestion different from default
+  const suggested = suggestedWeight(ex.name, ex.defaultWeight);
+  const hasHint   = suggested !== ex.defaultWeight;
+  const hintHtml  = hasHint
+    ? `<span class="weight-hint">↑ last: ${suggested} kg</span>`
+    : '';
 
   const rows = sets.map((s, si) => `
     <div class="set-row${s.done ? ' completed' : ''}" id="row-${ei}-${si}">
@@ -172,7 +298,7 @@ function renderCard(ex, ei) {
       <div class="exercise-card-header">
         <div>
           <div class="exercise-name">${ex.name}</div>
-          <div class="exercise-schema">${ex.sets} × ${ex.repRange}</div>
+          <div class="exercise-schema">${ex.sets} × ${ex.repRange} ${hintHtml}</div>
         </div>
         <div class="exercise-progress-ring">
           <svg viewBox="0 0 36 36">
@@ -192,7 +318,7 @@ function attachListeners() {
     input.addEventListener('change', () => {
       const ex = input.dataset.ex, si = parseInt(input.dataset.si), field = input.dataset.field;
       let v = parseFloat(input.value);
-      if (isNaN(v))         v = field === 'reps' ? 1 : 0;
+      if (isNaN(v))           v = field === 'reps' ? 1 : 0;
       if (field === 'weight') v = Math.max(0, v);
       if (field === 'reps')   v = Math.max(1, Math.round(v));
       input.value = v;
@@ -208,15 +334,21 @@ function toggleSet(btn) {
   state.sets[k][si].done = !state.sets[k][si].done;
   saveToStorage();
 
+  // Start duration timer on first set check
+  if (state.sets[k][si].done && !durationTimer) startDurationTimer();
+
   const row    = document.getElementById(`row-${ei}-${si}`);
   const isDone = state.sets[k][si].done;
   row.classList.toggle('completed', isDone);
   btn.textContent = isDone ? '✓' : '';
 
-  const all   = state.sets[k];
-  const done  = all.filter(s => s.done).length;
+  // Start rest timer after completing a set
+  if (isDone) startRestTimer(REST_DEFAULT);
+
+  const all  = state.sets[k];
+  const done = all.filter(s => s.done).length;
   const r = 14, circ = 2 * Math.PI * r, offset = circ - (done / all.length) * circ;
-  const card  = document.getElementById(`card-${ei}`);
+  const card = document.getElementById(`card-${ei}`);
   card.querySelector('.progress-fill').style.strokeDashoffset = offset;
   card.querySelector('.progress-label').textContent = `${done}/${all.length}`;
   card.classList.toggle('all-done', done === all.length);
@@ -225,12 +357,14 @@ function toggleSet(btn) {
 // ─── FINISH ──────────────────────────────────
 function finishWorkout() {
   const { phase, week, workout, exercises } = currentSession();
+  const duration = stopDurationTimer();
 
   state.history.unshift({
     id:           Date.now(),
     date:         todayISO(),
     phase, week, workout,
     sessionIndex: state.sessionIndex,
+    duration,
     exercises: exercises.map(ex => ({
       name:     ex.name,
       repRange: ex.repRange,
@@ -241,6 +375,7 @@ function finishWorkout() {
   });
 
   if (state.sessionIndex < SESSIONS.length - 1) state.sessionIndex++;
+  stopRestTimer();
   saveToStorage();
   showToast('WORKOUT SAVED ✓');
   renderHome();
@@ -248,6 +383,8 @@ function finishWorkout() {
 
 function skipWorkout() {
   if (!confirm('Skip this workout?')) return;
+  stopDurationTimer();
+  stopRestTimer();
   if (state.sessionIndex < SESSIONS.length - 1) state.sessionIndex++;
   saveToStorage();
   renderHome();
@@ -261,28 +398,83 @@ function renderHistory() {
   document.getElementById('historyCount').textContent =
     `${h.length} session${h.length !== 1 ? 's' : ''}`;
 
+  renderWeeklySummary();
+
   if (!h.length) { list.innerHTML = ''; empty.classList.remove('hidden'); return; }
   empty.classList.add('hidden');
 
-  list.innerHTML = h.map((log, i) => `
+  list.innerHTML = h.map((log, i) => {
+    const dur = log.duration ? `<div class="history-item-dur">◷ ${fmtDuration(log.duration)}</div>` : '';
+    return `
     <div class="history-item" id="hist-${i}">
       <div class="history-item-left" onclick="openHistoryModal(${i})" style="flex:1;cursor:pointer;">
         <div class="history-item-date">${formatDate(log.date)}</div>
         <div class="history-item-name">WORKOUT ${log.workout}</div>
         <div class="history-item-meta">${log.exercises.length} exercises · ${log.phase}, Wk ${log.week}</div>
+        ${dur}
       </div>
       <div style="display:flex;align-items:center;gap:10px">
         <div class="history-item-arrow" onclick="openHistoryModal(${i})" style="cursor:pointer;">›</div>
         <button class="history-delete-btn" onclick="deleteHistoryEntry(${i})">✕</button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
+}
+
+// ─── WEEKLY SUMMARY ──────────────────────────
+function renderWeeklySummary() {
+  const card = document.getElementById('weeklySummary');
+  const h    = state.history;
+  if (!h.length) { card.style.display = 'none'; return; }
+
+  const now     = new Date();
+  const monday  = new Date(now);
+  monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+  monday.setHours(0, 0, 0, 0);
+
+  const thisWeek = h.filter(l => new Date(l.date) >= monday);
+
+  if (!thisWeek.length) { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+
+  const sessions  = thisWeek.length;
+  let   totalVol  = 0;
+  let   totalSecs = 0;
+  thisWeek.forEach(log => {
+    totalSecs += log.duration || 0;
+    log.exercises.forEach(ex =>
+      ex.sets.forEach(s => { totalVol += (s.weight || 0) * (s.reps || 0); })
+    );
+  });
+
+  const avgDur = sessions > 0 && totalSecs > 0
+    ? fmtDuration(Math.round(totalSecs / sessions))
+    : '—';
+
+  document.getElementById('weeklySummaryStats').innerHTML = `
+    <div class="wsstat">
+      <div class="wsstat-val">${sessions}</div>
+      <div class="wsstat-lbl">SESSIONS</div>
+    </div>
+    <div class="wsstat">
+      <div class="wsstat-val">${fmtVol(totalVol)}</div>
+      <div class="wsstat-lbl">VOLUME</div>
+    </div>
+    <div class="wsstat">
+      <div class="wsstat-val">${avgDur}</div>
+      <div class="wsstat-lbl">AVG DUR</div>
+    </div>`;
 }
 
 function openHistoryModal(idx) {
   const log = state.history[idx]; if (!log) return;
   document.getElementById('modalDate').textContent  = formatDate(log.date);
-  document.getElementById('modalTitle').textContent = `WORKOUT ${log.workout} · ${log.phase}, Wk ${log.week}`;
-  document.getElementById('modalBody').innerHTML = log.exercises.map(ex => `
+  document.getElementById('modalTitle').textContent =
+    `WORKOUT ${log.workout} · ${log.phase}, Wk ${log.week}`;
+  const durLine = log.duration
+    ? `<div style="font-family:var(--font-mono);font-size:11px;color:var(--text-3);margin-bottom:12px">◷ ${fmtDuration(log.duration)}</div>`
+    : '';
+  document.getElementById('modalBody').innerHTML = durLine + log.exercises.map(ex => `
     <div class="modal-exercise">
       <div class="modal-exercise-name">
         ${ex.name}
@@ -297,11 +489,9 @@ function openHistoryModal(idx) {
     </div>`).join('');
   document.getElementById('modalOverlay').classList.remove('hidden');
 }
-
 function closeModal() {
   document.getElementById('modalOverlay').classList.add('hidden');
 }
-
 function deleteHistoryEntry(idx) {
   if (!confirm('Delete this workout from history?')) return;
   state.history.splice(idx, 1);
@@ -317,14 +507,12 @@ function populateExerciseSelect() {
 }
 
 function renderProgress() {
-  const h     = state.history;
+  const h = state.history;
   const empty = document.getElementById('progressEmpty');
   const stats = document.getElementById('statsRow');
   if (!h.length) { empty.classList.remove('hidden'); stats.innerHTML = ''; return; }
   empty.classList.add('hidden');
-  renderStats();
-  renderWeeklyChart();
-  renderExerciseChart();
+  renderStats(); renderWeeklyChart(); renderExerciseChart();
 }
 
 function renderStats() {
@@ -427,12 +615,22 @@ function showToast(msg) {
   toastTimer = setTimeout(() => el.classList.add('hidden'), 2200);
 }
 
+// ─── WEIGHT HINT CSS (injected once) ─────────
+function injectWeightHintStyle() {
+  const s = document.createElement('style');
+  s.textContent = `.weight-hint{font-family:var(--font-mono);font-size:10px;color:var(--accent);opacity:.7;margin-left:4px;}`;
+  document.head.appendChild(s);
+}
+
 // ─── BOOT ────────────────────────────────────
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeModal(); stopRestTimer(); }
+});
 
 document.addEventListener('DOMContentLoaded', async () => {
   loadFromStorage();
   setHeaderDate();
+  injectWeightHintStyle();
   await loadProgram();
   renderHome();
   renderHistory();
