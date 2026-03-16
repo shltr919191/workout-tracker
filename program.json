@@ -1,866 +1,923 @@
-[
-  {
-    "phase": "Technik & Volumen",
-    "week": 1,
-    "workouts": [
-      {
-        "name": "A",
-        "exercises": [
-          {
-            "exercise": "Kniebeugen",
-            "sets_reps": "3x6-8"
-          },
-          {
-            "exercise": "KH-Bankdrücken",
-            "sets_reps": "3x6-8"
-          },
-          {
-            "exercise": "Klimmzüge",
-            "sets_reps": "3x6-8"
-          },
-          {
-            "exercise": "Seitheben Kabel",
-            "sets_reps": "3x10-12"
-          },
-          {
-            "exercise": "Leg Curls",
-            "sets_reps": "3x10-12"
-          },
-          {
-            "exercise": "Incline KH-Curls",
-            "sets_reps": "3x10-12"
-          },
-          {
-            "exercise": "Face Pulls",
-            "sets_reps": "3x10-12"
-          }
-        ]
-      },
-      {
-        "name": "B",
-        "exercises": [
-          {
-            "exercise": "Trap Bar Deadlift",
-            "sets_reps": "3x6-8"
-          },
-          {
-            "exercise": "Seated Cable Row",
-            "sets_reps": "3x6-8"
-          },
-          {
-            "exercise": "Schrägbank KH-Drücken",
-            "sets_reps": "3x6-8"
-          },
-          {
-            "exercise": "Bulgarian Split Squats",
-            "sets_reps": "3x6-8"
-          },
-          {
-            "exercise": "Seitheben Kabel",
-            "sets_reps": "3x10-12"
-          },
-          {
-            "exercise": "Trizeps Pushdowns",
-            "sets_reps": "3x10-12"
-          },
-          {
-            "exercise": "Wadenheben",
-            "sets_reps": "3x10-15"
-          }
-        ]
-      }
-    ]
+{
+  "phase_info": {
+    "Technik & Volumen": {
+      "goal": "Bewegungsmuster einschleifen, Basisvolumen aufbauen",
+      "weeks": "1–3"
+    },
+    "Kraft & Progression": {
+      "goal": "Laststeigerung bei Compound-Übungen, 4 Sätze",
+      "weeks": "4–6"
+    },
+    "Intensität": {
+      "goal": "Maximale Intensität, reduzierte Wiederholungen",
+      "weeks": "7–9"
+    },
+    "Peak & Volumen": {
+      "goal": "Kombination Stärke + Hypertrophie, höchste Last",
+      "weeks": "10–11"
+    },
+    "Deload": {
+      "goal": "60–70 % Volumen, aktive Regeneration",
+      "weeks": "12"
+    }
   },
-  {
-    "phase": "Technik & Volumen",
-    "week": 2,
-    "workouts": [
-      {
-        "name": "A",
-        "exercises": [
-          {
-            "exercise": "Kniebeugen",
-            "sets_reps": "3x6-8"
-          },
-          {
-            "exercise": "KH-Bankdrücken",
-            "sets_reps": "3x6-8"
-          },
-          {
-            "exercise": "Klimmzüge",
-            "sets_reps": "3x6-8"
-          },
-          {
-            "exercise": "Seitheben Kabel",
-            "sets_reps": "3x10-12"
-          },
-          {
-            "exercise": "Leg Curls",
-            "sets_reps": "3x10-12"
-          },
-          {
-            "exercise": "Incline KH-Curls",
-            "sets_reps": "3x10-12"
-          },
-          {
-            "exercise": "Face Pulls",
-            "sets_reps": "3x10-12"
-          }
-        ]
-      },
-      {
-        "name": "B",
-        "exercises": [
-          {
-            "exercise": "Trap Bar Deadlift",
-            "sets_reps": "3x6-8"
-          },
-          {
-            "exercise": "Seated Cable Row",
-            "sets_reps": "3x6-8"
-          },
-          {
-            "exercise": "Schrägbank KH-Drücken",
-            "sets_reps": "3x6-8"
-          },
-          {
-            "exercise": "Bulgarian Split Squats",
-            "sets_reps": "3x6-8"
-          },
-          {
-            "exercise": "Seitheben Kabel",
-            "sets_reps": "3x10-12"
-          },
-          {
-            "exercise": "Trizeps Pushdowns",
-            "sets_reps": "3x10-12"
-          },
-          {
-            "exercise": "Wadenheben",
-            "sets_reps": "3x10-15"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "phase": "Technik & Volumen",
-    "week": 3,
-    "workouts": [
-      {
-        "name": "A",
-        "exercises": [
-          {
-            "exercise": "Kniebeugen",
-            "sets_reps": "3x6-8"
-          },
-          {
-            "exercise": "KH-Bankdrücken",
-            "sets_reps": "3x6-8"
-          },
-          {
-            "exercise": "Klimmzüge",
-            "sets_reps": "3x6-8"
-          },
-          {
-            "exercise": "Seitheben Kabel",
-            "sets_reps": "3x10-12"
-          },
-          {
-            "exercise": "Leg Curls",
-            "sets_reps": "3x10-12"
-          },
-          {
-            "exercise": "Incline KH-Curls",
-            "sets_reps": "3x10-12"
-          },
-          {
-            "exercise": "Face Pulls",
-            "sets_reps": "3x10-12"
-          }
-        ]
-      },
-      {
-        "name": "B",
-        "exercises": [
-          {
-            "exercise": "Trap Bar Deadlift",
-            "sets_reps": "3x6-8"
-          },
-          {
-            "exercise": "Seated Cable Row",
-            "sets_reps": "3x6-8"
-          },
-          {
-            "exercise": "Schrägbank KH-Drücken",
-            "sets_reps": "3x6-8"
-          },
-          {
-            "exercise": "Bulgarian Split Squats",
-            "sets_reps": "3x6-8"
-          },
-          {
-            "exercise": "Seitheben Kabel",
-            "sets_reps": "3x10-12"
-          },
-          {
-            "exercise": "Trizeps Pushdowns",
-            "sets_reps": "3x10-12"
-          },
-          {
-            "exercise": "Wadenheben",
-            "sets_reps": "3x10-15"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "phase": "Kraft & Progression",
-    "week": 4,
-    "workouts": [
-      {
-        "name": "A",
-        "exercises": [
-          {
-            "exercise": "Kniebeugen",
-            "sets_reps": "4x5-7"
-          },
-          {
-            "exercise": "KH-Bankdrücken",
-            "sets_reps": "4x5-7"
-          },
-          {
-            "exercise": "Klimmzüge",
-            "sets_reps": "4x5-7"
-          },
-          {
-            "exercise": "Seitheben Kabel",
-            "sets_reps": "3x8-10"
-          },
-          {
-            "exercise": "Leg Curls",
-            "sets_reps": "3x8-10"
-          },
-          {
-            "exercise": "Incline KH-Curls",
-            "sets_reps": "3x8-10"
-          },
-          {
-            "exercise": "Face Pulls",
-            "sets_reps": "3x8-10"
-          }
-        ]
-      },
-      {
-        "name": "B",
-        "exercises": [
-          {
-            "exercise": "Trap Bar Deadlift",
-            "sets_reps": "4x5-7"
-          },
-          {
-            "exercise": "Seated Cable Row",
-            "sets_reps": "4x5-7"
-          },
-          {
-            "exercise": "Schrägbank KH-Drücken",
-            "sets_reps": "4x5-7"
-          },
-          {
-            "exercise": "Bulgarian Split Squats",
-            "sets_reps": "4x5-7"
-          },
-          {
-            "exercise": "Seitheben Kabel",
-            "sets_reps": "3x8-10"
-          },
-          {
-            "exercise": "Trizeps Pushdowns",
-            "sets_reps": "3x8-10"
-          },
-          {
-            "exercise": "Wadenheben",
-            "sets_reps": "3x10-15"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "phase": "Kraft & Progression",
-    "week": 5,
-    "workouts": [
-      {
-        "name": "A",
-        "exercises": [
-          {
-            "exercise": "Kniebeugen",
-            "sets_reps": "4x5-7"
-          },
-          {
-            "exercise": "KH-Bankdrücken",
-            "sets_reps": "4x5-7"
-          },
-          {
-            "exercise": "Klimmzüge",
-            "sets_reps": "4x5-7"
-          },
-          {
-            "exercise": "Seitheben Kabel",
-            "sets_reps": "3x8-10"
-          },
-          {
-            "exercise": "Leg Curls",
-            "sets_reps": "3x8-10"
-          },
-          {
-            "exercise": "Incline KH-Curls",
-            "sets_reps": "3x8-10"
-          },
-          {
-            "exercise": "Face Pulls",
-            "sets_reps": "3x8-10"
-          }
-        ]
-      },
-      {
-        "name": "B",
-        "exercises": [
-          {
-            "exercise": "Trap Bar Deadlift",
-            "sets_reps": "4x5-7"
-          },
-          {
-            "exercise": "Seated Cable Row",
-            "sets_reps": "4x5-7"
-          },
-          {
-            "exercise": "Schrägbank KH-Drücken",
-            "sets_reps": "4x5-7"
-          },
-          {
-            "exercise": "Bulgarian Split Squats",
-            "sets_reps": "4x5-7"
-          },
-          {
-            "exercise": "Seitheben Kabel",
-            "sets_reps": "3x8-10"
-          },
-          {
-            "exercise": "Trizeps Pushdowns",
-            "sets_reps": "3x8-10"
-          },
-          {
-            "exercise": "Wadenheben",
-            "sets_reps": "3x10-15"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "phase": "Kraft & Progression",
-    "week": 6,
-    "workouts": [
-      {
-        "name": "A",
-        "exercises": [
-          {
-            "exercise": "Kniebeugen",
-            "sets_reps": "4x5-7"
-          },
-          {
-            "exercise": "KH-Bankdrücken",
-            "sets_reps": "4x5-7"
-          },
-          {
-            "exercise": "Klimmzüge",
-            "sets_reps": "4x5-7"
-          },
-          {
-            "exercise": "Seitheben Kabel",
-            "sets_reps": "3x8-10"
-          },
-          {
-            "exercise": "Leg Curls",
-            "sets_reps": "3x8-10"
-          },
-          {
-            "exercise": "Incline KH-Curls",
-            "sets_reps": "3x8-10"
-          },
-          {
-            "exercise": "Face Pulls",
-            "sets_reps": "3x8-10"
-          }
-        ]
-      },
-      {
-        "name": "B",
-        "exercises": [
-          {
-            "exercise": "Trap Bar Deadlift",
-            "sets_reps": "4x5-7"
-          },
-          {
-            "exercise": "Seated Cable Row",
-            "sets_reps": "4x5-7"
-          },
-          {
-            "exercise": "Schrägbank KH-Drücken",
-            "sets_reps": "4x5-7"
-          },
-          {
-            "exercise": "Bulgarian Split Squats",
-            "sets_reps": "4x5-7"
-          },
-          {
-            "exercise": "Seitheben Kabel",
-            "sets_reps": "3x8-10"
-          },
-          {
-            "exercise": "Trizeps Pushdowns",
-            "sets_reps": "3x8-10"
-          },
-          {
-            "exercise": "Wadenheben",
-            "sets_reps": "3x10-15"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "phase": "Intensität",
-    "week": 7,
-    "workouts": [
-      {
-        "name": "A",
-        "exercises": [
-          {
-            "exercise": "Kniebeugen",
-            "sets_reps": "4x3-5"
-          },
-          {
-            "exercise": "KH-Bankdrücken",
-            "sets_reps": "4x3-5"
-          },
-          {
-            "exercise": "Klimmzüge",
-            "sets_reps": "4x3-5"
-          },
-          {
-            "exercise": "Seitheben Kabel",
-            "sets_reps": "4x6-8"
-          },
-          {
-            "exercise": "Leg Curls",
-            "sets_reps": "4x6-8"
-          },
-          {
-            "exercise": "Incline KH-Curls",
-            "sets_reps": "4x6-8"
-          },
-          {
-            "exercise": "Face Pulls",
-            "sets_reps": "4x6-8"
-          }
-        ]
-      },
-      {
-        "name": "B",
-        "exercises": [
-          {
-            "exercise": "Trap Bar Deadlift",
-            "sets_reps": "4x3-5"
-          },
-          {
-            "exercise": "Seated Cable Row",
-            "sets_reps": "4x3-5"
-          },
-          {
-            "exercise": "Schrägbank KH-Drücken",
-            "sets_reps": "4x3-5"
-          },
-          {
-            "exercise": "Bulgarian Split Squats",
-            "sets_reps": "4x3-5"
-          },
-          {
-            "exercise": "Seitheben Kabel",
-            "sets_reps": "4x6-8"
-          },
-          {
-            "exercise": "Trizeps Pushdowns",
-            "sets_reps": "4x6-8"
-          },
-          {
-            "exercise": "Wadenheben",
-            "sets_reps": "4x10-15"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "phase": "Intensität",
-    "week": 8,
-    "workouts": [
-      {
-        "name": "A",
-        "exercises": [
-          {
-            "exercise": "Kniebeugen",
-            "sets_reps": "4x3-5"
-          },
-          {
-            "exercise": "KH-Bankdrücken",
-            "sets_reps": "4x3-5"
-          },
-          {
-            "exercise": "Klimmzüge",
-            "sets_reps": "4x3-5"
-          },
-          {
-            "exercise": "Seitheben Kabel",
-            "sets_reps": "4x6-8"
-          },
-          {
-            "exercise": "Leg Curls",
-            "sets_reps": "4x6-8"
-          },
-          {
-            "exercise": "Incline KH-Curls",
-            "sets_reps": "4x6-8"
-          },
-          {
-            "exercise": "Face Pulls",
-            "sets_reps": "4x6-8"
-          }
-        ]
-      },
-      {
-        "name": "B",
-        "exercises": [
-          {
-            "exercise": "Trap Bar Deadlift",
-            "sets_reps": "4x3-5"
-          },
-          {
-            "exercise": "Seated Cable Row",
-            "sets_reps": "4x3-5"
-          },
-          {
-            "exercise": "Schrägbank KH-Drücken",
-            "sets_reps": "4x3-5"
-          },
-          {
-            "exercise": "Bulgarian Split Squats",
-            "sets_reps": "4x3-5"
-          },
-          {
-            "exercise": "Seitheben Kabel",
-            "sets_reps": "4x6-8"
-          },
-          {
-            "exercise": "Trizeps Pushdowns",
-            "sets_reps": "4x6-8"
-          },
-          {
-            "exercise": "Wadenheben",
-            "sets_reps": "4x10-15"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "phase": "Intensität",
-    "week": 9,
-    "workouts": [
-      {
-        "name": "A",
-        "exercises": [
-          {
-            "exercise": "Kniebeugen",
-            "sets_reps": "4x3-5"
-          },
-          {
-            "exercise": "KH-Bankdrücken",
-            "sets_reps": "4x3-5"
-          },
-          {
-            "exercise": "Klimmzüge",
-            "sets_reps": "4x3-5"
-          },
-          {
-            "exercise": "Seitheben Kabel",
-            "sets_reps": "4x6-8"
-          },
-          {
-            "exercise": "Leg Curls",
-            "sets_reps": "4x6-8"
-          },
-          {
-            "exercise": "Incline KH-Curls",
-            "sets_reps": "4x6-8"
-          },
-          {
-            "exercise": "Face Pulls",
-            "sets_reps": "4x6-8"
-          }
-        ]
-      },
-      {
-        "name": "B",
-        "exercises": [
-          {
-            "exercise": "Trap Bar Deadlift",
-            "sets_reps": "4x3-5"
-          },
-          {
-            "exercise": "Seated Cable Row",
-            "sets_reps": "4x3-5"
-          },
-          {
-            "exercise": "Schrägbank KH-Drücken",
-            "sets_reps": "4x3-5"
-          },
-          {
-            "exercise": "Bulgarian Split Squats",
-            "sets_reps": "4x3-5"
-          },
-          {
-            "exercise": "Seitheben Kabel",
-            "sets_reps": "4x6-8"
-          },
-          {
-            "exercise": "Trizeps Pushdowns",
-            "sets_reps": "4x6-8"
-          },
-          {
-            "exercise": "Wadenheben",
-            "sets_reps": "4x10-15"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "phase": "Peak & Volumen",
-    "week": 10,
-    "workouts": [
-      {
-        "name": "A",
-        "exercises": [
-          {
-            "exercise": "Kniebeugen",
-            "sets_reps": "4x4-6"
-          },
-          {
-            "exercise": "KH-Bankdrücken",
-            "sets_reps": "4x4-6"
-          },
-          {
-            "exercise": "Klimmzüge",
-            "sets_reps": "4x4-6"
-          },
-          {
-            "exercise": "Seitheben Kabel",
-            "sets_reps": "4x8-10"
-          },
-          {
-            "exercise": "Leg Curls",
-            "sets_reps": "4x8-10"
-          },
-          {
-            "exercise": "Incline KH-Curls",
-            "sets_reps": "4x8-10"
-          },
-          {
-            "exercise": "Face Pulls",
-            "sets_reps": "4x8-10"
-          }
-        ]
-      },
-      {
-        "name": "B",
-        "exercises": [
-          {
-            "exercise": "Trap Bar Deadlift",
-            "sets_reps": "4x4-6"
-          },
-          {
-            "exercise": "Seated Cable Row",
-            "sets_reps": "4x4-6"
-          },
-          {
-            "exercise": "Schrägbank KH-Drücken",
-            "sets_reps": "4x4-6"
-          },
-          {
-            "exercise": "Bulgarian Split Squats",
-            "sets_reps": "4x4-6"
-          },
-          {
-            "exercise": "Seitheben Kabel",
-            "sets_reps": "4x8-10"
-          },
-          {
-            "exercise": "Trizeps Pushdowns",
-            "sets_reps": "4x8-10"
-          },
-          {
-            "exercise": "Wadenheben",
-            "sets_reps": "4x10-15"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "phase": "Peak & Volumen",
-    "week": 11,
-    "workouts": [
-      {
-        "name": "A",
-        "exercises": [
-          {
-            "exercise": "Kniebeugen",
-            "sets_reps": "4x4-6"
-          },
-          {
-            "exercise": "KH-Bankdrücken",
-            "sets_reps": "4x4-6"
-          },
-          {
-            "exercise": "Klimmzüge",
-            "sets_reps": "4x4-6"
-          },
-          {
-            "exercise": "Seitheben Kabel",
-            "sets_reps": "4x8-10"
-          },
-          {
-            "exercise": "Leg Curls",
-            "sets_reps": "4x8-10"
-          },
-          {
-            "exercise": "Incline KH-Curls",
-            "sets_reps": "4x8-10"
-          },
-          {
-            "exercise": "Face Pulls",
-            "sets_reps": "4x8-10"
-          }
-        ]
-      },
-      {
-        "name": "B",
-        "exercises": [
-          {
-            "exercise": "Trap Bar Deadlift",
-            "sets_reps": "4x4-6"
-          },
-          {
-            "exercise": "Seated Cable Row",
-            "sets_reps": "4x4-6"
-          },
-          {
-            "exercise": "Schrägbank KH-Drücken",
-            "sets_reps": "4x4-6"
-          },
-          {
-            "exercise": "Bulgarian Split Squats",
-            "sets_reps": "4x4-6"
-          },
-          {
-            "exercise": "Seitheben Kabel",
-            "sets_reps": "4x8-10"
-          },
-          {
-            "exercise": "Trizeps Pushdowns",
-            "sets_reps": "4x8-10"
-          },
-          {
-            "exercise": "Wadenheben",
-            "sets_reps": "4x10-15"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "phase": "Deload",
-    "week": 12,
-    "workouts": [
-      {
-        "name": "A",
-        "exercises": [
-          {
-            "exercise": "Kniebeugen",
-            "sets_reps": "3x8-12"
-          },
-          {
-            "exercise": "KH-Bankdrücken",
-            "sets_reps": "3x8-12"
-          },
-          {
-            "exercise": "Klimmzüge",
-            "sets_reps": "3x8-12"
-          },
-          {
-            "exercise": "Seitheben Kabel",
-            "sets_reps": "3x10-15"
-          },
-          {
-            "exercise": "Leg Curls",
-            "sets_reps": "3x10-15"
-          },
-          {
-            "exercise": "Incline KH-Curls",
-            "sets_reps": "3x10-15"
-          },
-          {
-            "exercise": "Face Pulls",
-            "sets_reps": "3x10-15"
-          }
-        ]
-      },
-      {
-        "name": "B",
-        "exercises": [
-          {
-            "exercise": "Trap Bar Deadlift",
-            "sets_reps": "3x8-12"
-          },
-          {
-            "exercise": "Seated Cable Row",
-            "sets_reps": "3x8-12"
-          },
-          {
-            "exercise": "Schrägbank KH-Drücken",
-            "sets_reps": "3x8-12"
-          },
-          {
-            "exercise": "Bulgarian Split Squats",
-            "sets_reps": "3x8-12"
-          },
-          {
-            "exercise": "Seitheben Kabel",
-            "sets_reps": "3x10-15"
-          },
-          {
-            "exercise": "Trizeps Pushdowns",
-            "sets_reps": "3x10-15"
-          },
-          {
-            "exercise": "Wadenheben",
-            "sets_reps": "3x10-15"
-          }
-        ]
-      }
-    ]
-  }
-]
+  "progression_rules": [
+    "Progressive Overload: Wenn du alle Wdh. der oberen Grenze sauber schaffst → nächste Einheit Gewicht erhöhen (+2,5–5 kg Compound / +1–2,5 kg Isolation).",
+    "Phase 1 (W1–3): Technik-Fokus, 3 Sätze. Gewicht konservativ wählen, RIR 3–4.",
+    "Phase 2 (W4–6): 4 Sätze Compound, 3 Sätze Iso. Rep-Range sinkt, Last steigt. RIR 2–3.",
+    "Phase 3 (W7–9): 4 Sätze überall. Intensität hoch, RIR 1–2.",
+    "Phase 4 (W10–11): Höchste absolute Last. RIR 0–1 auf Hauptübungen.",
+    "Deload (W12): Alle Gewichte –30–40 %, Sätze 3. Keine PRs jagen.",
+    "Beinvolumen: Moderat gehalten wegen Rennrad. Bei wenig Rennrad-Wochen BSS auf 4 Sätze erhöhen."
+  ],
+  "weeks": [
+    {
+      "phase": "Technik & Volumen",
+      "week": 1,
+      "workouts": [
+        {
+          "name": "A",
+          "exercises": [
+            {
+              "exercise": "Kniebeugen",
+              "sets_reps": "3x6-8"
+            },
+            {
+              "exercise": "KH-Bankdrücken",
+              "sets_reps": "3x6-8"
+            },
+            {
+              "exercise": "Klimmzüge",
+              "sets_reps": "3x6-8"
+            },
+            {
+              "exercise": "Seitheben Kabel",
+              "sets_reps": "3x10-12"
+            },
+            {
+              "exercise": "Leg Curls",
+              "sets_reps": "3x10-12"
+            },
+            {
+              "exercise": "Incline KH-Curls",
+              "sets_reps": "3x10-12"
+            },
+            {
+              "exercise": "Face Pulls",
+              "sets_reps": "3x10-12"
+            }
+          ]
+        },
+        {
+          "name": "B",
+          "exercises": [
+            {
+              "exercise": "Trap Bar Deadlift",
+              "sets_reps": "3x6-8"
+            },
+            {
+              "exercise": "Seated Cable Row",
+              "sets_reps": "3x6-8"
+            },
+            {
+              "exercise": "Schrägbank KH-Drücken",
+              "sets_reps": "3x6-8"
+            },
+            {
+              "exercise": "Bulgarian Split Squats",
+              "sets_reps": "3x6-8"
+            },
+            {
+              "exercise": "Seitheben Kabel",
+              "sets_reps": "3x10-12"
+            },
+            {
+              "exercise": "Trizeps Pushdowns",
+              "sets_reps": "3x10-12"
+            },
+            {
+              "exercise": "Wadenheben",
+              "sets_reps": "3x10-15"
+            }
+          ]
+        }
+      ],
+      "rir": "3–4",
+      "focus": "Bewegungsmuster, konservativ"
+    },
+    {
+      "phase": "Technik & Volumen",
+      "week": 2,
+      "workouts": [
+        {
+          "name": "A",
+          "exercises": [
+            {
+              "exercise": "Kniebeugen",
+              "sets_reps": "3x6-8"
+            },
+            {
+              "exercise": "KH-Bankdrücken",
+              "sets_reps": "3x6-8"
+            },
+            {
+              "exercise": "Klimmzüge",
+              "sets_reps": "3x6-8"
+            },
+            {
+              "exercise": "Seitheben Kabel",
+              "sets_reps": "3x10-12"
+            },
+            {
+              "exercise": "Leg Curls",
+              "sets_reps": "3x10-12"
+            },
+            {
+              "exercise": "Incline KH-Curls",
+              "sets_reps": "3x10-12"
+            },
+            {
+              "exercise": "Face Pulls",
+              "sets_reps": "3x10-12"
+            }
+          ]
+        },
+        {
+          "name": "B",
+          "exercises": [
+            {
+              "exercise": "Trap Bar Deadlift",
+              "sets_reps": "3x6-8"
+            },
+            {
+              "exercise": "Seated Cable Row",
+              "sets_reps": "3x6-8"
+            },
+            {
+              "exercise": "Schrägbank KH-Drücken",
+              "sets_reps": "3x6-8"
+            },
+            {
+              "exercise": "Bulgarian Split Squats",
+              "sets_reps": "3x6-8"
+            },
+            {
+              "exercise": "Seitheben Kabel",
+              "sets_reps": "3x10-12"
+            },
+            {
+              "exercise": "Trizeps Pushdowns",
+              "sets_reps": "3x10-12"
+            },
+            {
+              "exercise": "Wadenheben",
+              "sets_reps": "3x10-15"
+            }
+          ]
+        }
+      ],
+      "rir": "3–4",
+      "focus": "Leichte Progression"
+    },
+    {
+      "phase": "Technik & Volumen",
+      "week": 3,
+      "workouts": [
+        {
+          "name": "A",
+          "exercises": [
+            {
+              "exercise": "Kniebeugen",
+              "sets_reps": "3x6-8"
+            },
+            {
+              "exercise": "KH-Bankdrücken",
+              "sets_reps": "3x6-8"
+            },
+            {
+              "exercise": "Klimmzüge",
+              "sets_reps": "3x6-8"
+            },
+            {
+              "exercise": "Seitheben Kabel",
+              "sets_reps": "3x10-12"
+            },
+            {
+              "exercise": "Leg Curls",
+              "sets_reps": "3x10-12"
+            },
+            {
+              "exercise": "Incline KH-Curls",
+              "sets_reps": "3x10-12"
+            },
+            {
+              "exercise": "Face Pulls",
+              "sets_reps": "3x10-12"
+            }
+          ]
+        },
+        {
+          "name": "B",
+          "exercises": [
+            {
+              "exercise": "Trap Bar Deadlift",
+              "sets_reps": "3x6-8"
+            },
+            {
+              "exercise": "Seated Cable Row",
+              "sets_reps": "3x6-8"
+            },
+            {
+              "exercise": "Schrägbank KH-Drücken",
+              "sets_reps": "3x6-8"
+            },
+            {
+              "exercise": "Bulgarian Split Squats",
+              "sets_reps": "3x6-8"
+            },
+            {
+              "exercise": "Seitheben Kabel",
+              "sets_reps": "3x10-12"
+            },
+            {
+              "exercise": "Trizeps Pushdowns",
+              "sets_reps": "3x10-12"
+            },
+            {
+              "exercise": "Wadenheben",
+              "sets_reps": "3x10-15"
+            }
+          ]
+        }
+      ],
+      "rir": "2–3",
+      "focus": "Abschluss Phase 1"
+    },
+    {
+      "phase": "Kraft & Progression",
+      "week": 4,
+      "workouts": [
+        {
+          "name": "A",
+          "exercises": [
+            {
+              "exercise": "Kniebeugen",
+              "sets_reps": "4x5-7"
+            },
+            {
+              "exercise": "KH-Bankdrücken",
+              "sets_reps": "4x5-7"
+            },
+            {
+              "exercise": "Klimmzüge",
+              "sets_reps": "4x5-7"
+            },
+            {
+              "exercise": "Seitheben Kabel",
+              "sets_reps": "3x8-10"
+            },
+            {
+              "exercise": "Leg Curls",
+              "sets_reps": "3x8-10"
+            },
+            {
+              "exercise": "Incline KH-Curls",
+              "sets_reps": "3x8-10"
+            },
+            {
+              "exercise": "Face Pulls",
+              "sets_reps": "3x8-10"
+            }
+          ]
+        },
+        {
+          "name": "B",
+          "exercises": [
+            {
+              "exercise": "Trap Bar Deadlift",
+              "sets_reps": "4x5-7"
+            },
+            {
+              "exercise": "Seated Cable Row",
+              "sets_reps": "4x5-7"
+            },
+            {
+              "exercise": "Schrägbank KH-Drücken",
+              "sets_reps": "4x5-7"
+            },
+            {
+              "exercise": "Bulgarian Split Squats",
+              "sets_reps": "4x5-7"
+            },
+            {
+              "exercise": "Seitheben Kabel",
+              "sets_reps": "3x8-10"
+            },
+            {
+              "exercise": "Trizeps Pushdowns",
+              "sets_reps": "3x8-10"
+            },
+            {
+              "exercise": "Wadenheben",
+              "sets_reps": "3x10-15"
+            }
+          ]
+        }
+      ],
+      "rir": "2–3",
+      "focus": "Satzanzahl Compound ↑"
+    },
+    {
+      "phase": "Kraft & Progression",
+      "week": 5,
+      "workouts": [
+        {
+          "name": "A",
+          "exercises": [
+            {
+              "exercise": "Kniebeugen",
+              "sets_reps": "4x5-7"
+            },
+            {
+              "exercise": "KH-Bankdrücken",
+              "sets_reps": "4x5-7"
+            },
+            {
+              "exercise": "Klimmzüge",
+              "sets_reps": "4x5-7"
+            },
+            {
+              "exercise": "Seitheben Kabel",
+              "sets_reps": "3x8-10"
+            },
+            {
+              "exercise": "Leg Curls",
+              "sets_reps": "3x8-10"
+            },
+            {
+              "exercise": "Incline KH-Curls",
+              "sets_reps": "3x8-10"
+            },
+            {
+              "exercise": "Face Pulls",
+              "sets_reps": "3x8-10"
+            }
+          ]
+        },
+        {
+          "name": "B",
+          "exercises": [
+            {
+              "exercise": "Trap Bar Deadlift",
+              "sets_reps": "4x5-7"
+            },
+            {
+              "exercise": "Seated Cable Row",
+              "sets_reps": "4x5-7"
+            },
+            {
+              "exercise": "Schrägbank KH-Drücken",
+              "sets_reps": "4x5-7"
+            },
+            {
+              "exercise": "Bulgarian Split Squats",
+              "sets_reps": "4x5-7"
+            },
+            {
+              "exercise": "Seitheben Kabel",
+              "sets_reps": "3x8-10"
+            },
+            {
+              "exercise": "Trizeps Pushdowns",
+              "sets_reps": "3x8-10"
+            },
+            {
+              "exercise": "Wadenheben",
+              "sets_reps": "3x10-15"
+            }
+          ]
+        }
+      ],
+      "rir": "2–3",
+      "focus": "Gewicht progressiv steigern"
+    },
+    {
+      "phase": "Kraft & Progression",
+      "week": 6,
+      "workouts": [
+        {
+          "name": "A",
+          "exercises": [
+            {
+              "exercise": "Kniebeugen",
+              "sets_reps": "4x5-7"
+            },
+            {
+              "exercise": "KH-Bankdrücken",
+              "sets_reps": "4x5-7"
+            },
+            {
+              "exercise": "Klimmzüge",
+              "sets_reps": "4x5-7"
+            },
+            {
+              "exercise": "Seitheben Kabel",
+              "sets_reps": "3x8-10"
+            },
+            {
+              "exercise": "Leg Curls",
+              "sets_reps": "3x8-10"
+            },
+            {
+              "exercise": "Incline KH-Curls",
+              "sets_reps": "3x8-10"
+            },
+            {
+              "exercise": "Face Pulls",
+              "sets_reps": "3x8-10"
+            }
+          ]
+        },
+        {
+          "name": "B",
+          "exercises": [
+            {
+              "exercise": "Trap Bar Deadlift",
+              "sets_reps": "4x5-7"
+            },
+            {
+              "exercise": "Seated Cable Row",
+              "sets_reps": "4x5-7"
+            },
+            {
+              "exercise": "Schrägbank KH-Drücken",
+              "sets_reps": "4x5-7"
+            },
+            {
+              "exercise": "Bulgarian Split Squats",
+              "sets_reps": "4x5-7"
+            },
+            {
+              "exercise": "Seitheben Kabel",
+              "sets_reps": "3x8-10"
+            },
+            {
+              "exercise": "Trizeps Pushdowns",
+              "sets_reps": "3x8-10"
+            },
+            {
+              "exercise": "Wadenheben",
+              "sets_reps": "3x10-15"
+            }
+          ]
+        }
+      ],
+      "rir": "1–2",
+      "focus": "Stärkste Kraft-Woche"
+    },
+    {
+      "phase": "Intensität",
+      "week": 7,
+      "workouts": [
+        {
+          "name": "A",
+          "exercises": [
+            {
+              "exercise": "Kniebeugen",
+              "sets_reps": "4x3-5"
+            },
+            {
+              "exercise": "KH-Bankdrücken",
+              "sets_reps": "4x3-5"
+            },
+            {
+              "exercise": "Klimmzüge",
+              "sets_reps": "4x3-5"
+            },
+            {
+              "exercise": "Seitheben Kabel",
+              "sets_reps": "4x6-8"
+            },
+            {
+              "exercise": "Leg Curls",
+              "sets_reps": "4x6-8"
+            },
+            {
+              "exercise": "Incline KH-Curls",
+              "sets_reps": "4x6-8"
+            },
+            {
+              "exercise": "Face Pulls",
+              "sets_reps": "4x6-8"
+            }
+          ]
+        },
+        {
+          "name": "B",
+          "exercises": [
+            {
+              "exercise": "Trap Bar Deadlift",
+              "sets_reps": "4x3-5"
+            },
+            {
+              "exercise": "Seated Cable Row",
+              "sets_reps": "4x3-5"
+            },
+            {
+              "exercise": "Schrägbank KH-Drücken",
+              "sets_reps": "4x3-5"
+            },
+            {
+              "exercise": "Bulgarian Split Squats",
+              "sets_reps": "4x3-5"
+            },
+            {
+              "exercise": "Seitheben Kabel",
+              "sets_reps": "4x6-8"
+            },
+            {
+              "exercise": "Trizeps Pushdowns",
+              "sets_reps": "4x6-8"
+            },
+            {
+              "exercise": "Wadenheben",
+              "sets_reps": "4x10-15"
+            }
+          ]
+        }
+      ],
+      "rir": "1–2",
+      "focus": "Alle Iso auf 4 Sätze"
+    },
+    {
+      "phase": "Intensität",
+      "week": 8,
+      "workouts": [
+        {
+          "name": "A",
+          "exercises": [
+            {
+              "exercise": "Kniebeugen",
+              "sets_reps": "4x3-5"
+            },
+            {
+              "exercise": "KH-Bankdrücken",
+              "sets_reps": "4x3-5"
+            },
+            {
+              "exercise": "Klimmzüge",
+              "sets_reps": "4x3-5"
+            },
+            {
+              "exercise": "Seitheben Kabel",
+              "sets_reps": "4x6-8"
+            },
+            {
+              "exercise": "Leg Curls",
+              "sets_reps": "4x6-8"
+            },
+            {
+              "exercise": "Incline KH-Curls",
+              "sets_reps": "4x6-8"
+            },
+            {
+              "exercise": "Face Pulls",
+              "sets_reps": "4x6-8"
+            }
+          ]
+        },
+        {
+          "name": "B",
+          "exercises": [
+            {
+              "exercise": "Trap Bar Deadlift",
+              "sets_reps": "4x3-5"
+            },
+            {
+              "exercise": "Seated Cable Row",
+              "sets_reps": "4x3-5"
+            },
+            {
+              "exercise": "Schrägbank KH-Drücken",
+              "sets_reps": "4x3-5"
+            },
+            {
+              "exercise": "Bulgarian Split Squats",
+              "sets_reps": "4x3-5"
+            },
+            {
+              "exercise": "Seitheben Kabel",
+              "sets_reps": "4x6-8"
+            },
+            {
+              "exercise": "Trizeps Pushdowns",
+              "sets_reps": "4x6-8"
+            },
+            {
+              "exercise": "Wadenheben",
+              "sets_reps": "4x10-15"
+            }
+          ]
+        }
+      ],
+      "rir": "1–2",
+      "focus": "Schwere Woche"
+    },
+    {
+      "phase": "Intensität",
+      "week": 9,
+      "workouts": [
+        {
+          "name": "A",
+          "exercises": [
+            {
+              "exercise": "Kniebeugen",
+              "sets_reps": "4x3-5"
+            },
+            {
+              "exercise": "KH-Bankdrücken",
+              "sets_reps": "4x3-5"
+            },
+            {
+              "exercise": "Klimmzüge",
+              "sets_reps": "4x3-5"
+            },
+            {
+              "exercise": "Seitheben Kabel",
+              "sets_reps": "4x6-8"
+            },
+            {
+              "exercise": "Leg Curls",
+              "sets_reps": "4x6-8"
+            },
+            {
+              "exercise": "Incline KH-Curls",
+              "sets_reps": "4x6-8"
+            },
+            {
+              "exercise": "Face Pulls",
+              "sets_reps": "4x6-8"
+            }
+          ]
+        },
+        {
+          "name": "B",
+          "exercises": [
+            {
+              "exercise": "Trap Bar Deadlift",
+              "sets_reps": "4x3-5"
+            },
+            {
+              "exercise": "Seated Cable Row",
+              "sets_reps": "4x3-5"
+            },
+            {
+              "exercise": "Schrägbank KH-Drücken",
+              "sets_reps": "4x3-5"
+            },
+            {
+              "exercise": "Bulgarian Split Squats",
+              "sets_reps": "4x3-5"
+            },
+            {
+              "exercise": "Seitheben Kabel",
+              "sets_reps": "4x6-8"
+            },
+            {
+              "exercise": "Trizeps Pushdowns",
+              "sets_reps": "4x6-8"
+            },
+            {
+              "exercise": "Wadenheben",
+              "sets_reps": "4x10-15"
+            }
+          ]
+        }
+      ],
+      "rir": "0–1",
+      "focus": "Maximale Belastung"
+    },
+    {
+      "phase": "Peak & Volumen",
+      "week": 10,
+      "workouts": [
+        {
+          "name": "A",
+          "exercises": [
+            {
+              "exercise": "Kniebeugen",
+              "sets_reps": "4x4-6"
+            },
+            {
+              "exercise": "KH-Bankdrücken",
+              "sets_reps": "4x4-6"
+            },
+            {
+              "exercise": "Klimmzüge",
+              "sets_reps": "4x4-6"
+            },
+            {
+              "exercise": "Seitheben Kabel",
+              "sets_reps": "4x8-10"
+            },
+            {
+              "exercise": "Leg Curls",
+              "sets_reps": "4x8-10"
+            },
+            {
+              "exercise": "Incline KH-Curls",
+              "sets_reps": "4x8-10"
+            },
+            {
+              "exercise": "Face Pulls",
+              "sets_reps": "4x8-10"
+            }
+          ]
+        },
+        {
+          "name": "B",
+          "exercises": [
+            {
+              "exercise": "Trap Bar Deadlift",
+              "sets_reps": "4x4-6"
+            },
+            {
+              "exercise": "Seated Cable Row",
+              "sets_reps": "4x4-6"
+            },
+            {
+              "exercise": "Schrägbank KH-Drücken",
+              "sets_reps": "4x4-6"
+            },
+            {
+              "exercise": "Bulgarian Split Squats",
+              "sets_reps": "4x4-6"
+            },
+            {
+              "exercise": "Seitheben Kabel",
+              "sets_reps": "4x8-10"
+            },
+            {
+              "exercise": "Trizeps Pushdowns",
+              "sets_reps": "4x8-10"
+            },
+            {
+              "exercise": "Wadenheben",
+              "sets_reps": "4x10-15"
+            }
+          ]
+        }
+      ],
+      "rir": "0–1",
+      "focus": "Höchste absolute Lasten"
+    },
+    {
+      "phase": "Peak & Volumen",
+      "week": 11,
+      "workouts": [
+        {
+          "name": "A",
+          "exercises": [
+            {
+              "exercise": "Kniebeugen",
+              "sets_reps": "4x4-6"
+            },
+            {
+              "exercise": "KH-Bankdrücken",
+              "sets_reps": "4x4-6"
+            },
+            {
+              "exercise": "Klimmzüge",
+              "sets_reps": "4x4-6"
+            },
+            {
+              "exercise": "Seitheben Kabel",
+              "sets_reps": "4x8-10"
+            },
+            {
+              "exercise": "Leg Curls",
+              "sets_reps": "4x8-10"
+            },
+            {
+              "exercise": "Incline KH-Curls",
+              "sets_reps": "4x8-10"
+            },
+            {
+              "exercise": "Face Pulls",
+              "sets_reps": "4x8-10"
+            }
+          ]
+        },
+        {
+          "name": "B",
+          "exercises": [
+            {
+              "exercise": "Trap Bar Deadlift",
+              "sets_reps": "4x4-6"
+            },
+            {
+              "exercise": "Seated Cable Row",
+              "sets_reps": "4x4-6"
+            },
+            {
+              "exercise": "Schrägbank KH-Drücken",
+              "sets_reps": "4x4-6"
+            },
+            {
+              "exercise": "Bulgarian Split Squats",
+              "sets_reps": "4x4-6"
+            },
+            {
+              "exercise": "Seitheben Kabel",
+              "sets_reps": "4x8-10"
+            },
+            {
+              "exercise": "Trizeps Pushdowns",
+              "sets_reps": "4x8-10"
+            },
+            {
+              "exercise": "Wadenheben",
+              "sets_reps": "4x10-15"
+            }
+          ]
+        }
+      ],
+      "rir": "0–1",
+      "focus": "PRs anstreben"
+    },
+    {
+      "phase": "Deload",
+      "week": 12,
+      "workouts": [
+        {
+          "name": "A",
+          "exercises": [
+            {
+              "exercise": "Kniebeugen",
+              "sets_reps": "3x8-12"
+            },
+            {
+              "exercise": "KH-Bankdrücken",
+              "sets_reps": "3x8-12"
+            },
+            {
+              "exercise": "Klimmzüge",
+              "sets_reps": "3x8-12"
+            },
+            {
+              "exercise": "Seitheben Kabel",
+              "sets_reps": "3x10-15"
+            },
+            {
+              "exercise": "Leg Curls",
+              "sets_reps": "3x10-15"
+            },
+            {
+              "exercise": "Incline KH-Curls",
+              "sets_reps": "3x10-15"
+            },
+            {
+              "exercise": "Face Pulls",
+              "sets_reps": "3x10-15"
+            }
+          ]
+        },
+        {
+          "name": "B",
+          "exercises": [
+            {
+              "exercise": "Trap Bar Deadlift",
+              "sets_reps": "3x8-12"
+            },
+            {
+              "exercise": "Seated Cable Row",
+              "sets_reps": "3x8-12"
+            },
+            {
+              "exercise": "Schrägbank KH-Drücken",
+              "sets_reps": "3x8-12"
+            },
+            {
+              "exercise": "Bulgarian Split Squats",
+              "sets_reps": "3x8-12"
+            },
+            {
+              "exercise": "Seitheben Kabel",
+              "sets_reps": "3x10-15"
+            },
+            {
+              "exercise": "Trizeps Pushdowns",
+              "sets_reps": "3x10-15"
+            },
+            {
+              "exercise": "Wadenheben",
+              "sets_reps": "3x10-15"
+            }
+          ]
+        }
+      ],
+      "rir": "4+",
+      "focus": "–30–40 % Last, Regeneration"
+    }
+  ]
+}

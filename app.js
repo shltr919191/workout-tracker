@@ -28,6 +28,8 @@ const REST_DEFAULT = 90; // seconds
 
 // ─── GLOBALS ─────────────────────────────────
 let SESSIONS = [];
+let PHASE_INFO = {};
+let PROG_RULES = [];
 let state = {
   sessionIndex: 0,
   sets:         {},
@@ -79,15 +81,20 @@ function parseSetsReps(str) {
 
 // ─── LOAD PROGRAM ────────────────────────────
 async function loadProgram() {
-  const res  = await fetch('./program.json');
-  const data = await res.json();
-  SESSIONS   = [];
-  data.forEach(week => {
+  const res    = await fetch('./program.json');
+  const data   = await res.json();
+  SESSIONS     = [];
+  PHASE_INFO   = data.phase_info   || {};
+  PROG_RULES   = data.progression_rules || [];
+  const weeks  = data.weeks || data; // backwards compat
+  weeks.forEach(week => {
     week.workouts.forEach(workout => {
       SESSIONS.push({
         phase:    week.phase,
         week:     week.week,
         workout:  workout.name,
+        rir:      week.rir   || '',
+        focus:    week.focus || '',
         exercises: workout.exercises.map(ex => {
           const { sets, reps, repRange } = parseSetsReps(ex.sets_reps);
           return { name: ex.exercise, sets, reps, repRange,
@@ -516,6 +523,7 @@ function renderPlan() {
   const container = document.getElementById('planOverview');
   if (!container) return;
 
+  // Group SESSIONS by phase
   const phases = [];
   let lastPhase = null;
   SESSIONS.forEach((sess, idx) => {
@@ -527,16 +535,21 @@ function renderPlan() {
   });
 
   const completedIdxs = new Set(state.history.map(l => l.sessionIndex));
-  const currentIdx = state.sessionIndex;
+  const currentIdx    = state.sessionIndex;
 
   const phaseClass = p =>
-    p === 'Hypertrophy' ? 'hyp' :
-    p === 'Strength'    ? 'str' : 'peak';
+    p === 'Technik & Volumen'  ? 'hyp'  :
+    p === 'Kraft & Progression'? 'str'  :
+    p === 'Intensität'         ? 'int'  :
+    p === 'Peak & Volumen'     ? 'peak' : 'deload';
 
   container.innerHTML = phases.map(p => {
-    const weeks = [...new Set(p.sessions.map(s => s.week))];
-    const weekRange = `Woche ${Math.min(...weeks)}–${Math.max(...weeks)}`;
+    const info     = PHASE_INFO[p.phase] || {};
+    const pCls     = phaseClass(p.phase);
+    const weeks    = [...new Set(p.sessions.map(s => s.week))];
+    const weekRange = `Wochen ${Math.min(...weeks)}–${Math.max(...weeks)}`;
 
+    // Group by week
     const byWeek = {};
     p.sessions.forEach(s => { if (!byWeek[s.week]) byWeek[s.week] = []; byWeek[s.week].push(s); });
 
@@ -544,47 +557,82 @@ function renderPlan() {
       const isCurrent = sessions.some(s => s.globalIdx === currentIdx);
       const isDone    = sessions.every(s => completedIdxs.has(s.globalIdx));
       const badgeCls  = isCurrent ? 'current' : isDone ? 'done' : 'upcoming';
-      const badgeTxt  = isCurrent ? 'AKTUELL' : isDone ? '\u2713 DONE' : 'AUSSTEHEND';
+      const badgeTxt  = isCurrent ? 'AKTUELL' : isDone ? '✓ DONE' : 'AUSSTEHEND';
       const cardCls   = isCurrent ? 'current' : isDone ? 'completed' : '';
       const bodyOpen  = isCurrent ? 'open' : '';
+
+      // RIR + Focus from first session of this week
+      const rir   = sessions[0]?.rir   || '';
+      const focus = sessions[0]?.focus || '';
 
       const workoutSections = sessions.map(s => `
         <div class="plan-workout-section">
           <div class="plan-workout-label">WORKOUT ${s.workout}</div>
           ${s.exercises.map(ex =>
-            `<div class="plan-ex-row"><span class="plan-ex-name">${ex.name}</span><span class="plan-ex-scheme">${ex.sets} \u00d7 ${ex.repRange}</span></div>`
+            `<div class="plan-ex-row">
+              <span class="plan-ex-name">${ex.name}</span>
+              <span class="plan-ex-scheme">${ex.sets} × ${ex.repRange}</span>
+            </div>`
           ).join('')}
         </div>`).join('');
+
+      const metaRow = (rir || focus) ? `
+        <div class="plan-week-meta-row">
+          ${rir   ? `<span class="plan-meta-pill rir">RIR ${rir}</span>` : ''}
+          ${focus ? `<span class="plan-meta-focus">${focus}</span>` : ''}
+        </div>` : '';
 
       return `
         <div class="plan-week-card ${cardCls}">
           <div class="plan-week-header" onclick="togglePlanWeek(this)">
             <div>
               <div class="plan-week-label">WOCHE ${week}</div>
-              <div class="plan-week-meta">${sessions.length} Workouts \u00b7 ${sessions.map(s => 'Workout ' + s.workout).join(', ')}</div>
+              <div class="plan-week-meta">${sessions.length} Workouts · ${sessions.map(s => 'Workout ' + s.workout).join(', ')}</div>
             </div>
             <span class="plan-week-badge ${badgeCls}">${badgeTxt}</span>
           </div>
-          <div class="plan-week-body ${bodyOpen}">${workoutSections}</div>
+          <div class="plan-week-body ${bodyOpen}">
+            ${metaRow}
+            ${workoutSections}
+          </div>
         </div>`;
     }).join('');
 
+    const goalHtml = info.goal
+      ? `<div class="plan-phase-goal">${info.goal}</div>`
+      : '';
+
     return `
       <div class="plan-phase-section">
-        <div class="plan-phase-header ${phaseClass(p.phase)}">
+        <div class="plan-phase-header ${pCls}">
           <div>
             <div class="plan-phase-name">${p.phase.toUpperCase()}</div>
             <div class="plan-phase-weeks">${weekRange}</div>
           </div>
         </div>
+        ${goalHtml}
         ${weekCards}
       </div>`;
   }).join('');
 }
 
 function togglePlanWeek(header) {
-  const body = header.nextElementSibling;
-  body.classList.toggle('open');
+  header.nextElementSibling.classList.toggle('open');
+}
+
+function openInfoModal() {
+  const body = document.getElementById('infoModalBody');
+  body.innerHTML = PROG_RULES.map(r =>
+    `<div class="info-rule">
+      <span class="info-rule-dot">·</span>
+      <span class="info-rule-text">${r}</span>
+    </div>`
+  ).join('');
+  document.getElementById('infoModalOverlay').classList.remove('hidden');
+}
+
+function closeInfoModal() {
+  document.getElementById('infoModalOverlay').classList.add('hidden');
 }
 
 function populateExerciseSelect() {

@@ -107,7 +107,7 @@
 
         <div class="page-header">
           <h2 class="page-title">PLAN</h2>
-          <span class="page-count">12 Wochen</span>
+          <button class="info-btn" onclick="openInfoModal()" title="Progressionsregeln">ⓘ REGELN</button>
         </div>
 
         <div id="planOverview"></div>
@@ -189,6 +189,21 @@
         <button class="modal-close" onclick="closeModal()">✕</button>
       </div>
       <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+
+  <!-- INFO MODAL (Progressionsregeln) -->
+  <div class="modal-overlay hidden" id="infoModalOverlay" onclick="closeInfoModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <div class="modal-date">TRAININGSPLAN</div>
+          <div class="modal-title">PROGRESSIONSREGELN</div>
+        </div>
+        <button class="modal-close" onclick="closeInfoModal()">✕</button>
+      </div>
+      <div class="modal-body" id="infoModalBody"></div>
     </div>
   </div>
 
