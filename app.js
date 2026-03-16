@@ -8,12 +8,21 @@
 
 // ─── CONFIG ──────────────────────────────────
 const DEFAULT_WEIGHTS = {
-  'Trap Bar Deadlift':   100,
-  'DB Bench Press':       30,
-  'Pull Ups':              0,
-  'Cable Lateral Raise':  10,
-  'Incline DB Curl':      12,
-  'Core':                  0,
+  // Workout A
+  'Kniebeugen':               60,
+  'Kurzhantel Bankdrücken':   24,
+  'Klimmzüge':                 0,
+  'Seitheben am Kabel':        8,
+  'Leg Curls':                30,
+  'Incline Dumbbell Curls':   12,
+  'Face Pulls':               15,
+  // Workout B
+  'Trap Bar Deadlift':       100,
+  'Seated Cable Row':         50,
+  'Schrägbankdrücken Kurzhantel': 20,
+  'Bulgarian Split Squats':   20,
+  'Trizeps Pushdowns':        20,
+  'Wadenheben':               40,
 };
 const REST_DEFAULT = 90; // seconds
 
