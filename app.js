@@ -741,6 +741,18 @@ function chartOpts({ yMax, yLabel } = {}) {
   };
 }
 
+// ─── EXPORT ──────────────────────────────────
+function exportData() {
+  const raw = localStorage.getItem('wt_v4');
+  if (!raw) { showToast('KEINE DATEN'); return; }
+  const blob = new Blob([raw], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'workout-export-' + new Date().toISOString().split('T')[0] + '.json';
+  a.click();
+  showToast('EXPORT GESPEICHERT ✓');
+}
+
 // ─── TOAST ───────────────────────────────────
 let toastTimer = null;
 function showToast(msg) {
