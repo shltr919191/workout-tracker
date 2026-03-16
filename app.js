@@ -190,7 +190,7 @@ function updateRestDisplay() {
   // Pulse colour when low
   const fill = document.getElementById('restRingFill');
   if (restRemaining <= 10) fill.style.stroke = '#e05555';
-  else                      fill.style.stroke = '#f5a623';
+  else                      fill.style.stroke = '#FFB347';
 }
 function stopRestTimer() {
   clearInterval(restInterval);
@@ -682,8 +682,8 @@ function renderWeeklyChart() {
       labels: weeks.map(w => w.lbl),
       datasets: [{
         data: weeks.map(w => w.n),
-        backgroundColor: weeks.map(w => w.n > 0 ? 'rgba(245,166,35,.7)' : 'rgba(42,42,42,.5)'),
-        borderColor:     weeks.map(w => w.n > 0 ? '#f5a623' : '#2a2a2a'),
+        backgroundColor: weeks.map(w => w.n > 0 ? 'rgba(255,179,71,.7)' : 'rgba(42,42,42,.5)'),
+        borderColor:     weeks.map(w => w.n > 0 ? '#FFB347' : '#2a2a2a'),
         borderWidth: 1, borderRadius: 4, borderSkipped: false,
       }]
     },
@@ -711,8 +711,8 @@ function renderExerciseChart() {
       labels: pts.map(p => p.d),
       datasets: [{
         data: pts.map(p => p.v),
-        borderColor: '#f5a623', backgroundColor: 'rgba(245,166,35,.08)',
-        borderWidth: 2, pointBackgroundColor: '#f5a623', pointBorderColor: '#0f0f0f',
+        borderColor: '#FFB347', backgroundColor: 'rgba(255,179,71,.08)',
+        borderWidth: 2, pointBackgroundColor: '#FFB347', pointBorderColor: '#0f0f0f',
         pointBorderWidth: 2, pointRadius: 5, tension: .35, fill: true,
       }]
     },
