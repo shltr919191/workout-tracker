@@ -10,16 +10,16 @@
 const DEFAULT_WEIGHTS = {
   // Workout A
   'Kniebeugen':               60,
-  'Kurzhantel Bankdrücken':   24,
+  'KH-Bankdrücken':           24,
   'Klimmzüge':                 0,
-  'Seitheben am Kabel':        8,
+  'Seitheben Kabel':           8,
   'Leg Curls':                30,
-  'Incline Dumbbell Curls':   12,
+  'Incline KH-Curls':         12,
   'Face Pulls':               15,
   // Workout B
   'Trap Bar Deadlift':       100,
   'Seated Cable Row':         50,
-  'Schrägbankdrücken Kurzhantel': 20,
+  'Schrägbank KH-Drücken':   20,
   'Bulgarian Split Squats':   20,
   'Trizeps Pushdowns':        20,
   'Wadenheben':               40,
