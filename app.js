@@ -1,1132 +1,786 @@
-// ─────────────────────────────────────────────
-//  WORKOUT TRACKER — app.js
-//  Stack: Vanilla JS + LocalStorage + Chart.js
-// ─────────────────────────────────────────────
+/* =============================================
+   WORKOUT TRACKER — app.js
+   Features: weight suggestion, rest timer,
+             plan progress, workout duration,
+             weekly summary
+   ============================================= */
+'use strict';
 
-// ─── STORAGE KEYS ─────────────────────────────
-const KEY_HISTORY = 'ironlog_history';
-const KEY_STATE   = 'ironlog_state';
-const KEY_SETS    = 'ironlog_currentSets';
-
-// ─── 12-WEEK PROGRAM ─────────────────────────
-// Direkt aus program.json übernommen.
-// Änderungen: Wadenheben entfernt, Seitheben Kabel → Schulterdrücken in Workout A.
-
-const PHASES = [
-  {
-    id: 'TEC', name: 'Technik & Volumen', weeks: [1,2,3],
-    desc: 'Bewegungsmuster einschleifen, Basisvolumen aufbauen',
-    color: 'phase-orange',
-    weekMeta: {
-      1: { rir: '3-4', progression: 'Bewegungsmuster, konservativ' },
-      2: { rir: '3-4', progression: 'Leichte Progression' },
-      3: { rir: '3-4', progression: 'Leichte Progression' },
-    },
-  },
-  {
-    id: 'KRA', name: 'Kraft & Progression', weeks: [4,5,6],
-    desc: 'Laststeigerung bei Compound-Übungen, 4 Sätze',
-    color: 'phase-green',
-    weekMeta: {
-      4: { rir: '2-3', progression: 'Gewicht erhöhen wenn möglich' },
-      5: { rir: '2-3', progression: 'Moderate Progression' },
-      6: { rir: '2-3', progression: 'Moderate Progression' },
-    },
-  },
-  {
-    id: 'INT', name: 'Intensität', weeks: [7,8,9],
-    desc: 'Maximale Intensität, reduzierte Wiederholungen',
-    color: 'phase-red',
-    weekMeta: {
-      7: { rir: '1-2', progression: 'Starke Progression' },
-      8: { rir: '1-2', progression: 'Starke Progression' },
-      9: { rir: '1-2', progression: 'Nahe Muskelversagen' },
-    },
-  },
-  {
-    id: 'PEA', name: 'Peak & Volumen', weeks: [10,11],
-    desc: 'Kombination Stärke + Hypertrophie, höchste Last',
-    color: 'phase-purple',
-    weekMeta: {
-      10: { rir: '0-1', progression: 'Maximale Last' },
-      11: { rir: '0-1', progression: 'Nur wenn technisch sauber' },
-    },
-  },
-  {
-    id: 'DEL', name: 'Deload', weeks: [12],
-    desc: '60–70 % Volumen, aktive Regeneration',
-    color: 'phase-gray',
-    weekMeta: {
-      12: { rir: '4+', progression: '-30–40 % Last, Regeneration' },
-    },
-  },
-];
-
-// Vollständiger Wochenplan. Jede Woche definiert exakt die Übungen mit Sets/Reps.
-// Workout A: Seitheben Kabel → Schulterdrücken. Wadenheben komplett entfernt.
-const PROGRAM = {
-  // ── Technik & Volumen ──
-  1: {
-    A: [
-      { name: 'Kniebeugen',        setsReps: '3x6-8'   },
-      { name: 'KH-Bankdrücken',    setsReps: '3x6-8'   },
-      { name: 'Klimmzüge',         setsReps: '3x6-8'   },
-      { name: 'Schulterdrücken',   setsReps: '3x10-12' },
-      { name: 'Leg Curls',         setsReps: '3x10-12' },
-      { name: 'Incline KH-Curls',  setsReps: '3x10-12' },
-      { name: 'Face Pulls',        setsReps: '3x10-12' },
-    ],
-    B: [
-      { name: 'Trap Bar Deadlift',      setsReps: '3x6-8'   },
-      { name: 'Seated Cable Row',       setsReps: '3x6-8'   },
-      { name: 'Schrägbank KH-Drücken', setsReps: '3x6-8'   },
-      { name: 'Bulgarian Split Squats', setsReps: '3x6-8'   },
-      { name: 'Seitheben Kabel',        setsReps: '3x10-12' },
-      { name: 'Trizeps Pushdowns',      setsReps: '3x10-12' },
-    ],
-  },
-  2: {
-    A: [
-      { name: 'Kniebeugen',        setsReps: '3x6-8'   },
-      { name: 'KH-Bankdrücken',    setsReps: '3x6-8'   },
-      { name: 'Klimmzüge',         setsReps: '3x6-8'   },
-      { name: 'Schulterdrücken',   setsReps: '3x10-12' },
-      { name: 'Leg Curls',         setsReps: '3x10-12' },
-      { name: 'Incline KH-Curls',  setsReps: '3x10-12' },
-      { name: 'Face Pulls',        setsReps: '3x10-12' },
-    ],
-    B: [
-      { name: 'Trap Bar Deadlift',      setsReps: '3x6-8'   },
-      { name: 'Seated Cable Row',       setsReps: '3x6-8'   },
-      { name: 'Schrägbank KH-Drücken', setsReps: '3x6-8'   },
-      { name: 'Bulgarian Split Squats', setsReps: '3x6-8'   },
-      { name: 'Seitheben Kabel',        setsReps: '3x10-12' },
-      { name: 'Trizeps Pushdowns',      setsReps: '3x10-12' },
-    ],
-  },
-  3: {
-    A: [
-      { name: 'Kniebeugen',        setsReps: '3x6-8'   },
-      { name: 'KH-Bankdrücken',    setsReps: '3x6-8'   },
-      { name: 'Klimmzüge',         setsReps: '3x6-8'   },
-      { name: 'Schulterdrücken',   setsReps: '3x10-12' },
-      { name: 'Leg Curls',         setsReps: '3x10-12' },
-      { name: 'Incline KH-Curls',  setsReps: '3x10-12' },
-      { name: 'Face Pulls',        setsReps: '3x10-12' },
-    ],
-    B: [
-      { name: 'Trap Bar Deadlift',      setsReps: '3x6-8'   },
-      { name: 'Seated Cable Row',       setsReps: '3x6-8'   },
-      { name: 'Schrägbank KH-Drücken', setsReps: '3x6-8'   },
-      { name: 'Bulgarian Split Squats', setsReps: '3x6-8'   },
-      { name: 'Seitheben Kabel',        setsReps: '3x10-12' },
-      { name: 'Trizeps Pushdowns',      setsReps: '3x10-12' },
-    ],
-  },
-  // ── Kraft & Progression ──
-  4: {
-    A: [
-      { name: 'Kniebeugen',        setsReps: '4x5-7'  },
-      { name: 'KH-Bankdrücken',    setsReps: '4x5-7'  },
-      { name: 'Klimmzüge',         setsReps: '4x5-7'  },
-      { name: 'Schulterdrücken',   setsReps: '3x8-10' },
-      { name: 'Leg Curls',         setsReps: '3x8-10' },
-      { name: 'Incline KH-Curls',  setsReps: '3x8-10' },
-      { name: 'Face Pulls',        setsReps: '3x8-10' },
-    ],
-    B: [
-      { name: 'Trap Bar Deadlift',      setsReps: '4x5-7'  },
-      { name: 'Seated Cable Row',       setsReps: '4x5-7'  },
-      { name: 'Schrägbank KH-Drücken', setsReps: '4x5-7'  },
-      { name: 'Bulgarian Split Squats', setsReps: '4x5-7'  },
-      { name: 'Seitheben Kabel',        setsReps: '3x8-10' },
-      { name: 'Trizeps Pushdowns',      setsReps: '3x8-10' },
-    ],
-  },
-  5: {
-    A: [
-      { name: 'Kniebeugen',        setsReps: '4x5-7'  },
-      { name: 'KH-Bankdrücken',    setsReps: '4x5-7'  },
-      { name: 'Klimmzüge',         setsReps: '4x5-7'  },
-      { name: 'Schulterdrücken',   setsReps: '3x8-10' },
-      { name: 'Leg Curls',         setsReps: '3x8-10' },
-      { name: 'Incline KH-Curls',  setsReps: '3x8-10' },
-      { name: 'Face Pulls',        setsReps: '3x8-10' },
-    ],
-    B: [
-      { name: 'Trap Bar Deadlift',      setsReps: '4x5-7'  },
-      { name: 'Seated Cable Row',       setsReps: '4x5-7'  },
-      { name: 'Schrägbank KH-Drücken', setsReps: '4x5-7'  },
-      { name: 'Bulgarian Split Squats', setsReps: '4x5-7'  },
-      { name: 'Seitheben Kabel',        setsReps: '3x8-10' },
-      { name: 'Trizeps Pushdowns',      setsReps: '3x8-10' },
-    ],
-  },
-  6: {
-    A: [
-      { name: 'Kniebeugen',        setsReps: '4x5-7'  },
-      { name: 'KH-Bankdrücken',    setsReps: '4x5-7'  },
-      { name: 'Klimmzüge',         setsReps: '4x5-7'  },
-      { name: 'Schulterdrücken',   setsReps: '3x8-10' },
-      { name: 'Leg Curls',         setsReps: '3x8-10' },
-      { name: 'Incline KH-Curls',  setsReps: '3x8-10' },
-      { name: 'Face Pulls',        setsReps: '3x8-10' },
-    ],
-    B: [
-      { name: 'Trap Bar Deadlift',      setsReps: '4x5-7'  },
-      { name: 'Seated Cable Row',       setsReps: '4x5-7'  },
-      { name: 'Schrägbank KH-Drücken', setsReps: '4x5-7'  },
-      { name: 'Bulgarian Split Squats', setsReps: '4x5-7'  },
-      { name: 'Seitheben Kabel',        setsReps: '3x8-10' },
-      { name: 'Trizeps Pushdowns',      setsReps: '3x8-10' },
-    ],
-  },
-  // ── Intensität ──
-  7: {
-    A: [
-      { name: 'Kniebeugen',        setsReps: '4x3-5' },
-      { name: 'KH-Bankdrücken',    setsReps: '4x3-5' },
-      { name: 'Klimmzüge',         setsReps: '4x3-5' },
-      { name: 'Schulterdrücken',   setsReps: '4x6-8' },
-      { name: 'Leg Curls',         setsReps: '4x6-8' },
-      { name: 'Incline KH-Curls',  setsReps: '4x6-8' },
-      { name: 'Face Pulls',        setsReps: '4x6-8' },
-    ],
-    B: [
-      { name: 'Trap Bar Deadlift',      setsReps: '4x3-5' },
-      { name: 'Seated Cable Row',       setsReps: '4x3-5' },
-      { name: 'Schrägbank KH-Drücken', setsReps: '4x3-5' },
-      { name: 'Bulgarian Split Squats', setsReps: '4x3-5' },
-      { name: 'Seitheben Kabel',        setsReps: '4x6-8' },
-      { name: 'Trizeps Pushdowns',      setsReps: '4x6-8' },
-    ],
-  },
-  8: {
-    A: [
-      { name: 'Kniebeugen',        setsReps: '4x3-5' },
-      { name: 'KH-Bankdrücken',    setsReps: '4x3-5' },
-      { name: 'Klimmzüge',         setsReps: '4x3-5' },
-      { name: 'Schulterdrücken',   setsReps: '4x6-8' },
-      { name: 'Leg Curls',         setsReps: '4x6-8' },
-      { name: 'Incline KH-Curls',  setsReps: '4x6-8' },
-      { name: 'Face Pulls',        setsReps: '4x6-8' },
-    ],
-    B: [
-      { name: 'Trap Bar Deadlift',      setsReps: '4x3-5' },
-      { name: 'Seated Cable Row',       setsReps: '4x3-5' },
-      { name: 'Schrägbank KH-Drücken', setsReps: '4x3-5' },
-      { name: 'Bulgarian Split Squats', setsReps: '4x3-5' },
-      { name: 'Seitheben Kabel',        setsReps: '4x6-8' },
-      { name: 'Trizeps Pushdowns',      setsReps: '4x6-8' },
-    ],
-  },
-  9: {
-    A: [
-      { name: 'Kniebeugen',        setsReps: '4x3-5' },
-      { name: 'KH-Bankdrücken',    setsReps: '4x3-5' },
-      { name: 'Klimmzüge',         setsReps: '4x3-5' },
-      { name: 'Schulterdrücken',   setsReps: '4x6-8' },
-      { name: 'Leg Curls',         setsReps: '4x6-8' },
-      { name: 'Incline KH-Curls',  setsReps: '4x6-8' },
-      { name: 'Face Pulls',        setsReps: '4x6-8' },
-    ],
-    B: [
-      { name: 'Trap Bar Deadlift',      setsReps: '4x3-5' },
-      { name: 'Seated Cable Row',       setsReps: '4x3-5' },
-      { name: 'Schrägbank KH-Drücken', setsReps: '4x3-5' },
-      { name: 'Bulgarian Split Squats', setsReps: '4x3-5' },
-      { name: 'Seitheben Kabel',        setsReps: '4x6-8' },
-      { name: 'Trizeps Pushdowns',      setsReps: '4x6-8' },
-    ],
-  },
-  // ── Peak & Volumen ──
-  10: {
-    A: [
-      { name: 'Kniebeugen',        setsReps: '4x4-6'  },
-      { name: 'KH-Bankdrücken',    setsReps: '4x4-6'  },
-      { name: 'Klimmzüge',         setsReps: '4x4-6'  },
-      { name: 'Schulterdrücken',   setsReps: '4x8-10' },
-      { name: 'Leg Curls',         setsReps: '4x8-10' },
-      { name: 'Incline KH-Curls',  setsReps: '4x8-10' },
-      { name: 'Face Pulls',        setsReps: '4x8-10' },
-    ],
-    B: [
-      { name: 'Trap Bar Deadlift',      setsReps: '4x4-6'  },
-      { name: 'Seated Cable Row',       setsReps: '4x4-6'  },
-      { name: 'Schrägbank KH-Drücken', setsReps: '4x4-6'  },
-      { name: 'Bulgarian Split Squats', setsReps: '4x4-6'  },
-      { name: 'Seitheben Kabel',        setsReps: '4x8-10' },
-      { name: 'Trizeps Pushdowns',      setsReps: '4x8-10' },
-    ],
-  },
-  11: {
-    A: [
-      { name: 'Kniebeugen',        setsReps: '4x4-6'  },
-      { name: 'KH-Bankdrücken',    setsReps: '4x4-6'  },
-      { name: 'Klimmzüge',         setsReps: '4x4-6'  },
-      { name: 'Schulterdrücken',   setsReps: '4x8-10' },
-      { name: 'Leg Curls',         setsReps: '4x8-10' },
-      { name: 'Incline KH-Curls',  setsReps: '4x8-10' },
-      { name: 'Face Pulls',        setsReps: '4x8-10' },
-    ],
-    B: [
-      { name: 'Trap Bar Deadlift',      setsReps: '4x4-6'  },
-      { name: 'Seated Cable Row',       setsReps: '4x4-6'  },
-      { name: 'Schrägbank KH-Drücken', setsReps: '4x4-6'  },
-      { name: 'Bulgarian Split Squats', setsReps: '4x4-6'  },
-      { name: 'Seitheben Kabel',        setsReps: '4x8-10' },
-      { name: 'Trizeps Pushdowns',      setsReps: '4x8-10' },
-    ],
-  },
-  // ── Deload ──
-  12: {
-    A: [
-      { name: 'Kniebeugen',        setsReps: '3x8-12'  },
-      { name: 'KH-Bankdrücken',    setsReps: '3x8-12'  },
-      { name: 'Klimmzüge',         setsReps: '3x8-12'  },
-      { name: 'Schulterdrücken',   setsReps: '3x10-15' },
-      { name: 'Leg Curls',         setsReps: '3x10-15' },
-      { name: 'Incline KH-Curls',  setsReps: '3x10-15' },
-      { name: 'Face Pulls',        setsReps: '3x10-15' },
-    ],
-    B: [
-      { name: 'Trap Bar Deadlift',      setsReps: '3x8-12'  },
-      { name: 'Seated Cable Row',       setsReps: '3x8-12'  },
-      { name: 'Schrägbank KH-Drücken', setsReps: '3x8-12'  },
-      { name: 'Bulgarian Split Squats', setsReps: '3x8-12'  },
-      { name: 'Seitheben Kabel',        setsReps: '3x10-15' },
-      { name: 'Trizeps Pushdowns',      setsReps: '3x10-15' },
-    ],
-  },
+// ─── CONFIG ──────────────────────────────────
+const DEFAULT_WEIGHTS = {
+  // Workout A
+  'Kniebeugen':               60,
+  'KH-Bankdrücken':           24,
+  'Klimmzüge':                 0,
+  'Seitheben Kabel':           8,
+  'Leg Curls':                30,
+  'Incline KH-Curls':         12,
+  'Face Pulls':               15,
+  // Workout B
+  'Trap Bar Deadlift':       100,
+  'Seated Cable Row':         50,
+  'Schrägbank KH-Drücken':   20,
+  'Bulgarian Split Squats':   20,
+  'Trizeps Pushdowns':        20,
+  'Wadenheben':               40,
 };
+const REST_DEFAULT = 90; // seconds
 
-// Parst "3x6-8" → { sets: 3, repRange: '6-8', defaultReps: 8 }
-function parseSetsReps(str) {
-  const [s, r] = str.split('x');
-  const sets = parseInt(s, 10);
-  const repRange = r;
-  const defaultReps = parseInt(r.split('-')[1] || r, 10);
-  return { sets, repRange, defaultReps };
-}
-
-// A-B-A / B-A-B pattern: even weeks start A, odd weeks start B
-function sessionPattern(sessionIndex) {
-  const weekIdx    = Math.floor(sessionIndex / 3);
-  const posInWeek  = sessionIndex % 3;
-  const startA     = weekIdx % 2 === 0;
-  if (startA) return posInWeek === 1 ? 'B' : 'A';
-  else        return posInWeek === 1 ? 'A' : 'B';
-}
-
-const TOTAL_SESSIONS = 36;
-
-// ─── STATE ────────────────────────────────────
-const state = {
-  sessionIndex: 0,   // 0–35
+// ─── GLOBALS ─────────────────────────────────
+let SESSIONS = [];
+let PHASE_INFO = {};
+let PROG_RULES = [];
+let state = {
+  sessionIndex: 0,
   sets:         {},
   history:      [],
 };
 
-const DEFAULT_WEIGHTS = {
-  'Kniebeugen':            70,
-  'KH-Bankdrücken':        25,
-  'Klimmzüge':              0,
-  'Schulterdrücken':       20,
-  'Leg Curls':             25,
-  'Incline KH-Curls':      10,
-  'Face Pulls':            20,
-  'Trap Bar Deadlift':     80,
-  'Seated Cable Row':      69,
-  'Schrägbank KH-Drücken': 25,
-  'Bulgarian Split Squats': 15,
-  'Seitheben Kabel':      3.75,
-  'Trizeps Pushdowns':     25,
-};
+// Timer state
+let durationStart   = null;
+let durationTimer   = null;
+let restTotal       = REST_DEFAULT;
+let restRemaining   = REST_DEFAULT;
+let restInterval    = null;
 
-function currentWorkout()  { return sessionPattern(state.sessionIndex); }
-function currentWeek()     { return Math.floor(state.sessionIndex / 3) + 1; }
-function currentPhase()    { return PHASES.find(p => p.weeks.includes(currentWeek())) || PHASES[0]; }
+let chartWeekly  = null;
+let chartExercise = null;
 
-function currentExercises() {
-  const week    = currentWeek();
-  const workout = currentWorkout();
-  const entries = (PROGRAM[week] || PROGRAM[1])[workout] || [];
-  return entries.map(e => {
-    const { sets, repRange, defaultReps } = parseSetsReps(e.setsReps);
-    return { name: e.name, sets, repRange, defaultReps, defaultWeight: DEFAULT_WEIGHTS[e.name] || 0 };
-  });
+// ─── STORAGE ─────────────────────────────────
+function saveToStorage() {
+  try {
+    localStorage.setItem('wt_v5', JSON.stringify({
+      sessionIndex: state.sessionIndex,
+      sets:         state.sets,
+      history:      state.history,
+    }));
+  } catch(e) {}
 }
-
-function exercisesFor(week, workout) {
-  const entries = (PROGRAM[week] || PROGRAM[1])[workout] || [];
-  return entries.map(e => {
-    const { sets, repRange } = parseSetsReps(e.setsReps);
-    return { name: e.name, sets, repRange };
-  });
-}
-
-// ─── STORAGE ──────────────────────────────────
-
 function loadFromStorage() {
   try {
-    const raw = localStorage.getItem(KEY_HISTORY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) state.history = parsed;
+    const saved = localStorage.getItem('wt_v5');
+    if (saved) {
+      const p = JSON.parse(saved);
+      state.sessionIndex = p.sessionIndex || 0;
+      state.sets         = p.sets         || {};
+      state.history      = p.history      || [];
     }
-  } catch (e) { console.warn('History load failed:', e); }
-
-  try {
-    const raw = localStorage.getItem(KEY_STATE);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (parsed.sessionIndex !== undefined) state.sessionIndex = parsed.sessionIndex;
-    }
-  } catch (e) { console.warn('State load failed:', e); }
-
-  try {
-    const raw = localStorage.getItem(KEY_SETS);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (parsed && typeof parsed === 'object') state.sets = parsed;
-    }
-  } catch (e) { console.warn('Sets load failed:', e); }
-
-  initSetsIfNeeded();
+  } catch(e) {}
 }
 
-function saveState() {
-  localStorage.setItem(KEY_STATE, JSON.stringify({ sessionIndex: state.sessionIndex }));
-  localStorage.setItem(KEY_SETS,  JSON.stringify(state.sets));
+// ─── PARSE ───────────────────────────────────
+function parseSetsReps(str) {
+  const [setsStr, repsStr] = str.split('x');
+  const sets     = parseInt(setsStr);
+  const repRange = repsStr;
+  const reps     = repRange.includes('-')
+    ? parseInt(repRange.split('-')[1])
+    : parseInt(repRange);
+  return { sets, reps, repRange };
 }
 
-function saveHistory() {
-  localStorage.setItem(KEY_HISTORY, JSON.stringify(state.history));
-}
-
-// ─── MIGRATION FROM OLD EXPORT FORMAT ─────────
-function importFromExport(exportData) {
-  try {
-    const data = typeof exportData === 'string' ? JSON.parse(exportData) : exportData;
-
-    // Migrate history
-    if (Array.isArray(data.history)) {
-      const migrated = data.history.map(log => ({
-        id:           log.id   ?? Date.now() + Math.random(),
-        date:         log.date ?? new Date().toISOString().split('T')[0],
-        workout:      log.workout ?? 'A',
-        week:         log.week    ?? 1,
-        phase:        log.phase   ?? null,
-        sessionIndex: log.sessionIndex ?? 0,
-        duration:     log.duration ?? 0,
-        exercises: (log.exercises ?? []).map(ex => ({
-          name: ex.name,
-          sets: (ex.sets ?? []).map(s => ({
-            weight: Number(s.weight) || 0,
-            reps:   Number(s.reps)   || 0,
-            done:   Boolean(s.done),
-          })),
-        })),
-      }));
-      migrated.sort((a, b) => new Date(a.date) - new Date(b.date));
-      state.history = migrated;
-    }
-
-    // Restore session index
-    if (data.sessionIndex !== undefined) {
-      state.sessionIndex = data.sessionIndex;
-    }
-
-    // Migrate current sets (old format: "Übung__sessionIdx")
-    const currentIdx = data.sessionIndex ?? 0;
-    const newSets = {};
-    if (data.sets && typeof data.sets === 'object') {
-      Object.entries(data.sets).forEach(([key, sets]) => {
-        const lastDunder   = key.lastIndexOf('__');
-        const sessionIdx   = parseInt(key.slice(lastDunder + 2), 10);
-        const exerciseName = key.slice(0, lastDunder);
-        if (sessionIdx === currentIdx && exerciseName !== 'Wadenheben') {
-          newSets[exerciseName] = sets.map(s => ({
-            weight: Number(s.weight) || 0,
-            reps:   Number(s.reps)   || 0,
-            done:   Boolean(s.done),
-          }));
-        }
+// ─── LOAD PROGRAM ────────────────────────────
+async function loadProgram() {
+  const res    = await fetch('./program.json');
+  const data   = await res.json();
+  SESSIONS     = [];
+  PHASE_INFO   = data.phase_info   || {};
+  PROG_RULES   = data.progression_rules || [];
+  const weeks  = data.weeks || data; // backwards compat
+  weeks.forEach(week => {
+    week.workouts.forEach(workout => {
+      SESSIONS.push({
+        phase:    week.phase,
+        week:     week.week,
+        workout:  workout.name,
+        rir:      week.rir   || '',
+        focus:    week.focus || '',
+        exercises: workout.exercises.map(ex => {
+          const { sets, reps, repRange } = parseSetsReps(ex.sets_reps);
+          return { name: ex.exercise, sets, reps, repRange,
+                   defaultWeight: DEFAULT_WEIGHTS[ex.exercise] ?? 0 };
+        }),
       });
-    }
-    state.sets = newSets;
-
-    initSetsIfNeeded();
-    saveHistory();
-    saveState();
-    return { success: true, sessions: state.history.length };
-  } catch (e) {
-    console.error('Import failed:', e);
-    return { success: false, error: e.message };
-  }
-}
-
-// ─── SETS ─────────────────────────────────────
-
-function initSetsIfNeeded() {
-  currentExercises().forEach(ex => {
-    if (!state.sets[ex.name]) state.sets[ex.name] = buildDefaultSets(ex);
+    });
   });
 }
 
-function buildDefaultSets(exercise) {
-  const lastWeight = getLastWeight(exercise.name) ?? exercise.defaultWeight;
-  return Array.from({ length: exercise.sets }, () => ({
-    weight: lastWeight,
-    reps:   exercise.defaultReps,
-    done:   false,
-  }));
+// ─── HELPERS ─────────────────────────────────
+function currentSession() {
+  return SESSIONS[Math.min(state.sessionIndex, SESSIONS.length - 1)];
+}
+function setKey(exName) {
+  return `${exName}__${state.sessionIndex}`;
+}
+function formatDate(iso) {
+  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+function todayISO() { return new Date().toISOString().split('T')[0]; }
+function setHeaderDate() {
+  const el = document.getElementById('headerDate');
+  if (el) el.textContent = new Date()
+    .toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
+    .toUpperCase();
 }
 
-function getLastWeight(exerciseName) {
-  for (let i = state.history.length - 1; i >= 0; i--) {
-    const ex = state.history[i].exercises?.find(e => e.name === exerciseName);
-    if (ex?.sets?.length > 0) return ex.sets[ex.sets.length - 1].weight;
+// ─── WEIGHT SUGGESTION ───────────────────────
+// Returns the last logged weight for an exercise, or defaultWeight
+function suggestedWeight(exName, defaultWeight) {
+  for (const log of state.history) {
+    const ex = log.exercises.find(e => e.name === exName);
+    if (ex && ex.sets.length > 0) {
+      const w = ex.sets[0].weight;
+      if (w !== undefined) return w;
+    }
   }
-  return null;
+  return defaultWeight;
 }
 
-// ─── TAB NAVIGATION ──────────────────────────
+// ─── WORKOUT DURATION ────────────────────────
+function startDurationTimer() {
+  if (durationTimer) return; // already running
+  durationStart = Date.now();
+  const el = document.getElementById('workoutDuration');
+  if (el) el.style.display = 'flex';
+  durationTimer = setInterval(updateDurationDisplay, 1000);
+}
+function updateDurationDisplay() {
+  if (!durationStart) return;
+  const secs  = Math.floor((Date.now() - durationStart) / 1000);
+  const m     = Math.floor(secs / 60);
+  const s     = secs % 60;
+  const el    = document.getElementById('durationVal');
+  if (el) el.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+}
+function stopDurationTimer() {
+  clearInterval(durationTimer);
+  durationTimer = null;
+  const elapsed = durationStart ? Math.floor((Date.now() - durationStart) / 1000) : 0;
+  durationStart = null;
+  const el = document.getElementById('workoutDuration');
+  if (el) el.style.display = 'none';
+  const valEl = document.getElementById('durationVal');
+  if (valEl) valEl.textContent = '0:00';
+  return elapsed;
+}
+function fmtDuration(secs) {
+  if (!secs) return null;
+  const m = Math.floor(secs / 60), s = secs % 60;
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
 
+// ─── REST TIMER ──────────────────────────────
+function startRestTimer(duration = REST_DEFAULT) {
+  stopRestTimer();
+  restTotal     = duration;
+  restRemaining = duration;
+  document.getElementById('restTimerOverlay').classList.remove('hidden');
+  updateRestDisplay();
+  restInterval = setInterval(() => {
+    restRemaining--;
+    updateRestDisplay();
+    if (restRemaining <= 0) stopRestTimer();
+  }, 1000);
+}
+function updateRestDisplay() {
+  document.getElementById('restTimerDisplay').textContent = restRemaining;
+  const circ   = 2 * Math.PI * 54; // r=54
+  const offset = circ * (1 - restRemaining / restTotal);
+  document.getElementById('restRingFill').style.strokeDashoffset = offset;
+  // Pulse colour when low
+  const fill = document.getElementById('restRingFill');
+  if (restRemaining <= 10) fill.style.stroke = '#e05555';
+  else                      fill.style.stroke = '#FFB347';
+}
+function stopRestTimer() {
+  clearInterval(restInterval);
+  restInterval = null;
+  document.getElementById('restTimerOverlay').classList.add('hidden');
+}
+function adjustRestTimer(delta) {
+  restRemaining = Math.max(5, restRemaining + delta);
+  restTotal     = Math.max(restTotal, restRemaining);
+  updateRestDisplay();
+}
+
+// ─── PLAN PROGRESS ───────────────────────────
+function renderPlanProgress() {
+  const total   = SESSIONS.length;
+  const current = Math.min(state.sessionIndex, total - 1);
+  const pct     = Math.round((current / total) * 100);
+
+  document.getElementById('planProgressPct').textContent  = `${pct}%`;
+  document.getElementById('planProgressFill').style.width = `${pct}%`;
+
+  // Build phase blocks
+  // Group sessions by phase
+  const phases = [];
+  let lastPhase = null;
+  SESSIONS.forEach((s, i) => {
+    if (s.phase !== lastPhase) {
+      phases.push({ phase: s.phase, start: i, end: i });
+      lastPhase = s.phase;
+    } else {
+      phases[phases.length - 1].end = i;
+    }
+  });
+
+  const blocksEl = document.getElementById('planPhaseBlocks');
+  blocksEl.innerHTML = phases.map(p => {
+    const isDone   = current > p.end;
+    const isActive = current >= p.start && current <= p.end;
+    const cls      = isDone ? 'done' : isActive ? 'active' : '';
+    // Short label
+    const label = p.phase === 'Peak / Performance' ? 'PEAK' :
+                  p.phase === 'Hypertrophy'         ? 'HYP'  :
+                  p.phase === 'Strength'             ? 'STR'  : p.phase.slice(0,3).toUpperCase();
+    return `<div class="phase-block ${cls}">${label}</div>`;
+  }).join('');
+}
+
+// ─── TAB NAV ─────────────────────────────────
 function switchTab(tab) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('screen' + tab).classList.add('active');
   document.getElementById('nav' + tab).classList.add('active');
-  if (tab === 'Progress') renderProgress();
+  if (tab === 'History')  renderHistory();
   if (tab === 'Plan')     renderPlan();
+  if (tab === 'Progress') renderProgress();
 }
 
-// ─── HEADER ──────────────────────────────────
-
-function setHeaderDate() {
-  document.getElementById('headerDate').textContent = new Date().toLocaleDateString('en-GB', {
-    weekday: 'short', day: 'numeric', month: 'short',
-  }).toUpperCase();
-}
-
-// ─── HOME ─────────────────────────────────────
-
+// ─── HOME ────────────────────────────────────
 function renderHome() {
-  const phase     = currentPhase();
-  const workout   = currentWorkout();
-  const week      = currentWeek();
-  const exercises = currentExercises();
-  const si        = state.sessionIndex;
+  const sess = currentSession(); if (!sess) return;
+  const { phase, week, workout, exercises } = sess;
 
-  document.getElementById('phaseBadge').textContent    = `${phase.name.toUpperCase()} · WEEK ${week}`;
-  document.getElementById('workoutTitle').textContent  = `WORKOUT ${workout}`;
-  document.getElementById('workoutSubtitle').textContent = `Session ${si + 1} of ${TOTAL_SESSIONS}`;
+  document.getElementById('phaseBadge').textContent     = `${phase.toUpperCase()} · WEEK ${week}`;
+  document.getElementById('workoutTitle').textContent    = `WORKOUT ${workout}`;
+  document.getElementById('workoutSubtitle').textContent =
+    `Session ${state.sessionIndex + 1} of ${SESSIONS.length}`;
 
-  // Plan progress
-  const pct = Math.round((si / TOTAL_SESSIONS) * 100);
-  document.getElementById('planProgressPct').textContent   = pct + '%';
-  document.getElementById('planProgressFill').style.width  = pct + '%';
+  // Init sets using last-session weight suggestion
+  let changed = false;
+  exercises.forEach(ex => {
+    const k = setKey(ex.name);
+    if (!state.sets[k] || state.sets[k].length !== ex.sets) {
+      const suggested = suggestedWeight(ex.name, ex.defaultWeight);
+      state.sets[k] = Array.from({ length: ex.sets }, () => ({
+        weight: suggested, reps: ex.reps, done: false,
+      }));
+      changed = true;
+    }
+  });
+  if (changed) saveToStorage();
 
-  // Phase pills
-  document.getElementById('phasePills').innerHTML = PHASES.map(p => {
-    const isDone    = p.weeks[p.weeks.length - 1] < week;
-    const isActive  = p.weeks.includes(week);
-    const cls = isActive ? 'active' : isDone ? 'done' : '';
-    return `<span class="phase-pill ${cls}">${p.id}</span>`;
-  }).join('');
-
-  // Exercise list
   document.getElementById('exerciseList').innerHTML =
-    exercises.map(ex => renderExerciseCard(ex)).join('');
+    exercises.map((ex, ei) => renderCard(ex, ei)).join('');
 
-  updateAllBadges();
+  renderPlanProgress();
+  attachListeners();
 }
 
-function renderExerciseCard(exercise) {
-  const sets      = state.sets[exercise.name] ?? buildDefaultSets(exercise);
+function renderCard(ex, ei) {
+  const sets      = state.sets[setKey(ex.name)] || [];
   const doneCount = sets.filter(s => s.done).length;
-  const total     = sets.length;
-  const allDone   = doneCount === total;
-  const lastW     = getLastWeight(exercise.name);
-  const phase     = currentPhase();
+  const r = 14, circ = 2 * Math.PI * r;
+  const offset = circ - (doneCount / sets.length) * circ;
 
-  const lastHint = lastW !== null
-    ? `<span class="ex-last">↑ last: ${lastW} kg</span>`
+  // Check if this exercise has a suggestion different from default
+  const suggested = suggestedWeight(ex.name, ex.defaultWeight);
+  const hasHint   = suggested !== ex.defaultWeight;
+  const hintHtml  = hasHint
+    ? `<span class="weight-hint">↑ last: ${suggested} kg</span>`
     : '';
 
-  return `
-    <div class="exercise-card ${allDone ? 'completed' : ''}" id="card-${sid(exercise.name)}">
-      <div class="ex-card-header">
-        <div class="ex-card-left">
-          <div class="ex-name">${exercise.name}</div>
-          <div class="ex-meta">
-            ${exercise.sets} × ${exercise.repRange}${lastHint}
-          </div>
-        </div>
-        <div class="ex-badge ${allDone ? 'done' : ''}" id="badge-${sid(exercise.name)}">
-          ${allDone ? '✓' : `${doneCount}/${total}`}
-        </div>
-      </div>
-      <div class="sets-container">
-        ${sets.map((set, i) => renderSetRow(exercise.name, set, i)).join('')}
-      </div>
-    </div>
-  `;
-}
-
-function renderSetRow(exerciseName, set, index) {
-  const id = `${sid(exerciseName)}-${index}`;
-  return `
-    <div class="set-row ${set.done ? 'done' : ''}" id="row-${id}">
-      <span class="set-num">${index + 1}</span>
-      <div class="set-input-wrap">
+  const rows = sets.map((s, si) => `
+    <div class="set-row${s.done ? ' completed' : ''}" id="row-${ei}-${si}">
+      <div class="set-number">${si + 1}</div>
+      <div class="set-input-group">
         <span class="set-input-label">KG</span>
-        <div class="set-input-box">
-          <input class="set-input" type="number" min="0" step="0.5"
-            value="${set.weight}"
-            onchange="updateSet('${exerciseName}', ${index}, 'weight', this.value)"
-            inputmode="decimal" />
-        </div>
+        <input class="set-input" type="number" inputmode="decimal" min="0" step="0.5"
+          value="${s.weight}" data-ex="${ex.name}" data-si="${si}" data-field="weight"/>
       </div>
-      <div class="set-input-wrap">
+      <div class="set-input-group">
         <span class="set-input-label">REPS</span>
-        <div class="set-input-box">
-          <input class="set-input" type="number" min="1" step="1"
-            value="${set.reps}"
-            onchange="updateSet('${exerciseName}', ${index}, 'reps', this.value)"
-            inputmode="numeric" />
+        <input class="set-input" type="number" inputmode="numeric" min="1" step="1"
+          value="${s.reps}" data-ex="${ex.name}" data-si="${si}" data-field="reps"/>
+      </div>
+      <button class="set-check" data-ex="${ex.name}" data-si="${si}" data-ei="${ei}"
+        onclick="toggleSet(this)">${s.done ? '✓' : ''}</button>
+    </div>`).join('');
+
+  return `
+    <div class="exercise-card${doneCount === sets.length ? ' all-done' : ''}" id="card-${ei}">
+      <div class="exercise-card-header">
+        <div>
+          <div class="exercise-name">${ex.name}</div>
+          <div class="exercise-schema">${ex.sets} × ${ex.repRange} ${hintHtml}</div>
+        </div>
+        <div class="exercise-progress-ring">
+          <svg viewBox="0 0 36 36">
+            <circle class="progress-bg"   cx="18" cy="18" r="${r}" stroke-width="3"/>
+            <circle class="progress-fill" cx="18" cy="18" r="${r}" stroke-width="3"
+              stroke-dasharray="${circ}" stroke-dashoffset="${offset}"/>
+          </svg>
+          <div class="progress-label">${doneCount}/${sets.length}</div>
         </div>
       </div>
-      <div class="set-input-wrap" style="align-items:center">
-        <span class="set-input-label" style="opacity:0">✓</span>
-        <button class="set-check ${set.done ? 'checked' : ''}"
-          id="chk-${id}"
-          onclick="toggleSet('${exerciseName}', ${index})">✓</button>
-      </div>
-    </div>
-  `;
+      <div class="set-list">${rows}</div>
+    </div>`;
 }
 
-// ─── SET INTERACTIONS ─────────────────────────
-
-function updateSet(exerciseName, index, field, value) {
-  if (!state.sets[exerciseName]) return;
-  state.sets[exerciseName][index][field] = field === 'weight'
-    ? Math.max(0, parseFloat(value) || 0)
-    : Math.max(1, parseInt(value, 10) || 1);
-  saveState();
+function attachListeners() {
+  document.querySelectorAll('.set-input').forEach(input => {
+    input.addEventListener('change', () => {
+      const ex = input.dataset.ex, si = parseInt(input.dataset.si), field = input.dataset.field;
+      let v = parseFloat(input.value);
+      if (isNaN(v))           v = field === 'reps' ? 1 : 0;
+      if (field === 'weight') v = Math.max(0, v);
+      if (field === 'reps')   v = Math.max(1, Math.round(v));
+      input.value = v;
+      state.sets[setKey(ex)][si][field] = v;
+      saveToStorage();
+    });
+  });
 }
 
-function toggleSet(exerciseName, index) {
-  if (!state.sets[exerciseName]) return;
-  state.sets[exerciseName][index].done = !state.sets[exerciseName][index].done;
-  saveState();
-  patchSetRow(exerciseName, index);
-  updateBadge(exerciseName);
-  updateCardComplete(exerciseName);
+function toggleSet(btn) {
+  const ex = btn.dataset.ex, si = parseInt(btn.dataset.si), ei = parseInt(btn.dataset.ei);
+  const k  = setKey(ex);
+  state.sets[k][si].done = !state.sets[k][si].done;
+  saveToStorage();
+
+  // Start duration timer on first set check
+  if (state.sets[k][si].done && !durationTimer) startDurationTimer();
+
+  const row    = document.getElementById(`row-${ei}-${si}`);
+  const isDone = state.sets[k][si].done;
+  row.classList.toggle('completed', isDone);
+  btn.textContent = isDone ? '✓' : '';
+
+  // Start rest timer after completing a set
+  if (isDone) startRestTimer(REST_DEFAULT);
+
+  const all  = state.sets[k];
+  const done = all.filter(s => s.done).length;
+  const r = 14, circ = 2 * Math.PI * r, offset = circ - (done / all.length) * circ;
+  const card = document.getElementById(`card-${ei}`);
+  card.querySelector('.progress-fill').style.strokeDashoffset = offset;
+  card.querySelector('.progress-label').textContent = `${done}/${all.length}`;
+  card.classList.toggle('all-done', done === all.length);
 }
 
-function patchSetRow(exerciseName, index) {
-  const set = state.sets[exerciseName][index];
-  const id  = `${sid(exerciseName)}-${index}`;
-  document.getElementById('row-' + id)?.classList.toggle('done', set.done);
-  document.getElementById('chk-'  + id)?.classList.toggle('checked', set.done);
-}
-
-function updateBadge(exerciseName) {
-  const sets    = state.sets[exerciseName] ?? [];
-  const done    = sets.filter(s => s.done).length;
-  const total   = sets.length;
-  const allDone = done === total;
-  const badge   = document.getElementById('badge-' + sid(exerciseName));
-  if (!badge) return;
-  badge.className = `ex-badge ${allDone ? 'done' : ''}`;
-  badge.textContent = allDone ? '✓' : `${done}/${total}`;
-}
-
-function updateAllBadges() {
-  currentExercises().forEach(ex => updateBadge(ex.name));
-}
-
-function updateCardComplete(exerciseName) {
-  const sets = state.sets[exerciseName] ?? [];
-  document.getElementById('card-' + sid(exerciseName))
-    ?.classList.toggle('completed', sets.every(s => s.done));
-}
-
-// ─── IMPORT ───────────────────────────────────
-
-function triggerImport() {
-  document.getElementById('importFileInput')?.click();
-}
-
-function handleImportFile(input) {
-  const file = input.files?.[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    const result = importFromExport(e.target.result);
-    if (result.success) {
-      showToast(`✓ ${result.sessions} sessions imported`);
-      renderHome();
-      renderHistory();
-    } else {
-      showToast('Import failed — invalid format');
-    }
-    input.value = '';
-  };
-  reader.readAsText(file);
-}
-
-// ─── FINISH / SKIP ────────────────────────────
-
+// ─── FINISH ──────────────────────────────────
 function finishWorkout() {
-  const exercises = currentExercises();
-  const anyDone   = exercises.some(ex => (state.sets[ex.name] ?? []).some(s => s.done));
-  if (!anyDone) { showToast('No sets completed — not saved.'); return; }
+  const { phase, week, workout, exercises } = currentSession();
+  const duration = stopDurationTimer();
 
-  const phase = currentPhase();
-  state.history.push({
+  state.history.unshift({
     id:           Date.now(),
-    date:         new Date().toISOString().split('T')[0],
-    workout:      currentWorkout(),
-    week:         currentWeek(),
-    phase:        phase.name,
+    date:         todayISO(),
+    phase, week, workout,
     sessionIndex: state.sessionIndex,
-    duration:     0,
+    duration,
     exercises: exercises.map(ex => ({
-      name: ex.name,
-      sets: (state.sets[ex.name] ?? []).map(s => ({ weight: s.weight, reps: s.reps, done: s.done })),
+      name:     ex.name,
+      repRange: ex.repRange,
+      sets:     state.sets[setKey(ex.name)].map(s => ({
+        weight: s.weight, reps: s.reps, done: s.done,
+      })),
     })),
   });
 
-  saveHistory();
-  advanceSession();
+  if (state.sessionIndex < SESSIONS.length - 1) state.sessionIndex++;
+  stopRestTimer();
+  saveToStorage();
+  showToast('WORKOUT SAVED ✓');
   renderHome();
-  renderHistory();
-  showToast('Workout saved ✓');
 }
 
 function skipWorkout() {
-  advanceSession();
+  if (!confirm('Skip this workout?')) return;
+  stopDurationTimer();
+  stopRestTimer();
+  if (state.sessionIndex < SESSIONS.length - 1) state.sessionIndex++;
+  saveToStorage();
   renderHome();
-  showToast('Skipped →');
 }
 
-function advanceSession() {
-  state.sessionIndex = Math.min(state.sessionIndex + 1, TOTAL_SESSIONS - 1);
-  state.sets = {};
-  initSetsIfNeeded();
-  saveState();
-}
-
-// ─── HISTORY ──────────────────────────────────
-
+// ─── HISTORY ─────────────────────────────────
 function renderHistory() {
+  const h     = state.history;
   const list  = document.getElementById('historyList');
   const empty = document.getElementById('historyEmpty');
-  const count = document.getElementById('historyCount');
-  const summCard = document.getElementById('weekSummary');
+  document.getElementById('historyCount').textContent =
+    `${h.length} session${h.length !== 1 ? 's' : ''}`;
 
-  if (state.history.length === 0) {
-    list.innerHTML = '';
-    empty.classList.remove('hidden');
-    summCard.classList.add('hidden');
-    count.textContent = '0 sessions';
-    return;
-  }
+  renderWeeklySummary();
 
+  if (!h.length) { list.innerHTML = ''; empty.classList.remove('hidden'); return; }
   empty.classList.add('hidden');
-  count.textContent = `${state.history.length} sessions`;
 
-  // This week summary
-  const weekStart = startOfWeek(new Date());
-  const thisWeek  = state.history.filter(l => new Date(l.date) >= weekStart);
-  if (thisWeek.length > 0) {
-    const vol    = thisWeek.reduce((s, l) => s + calcVolume(l), 0);
-    const avgDur = thisWeek.reduce((s, l) => s + (l.duration || 0), 0) / thisWeek.length;
-    summCard.classList.remove('hidden');
-    summCard.innerHTML = `
-      <div class="week-summary-tag">THIS WEEK</div>
-      <div class="week-summary-stats">
-        <div>
-          <div class="week-stat-value">${thisWeek.length}</div>
-          <div class="week-stat-label">SESSIONS</div>
-        </div>
-        <div>
-          <div class="week-stat-value">${formatVolume(vol)}</div>
-          <div class="week-stat-label">VOLUME</div>
-        </div>
-        <div>
-          <div class="week-stat-value">${avgDur > 0 ? secToHMS(avgDur) : '—'}</div>
-          <div class="week-stat-label">AVG DUR</div>
-        </div>
-      </div>
-    `;
-  } else {
-    summCard.classList.add('hidden');
-  }
-
-  list.innerHTML = [...state.history].reverse().map(log => {
-    const exCount = log.exercises?.length ?? 0;
-    const meta    = `${exCount} exercises · ${log.phase || ''}${log.week ? ', Wk ' + log.week : ''}`;
-    const dur     = log.duration ? `<div class="history-item-dur">⊙ ${secToHMS(log.duration)}</div>` : '';
+  list.innerHTML = h.map((log, i) => {
+    const dur = log.duration ? `<div class="history-item-dur">◷ ${fmtDuration(log.duration)}</div>` : '';
     return `
-      <div class="history-item" onclick="openModal(${log.id})">
-        <div>
-          <div class="history-item-date">${formatDateLong(log.date)}</div>
-          <div class="history-item-title">WORKOUT ${log.workout}</div>
-          <div class="history-item-meta">${meta}</div>
-          ${dur}
-        </div>
-        <div class="history-item-actions">
-          <span class="history-arrow">›</span>
-          <button class="history-delete" onclick="deleteSession(event, ${log.id})">✕</button>
-        </div>
+    <div class="history-item" id="hist-${i}">
+      <div class="history-item-left" onclick="openHistoryModal(${i})" style="flex:1;cursor:pointer;">
+        <div class="history-item-date">${formatDate(log.date)}</div>
+        <div class="history-item-name">WORKOUT ${log.workout}</div>
+        <div class="history-item-meta">${log.exercises.length} exercises · ${log.phase}, Wk ${log.week}</div>
+        ${dur}
       </div>
-    `;
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="history-item-arrow" onclick="openHistoryModal(${i})" style="cursor:pointer;">›</div>
+        <button class="history-delete-btn" onclick="deleteHistoryEntry(${i})">✕</button>
+      </div>
+    </div>`;
   }).join('');
 }
 
-function deleteSession(event, id) {
-  event.stopPropagation();
-  state.history = state.history.filter(l => l.id !== id);
-  saveHistory();
-  renderHistory();
-  showToast('Session deleted');
+// ─── WEEKLY SUMMARY ──────────────────────────
+function renderWeeklySummary() {
+  const card = document.getElementById('weeklySummary');
+  const h    = state.history;
+  if (!h.length) { card.style.display = 'none'; return; }
+
+  const now     = new Date();
+  const monday  = new Date(now);
+  monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+  monday.setHours(0, 0, 0, 0);
+
+  const thisWeek = h.filter(l => new Date(l.date) >= monday);
+
+  if (!thisWeek.length) { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+
+  const sessions  = thisWeek.length;
+  let   totalVol  = 0;
+  let   totalSecs = 0;
+  thisWeek.forEach(log => {
+    totalSecs += log.duration || 0;
+    log.exercises.forEach(ex =>
+      ex.sets.forEach(s => { totalVol += (s.weight || 0) * (s.reps || 0); })
+    );
+  });
+
+  const avgDur = sessions > 0 && totalSecs > 0
+    ? fmtDuration(Math.round(totalSecs / sessions))
+    : '—';
+
+  document.getElementById('weeklySummaryStats').innerHTML = `
+    <div class="wsstat">
+      <div class="wsstat-val">${sessions}</div>
+      <div class="wsstat-lbl">SESSIONS</div>
+    </div>
+    <div class="wsstat">
+      <div class="wsstat-val">${fmtVol(totalVol)}</div>
+      <div class="wsstat-lbl">VOLUME</div>
+    </div>
+    <div class="wsstat">
+      <div class="wsstat-val">${avgDur}</div>
+      <div class="wsstat-lbl">AVG DUR</div>
+    </div>`;
 }
 
-function openModal(id) {
-  const log = state.history.find(l => l.id === id);
-  if (!log) return;
-
-  document.getElementById('modalDate').textContent  = `${log.phase || 'WORKOUT'} · WEEK ${log.week ?? '—'}`;
-  document.getElementById('modalTitle').textContent = `WORKOUT ${log.workout}`;
-  document.getElementById('modalSub').textContent   = formatDateLong(log.date) +
-    (log.duration ? ` · ${secToHMS(log.duration)}` : '');
-
-  document.getElementById('modalBody').innerHTML = (log.exercises ?? []).map(ex => `
+function openHistoryModal(idx) {
+  const log = state.history[idx]; if (!log) return;
+  document.getElementById('modalDate').textContent  = formatDate(log.date);
+  document.getElementById('modalTitle').textContent =
+    `WORKOUT ${log.workout} · ${log.phase}, Wk ${log.week}`;
+  const durLine = log.duration
+    ? `<div style="font-family:var(--font-mono);font-size:11px;color:var(--text-3);margin-bottom:12px">◷ ${fmtDuration(log.duration)}</div>`
+    : '';
+  document.getElementById('modalBody').innerHTML = durLine + log.exercises.map(ex => `
     <div class="modal-exercise">
-      <div class="modal-exercise-name">${ex.name}</div>
-      ${(ex.sets ?? []).map((s, i) => `
+      <div class="modal-exercise-name">
+        ${ex.name}
+        <span style="color:var(--text-3);font-size:11px;font-family:var(--font-mono)">${ex.repRange || ''}</span>
+      </div>
+      ${ex.sets.map((s, si) => `
         <div class="modal-set-row">
-          <span class="modal-set-num">${i + 1}</span>
-          <span class="modal-set-weight">${s.weight} kg</span>
-          <span class="modal-set-reps">× ${s.reps} reps</span>
-          <span class="modal-set-done" style="color:${s.done ? 'var(--success)' : 'var(--text-3)'}">
-            ${s.done ? '✓' : '○'}
-          </span>
-        </div>
-      `).join('')}
-    </div>
-  `).join('');
-
+          <span class="modal-set-num">${si + 1}</span>
+          <span class="modal-set-val">${s.weight} kg</span>
+          <span class="modal-set-val">${s.reps} reps</span>
+        </div>`).join('')}
+    </div>`).join('');
   document.getElementById('modalOverlay').classList.remove('hidden');
 }
+function closeModal() {
+  document.getElementById('modalOverlay').classList.add('hidden');
+}
+function deleteHistoryEntry(idx) {
+  if (!confirm('Delete this workout from history?')) return;
+  state.history.splice(idx, 1);
+  saveToStorage();
+  renderHistory();
+}
 
-function closeModal()      { document.getElementById('modalOverlay').classList.add('hidden'); }
-function openRulesModal()  { document.getElementById('rulesOverlay').classList.remove('hidden'); }
-function closeRulesModal() { document.getElementById('rulesOverlay').classList.add('hidden'); }
+// ─── PROGRESS ────────────────────────────────
 
-// ─── PLAN TAB ─────────────────────────────────
-
-// Tracks which weeks are expanded in the plan tab
-const expandedWeeks = new Set();
-
+// ─── PLAN OVERVIEW ───────────────────────────
 function renderPlan() {
-  const week  = currentWeek();
-  const phase = currentPhase();
+  const container = document.getElementById('planOverview');
+  if (!container) return;
 
-  // Auto-expand current week and done weeks on first render
-  if (expandedWeeks.size === 0) {
-    for (let w = 1; w < week; w++) expandedWeeks.add(w);  // all done weeks
-    expandedWeeks.add(week);                               // current week
-  }
+  // Group SESSIONS by phase
+  const phases = [];
+  let lastPhase = null;
+  SESSIONS.forEach((sess, idx) => {
+    if (sess.phase !== lastPhase) {
+      phases.push({ phase: sess.phase, sessions: [] });
+      lastPhase = sess.phase;
+    }
+    phases[phases.length - 1].sessions.push({ ...sess, globalIdx: idx });
+  });
 
-  document.getElementById('planList').innerHTML = PHASES.map(p => {
-    const isActivePhase = p.id === phase.id;
+  const completedIdxs = new Set(state.history.map(l => l.sessionIndex));
+  const currentIdx    = state.sessionIndex;
 
-    const weeksHTML = p.weeks.map(w => {
-      const isCurrent  = w === week;
-      const isWeekDone = w < week;
-      const weekStart  = (w - 1) * 3;
-      const wkPattern  = [0,1,2].map(i => sessionPattern(weekStart + i));
-      const isOpen     = expandedWeeks.has(w);
-      const meta       = p.weekMeta[w] || { rir: '—', progression: '' };
+  const phaseClass = p =>
+    p === 'Technik & Volumen'  ? 'hyp'  :
+    p === 'Kraft & Progression'? 'str'  :
+    p === 'Intensität'         ? 'int'  :
+    p === 'Peak & Volumen'     ? 'peak' : 'deload';
 
-      let badge = `<span class="plan-week-badge pending">AUSSTEHEND</span>`;
-      if (isWeekDone) badge = `<span class="plan-week-badge done">✓ DONE</span>`;
-      if (isCurrent)  badge = `<span class="plan-week-badge current">AKTUELL</span>`;
+  container.innerHTML = phases.map(p => {
+    const info     = PHASE_INFO[p.phase] || {};
+    const pCls     = phaseClass(p.phase);
+    const weeks    = [...new Set(p.sessions.map(s => s.week))];
+    const weekRange = `Wochen ${Math.min(...weeks)}–${Math.max(...weeks)}`;
 
-      const bodyHTML = isOpen ? `
-        <div class="plan-week-body">
-          <div class="plan-rir-row">
-            <span class="plan-rir-badge">RIR ${meta.rir}</span>
-            <span class="plan-rir-label">${meta.progression}</span>
-          </div>
-          ${['A','B'].map(wo => `
-            <div class="plan-workout-section">
-              <div class="plan-workout-label">WORKOUT ${wo}</div>
-              ${exercisesFor(w, wo).map(ex => `
-                <div class="plan-exercise-row">
-                  <span class="plan-exercise-name">${ex.name}</span>
-                  <span class="plan-exercise-range">${ex.sets} × ${ex.repRange}</span>
-                </div>
-              `).join('')}
-            </div>
-          `).join('')}
-        </div>
-      ` : '';
+    // Group by week
+    const byWeek = {};
+    p.sessions.forEach(s => { if (!byWeek[s.week]) byWeek[s.week] = []; byWeek[s.week].push(s); });
 
-      const titleHTML = isCurrent
-        ? `<span style="color:var(--acc);font-family:var(--fd),sans-serif;font-weight:800;font-size:16px;letter-spacing:.06em">WOCHE ${w}</span>`
-        : `WOCHE ${w}`;
+    const weekCards = Object.entries(byWeek).map(([week, sessions]) => {
+      const isCurrent = sessions.some(s => s.globalIdx === currentIdx);
+      const isDone    = sessions.every(s => completedIdxs.has(s.globalIdx));
+      const badgeCls  = isCurrent ? 'current' : isDone ? 'done' : 'upcoming';
+      const badgeTxt  = isCurrent ? 'AKTUELL' : isDone ? '✓ DONE' : 'AUSSTEHEND';
+      const cardCls   = isCurrent ? 'current' : isDone ? 'completed' : '';
+      const bodyOpen  = isCurrent ? 'open' : '';
+
+      // RIR + Focus from first session of this week
+      const rir   = sessions[0]?.rir   || '';
+      const focus = sessions[0]?.focus || '';
+
+      const workoutSections = sessions.map(s => `
+        <div class="plan-workout-section">
+          <div class="plan-workout-label">WORKOUT ${s.workout}</div>
+          ${s.exercises.map(ex =>
+            `<div class="plan-ex-row">
+              <span class="plan-ex-name">${ex.name}</span>
+              <span class="plan-ex-scheme">${ex.sets} × ${ex.repRange}</span>
+            </div>`
+          ).join('')}
+        </div>`).join('');
+
+      const metaRow = (rir || focus) ? `
+        <div class="plan-week-meta-row">
+          ${rir   ? `<span class="plan-meta-pill rir">RIR ${rir}</span>` : ''}
+          ${focus ? `<span class="plan-meta-focus">${focus}</span>` : ''}
+        </div>` : '';
 
       return `
-        <div class="plan-week-card ${isCurrent ? 'current-week' : ''} ${isOpen ? 'open' : ''}"
-             onclick="toggleWeek(${w})">
-          <div class="plan-week-header">
+        <div class="plan-week-card ${cardCls}">
+          <div class="plan-week-header" onclick="togglePlanWeek(this)">
             <div>
-              <div class="plan-week-title">${titleHTML}</div>
-              <div class="plan-week-sub">3 Workouts · ${wkPattern.map(x => 'Workout ' + x).join(', ')}</div>
+              <div class="plan-week-label">WOCHE ${week}</div>
+              <div class="plan-week-meta">${sessions.length} Workouts · ${sessions.map(s => 'Workout ' + s.workout).join(', ')}</div>
             </div>
-            ${badge}
+            <span class="plan-week-badge ${badgeCls}">${badgeTxt}</span>
           </div>
-          ${bodyHTML}
-        </div>
-      `;
+          <div class="plan-week-body ${bodyOpen}">
+            ${metaRow}
+            ${workoutSections}
+          </div>
+        </div>`;
     }).join('');
 
+    const goalHtml = info.goal
+      ? `<div class="plan-phase-goal">${info.goal}</div>`
+      : '';
+
     return `
-      <div class="plan-phase-card ${isActivePhase ? 'active-phase' : ''} ${p.color}">
-        <div class="plan-phase-header">
-          <div class="plan-phase-name">${p.name.toUpperCase()}</div>
-          <div class="plan-phase-weeks">Wochen ${p.weeks[0]}–${p.weeks[p.weeks.length-1]}</div>
+      <div class="plan-phase-section">
+        <div class="plan-phase-header ${pCls}">
+          <div>
+            <div class="plan-phase-name">${p.phase.toUpperCase()}</div>
+            <div class="plan-phase-weeks">${weekRange}</div>
+          </div>
         </div>
-        <div class="plan-phase-desc">${p.desc}</div>
-        ${weeksHTML}
-        <div style="height:6px"></div>
-      </div>
-    `;
+        ${goalHtml}
+        ${weekCards}
+      </div>`;
   }).join('');
 }
 
-function toggleWeek(w) {
-  if (expandedWeeks.has(w)) {
-    expandedWeeks.delete(w);
-  } else {
-    expandedWeeks.add(w);
-  }
-  renderPlan();
+function togglePlanWeek(header) {
+  header.nextElementSibling.classList.toggle('open');
 }
 
-// ─── PROGRESS ─────────────────────────────────
+function openInfoModal() {
+  const body = document.getElementById('infoModalBody');
+  body.innerHTML = PROG_RULES.map(r =>
+    `<div class="info-rule">
+      <span class="info-rule-dot">·</span>
+      <span class="info-rule-text">${r}</span>
+    </div>`
+  ).join('');
+  document.getElementById('infoModalOverlay').classList.remove('hidden');
+}
 
-let chartWeekly   = null;
-let chartExercise = null;
+function closeInfoModal() {
+  document.getElementById('infoModalOverlay').classList.add('hidden');
+}
+
+function populateExerciseSelect() {
+  const names = [...new Set(SESSIONS.flatMap(s => s.exercises.map(e => e.name)))];
+  document.getElementById('exerciseSelect').innerHTML =
+    names.map(n => `<option value="${n}">${n}</option>`).join('');
+}
 
 function renderProgress() {
-  renderStatTiles();
-  renderWeeklyChart();
-  renderExerciseSelect();
-  renderExerciseChart();
+  const h = state.history;
+  const empty = document.getElementById('progressEmpty');
+  const stats = document.getElementById('statsRow');
+  if (!h.length) { empty.classList.remove('hidden'); stats.innerHTML = ''; return; }
+  empty.classList.add('hidden');
+  renderStats(); renderWeeklyChart(); renderExerciseChart();
 }
 
-function renderStatTiles() {
-  const total    = state.history.length;
-  const thisWeek = state.history.filter(l => new Date(l.date) >= startOfWeek(new Date())).length;
-  const totalVol = state.history.reduce((s, l) => s + calcVolume(l), 0);
-
+function renderStats() {
+  const h = state.history;
+  let vol = 0;
+  h.forEach(log => log.exercises.forEach(ex =>
+    ex.sets.forEach(s => { vol += (s.weight || 0) * (s.reps || 0); })
+  ));
+  const now = new Date(), wa = new Date(now);
+  wa.setDate(now.getDate() - 7);
+  const tw = h.filter(l => new Date(l.date) >= wa).length;
   document.getElementById('statsRow').innerHTML = `
-    <div class="stat-tile">
-      <div class="stat-value">${total}</div>
-      <div class="stat-label">TOTAL</div>
-    </div>
-    <div class="stat-tile">
-      <div class="stat-value">${thisWeek}</div>
-      <div class="stat-label">THIS WEEK</div>
-    </div>
-    <div class="stat-tile">
-      <div class="stat-value">${formatVolume(totalVol)}</div>
-      <div class="stat-label">VOLUME</div>
-    </div>
-  `;
-  document.getElementById('progressEmpty')?.classList.toggle('hidden', total > 0);
+    <div class="stat-card"><div class="stat-value">${h.length}</div><div class="stat-label">TOTAL SESSIONS</div></div>
+    <div class="stat-card"><div class="stat-value">${tw}</div><div class="stat-label">THIS WEEK</div></div>
+    <div class="stat-card"><div class="stat-value">${fmtVol(vol)}</div><div class="stat-label">TOTAL VOL</div></div>`;
 }
+function fmtVol(kg) { return kg >= 1000 ? (kg / 1000).toFixed(1) + 't' : kg + 'kg'; }
 
 function renderWeeklyChart() {
-  const weeks  = last8Weeks();
-  const counts = weeks.map(w => w.count);
-
+  const h = state.history, now = new Date(), weeks = [];
+  for (let i = 7; i >= 0; i--) {
+    const s = new Date(now); s.setDate(now.getDate() - i * 7);
+    const e = new Date(s);   e.setDate(s.getDate() + 6);
+    weeks.push({ s, e, n: 0, lbl: s.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) });
+  }
+  h.forEach(log => { const d = new Date(log.date); weeks.forEach(w => { if (d >= w.s && d <= w.e) w.n++; }); });
+  const ctx = document.getElementById('chartWeekly').getContext('2d');
   if (chartWeekly) chartWeekly.destroy();
-  chartWeekly = new Chart(document.getElementById('chartWeekly'), {
+  chartWeekly = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: weeks.map(w => weekLabel(w.start)),
+      labels: weeks.map(w => w.lbl),
       datasets: [{
-        data: counts,
-        backgroundColor: 'rgba(255,179,71,0.7)',
-        borderColor: '#FFB347', borderWidth: 1, borderRadius: 3,
-      }],
+        data: weeks.map(w => w.n),
+        backgroundColor: weeks.map(w => w.n > 0 ? 'rgba(255,179,71,.7)' : 'rgba(42,42,42,.5)'),
+        borderColor:     weeks.map(w => w.n > 0 ? '#FFB347' : '#2a2a2a'),
+        borderWidth: 1, borderRadius: 4, borderSkipped: false,
+      }]
     },
-    options: chartOptions('', Math.max(5, ...counts) + 1),
+    options: chartOpts({ yMax: Math.max(5, ...weeks.map(w => w.n)) + 1 }),
   });
-}
-
-function renderExerciseSelect() {
-  const select  = document.getElementById('exerciseSelect');
-  const current = select.value;
-  const names   = new Set();
-  Object.keys(DEFAULT_WEIGHTS).forEach(n => names.add(n));
-  state.history.forEach(log => log.exercises?.forEach(ex => names.add(ex.name)));
-  select.innerHTML = [...names].map(n =>
-    `<option value="${n}" ${n === current ? 'selected' : ''}>${n}</option>`
-  ).join('');
 }
 
 function renderExerciseChart() {
   const name = document.getElementById('exerciseSelect').value;
-  if (!name) return;
-
-  const points = state.history
-    .filter(log => log.exercises?.some(e => e.name === name))
-    .map(log => {
-      const ex  = log.exercises.find(e => e.name === name);
-      const max = Math.max(...(ex?.sets?.map(s => s.weight) ?? [0]));
-      return { date: log.date, y: max };
-    });
-
+  const pts  = [];
+  [...state.history].reverse().forEach(log => {
+    const ex = log.exercises.find(e => e.name === name); if (!ex) return;
+    const mx = Math.max(...ex.sets.map(s => s.weight || 0));
+    if (mx > 0) pts.push({ d: formatDate(log.date), v: mx });
+  });
+  const ctx = document.getElementById('chartExercise').getContext('2d');
   if (chartExercise) chartExercise.destroy();
-  chartExercise = new Chart(document.getElementById('chartExercise'), {
+  if (!pts.length) {
+    chartExercise = new Chart(ctx, { type: 'line', data: { labels: [], datasets: [{ data: [] }] }, options: chartOpts({}) });
+    return;
+  }
+  chartExercise = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: points.map(p => formatDate(p.date)),
+      labels: pts.map(p => p.d),
       datasets: [{
-        data: points.map(p => p.y),
-        borderColor: '#FFB347', backgroundColor: 'rgba(255,179,71,0.08)',
-        borderWidth: 2, pointBackgroundColor: '#FFB347', pointRadius: 4,
-        tension: 0.3, fill: true,
-      }],
+        data: pts.map(p => p.v),
+        borderColor: '#FFB347', backgroundColor: 'rgba(255,179,71,.08)',
+        borderWidth: 2, pointBackgroundColor: '#FFB347', pointBorderColor: '#0f0f0f',
+        pointBorderWidth: 2, pointRadius: 5, tension: .35, fill: true,
+      }]
     },
-    options: chartOptions('kg', Math.max(10, ...points.map(p => p.y)) * 1.1),
+    options: chartOpts({ yLabel: 'kg' }),
   });
 }
 
-function chartOptions(yLabel, yMax) {
+function chartOpts({ yMax, yLabel } = {}) {
   return {
     responsive: true, maintainAspectRatio: false,
+    interaction: { intersect: false, mode: 'index' },
     plugins: {
       legend: { display: false },
       tooltip: {
-        backgroundColor: '#1e1e1e', borderColor: '#3a3a3a', borderWidth: 1,
-        titleColor: '#909090', bodyColor: '#ffffff',
-        titleFont: { family: 'Share Tech Mono', size: 10 },
-        bodyFont:  { family: 'Share Tech Mono', size: 12 },
-        callbacks: { label: ctx => ctx.parsed.y + (yLabel ? ' ' + yLabel : '') },
-      },
+        backgroundColor: '#1f1f1f', borderColor: '#3a3a3a', borderWidth: 1,
+        titleColor: '#999', bodyColor: '#f0f0f0',
+        titleFont: { family: 'Share Tech Mono', size: 11 },
+        bodyFont:  { family: 'Share Tech Mono', size: 13 },
+        callbacks: { label: c => ` ${c.parsed.y}${yLabel ? ' ' + yLabel : ''}` },
+      }
     },
     scales: {
-      x: {
-        grid:   { color: 'rgba(42,42,42,0.5)', drawTicks: false },
-        ticks:  { color: '#909090', font: { family: 'Share Tech Mono', size: 10 }, maxRotation: 45 },
-        border: { color: '#2a2a2a' },
-      },
-      y: {
-        grid:        { color: 'rgba(42,42,42,0.5)', drawTicks: false },
-        ticks:       { color: '#909090', font: { family: 'Share Tech Mono', size: 10 } },
-        border:      { color: '#2a2a2a' },
-        max:         yMax || undefined,
-        beginAtZero: true,
-      },
+      x: { grid: { color: 'rgba(42,42,42,.5)', drawTicks: false }, ticks: { color: '#555', font: { family: 'Share Tech Mono', size: 10 }, maxRotation: 45 }, border: { color: '#2a2a2a' } },
+      y: { grid: { color: 'rgba(42,42,42,.5)', drawTicks: false }, ticks: { color: '#555', font: { family: 'Share Tech Mono', size: 10 }, stepSize: 1 }, border: { color: '#2a2a2a' }, max: yMax || undefined, beginAtZero: true },
     },
   };
 }
 
-// ─── HELPERS ──────────────────────────────────
-
-function calcVolume(log) {
-  return (log.exercises ?? []).reduce((sum, ex) =>
-    sum + (ex.sets ?? []).reduce((s2, set) =>
-      s2 + (set.done ? set.weight * set.reps : 0), 0
-    ), 0
-  );
+// ─── EXPORT ──────────────────────────────────
+function exportData() {
+  const raw = localStorage.getItem('wt_v5');
+  if (!raw) { showToast('KEINE DATEN'); return; }
+  const blob = new Blob([raw], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'workout-export-' + new Date().toISOString().split('T')[0] + '.json';
+  a.click();
+  showToast('EXPORT GESPEICHERT ✓');
 }
 
-function last8Weeks() {
-  const now = new Date();
-  return Array.from({ length: 8 }, (_, i) => {
-    const start = startOfWeek(new Date(now.getTime() - (7 - i) * 7 * 86400_000));
-    const end   = new Date(start.getTime() + 7 * 86400_000);
-    return {
-      start,
-      count: state.history.filter(l => { const d = new Date(l.date); return d >= start && d < end; }).length,
-    };
-  });
-}
-
-function startOfWeek(date) {
-  const d = new Date(date);
-  d.setDate(d.getDate() + (d.getDay() === 0 ? -6 : 1 - d.getDay()));
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
-
-function weekLabel(date) {
-  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-}
-
-function formatDate(isoDate) {
-  if (!isoDate) return '—';
-  return new Date(isoDate + 'T12:00:00').toLocaleDateString('en-GB', {
-    day: 'numeric', month: 'short',
-  });
-}
-
-function formatDateLong(isoDate) {
-  if (!isoDate) return '—';
-  return new Date(isoDate + 'T12:00:00').toLocaleDateString('en-GB', {
-    day: 'numeric', month: 'short', year: 'numeric',
-  });
-}
-
-function formatVolume(vol) {
-  return vol >= 1000 ? (vol / 1000).toFixed(1) + 't' : vol + 'kg';
-}
-
-function secToHMS(sec) {
-  sec = Math.max(0, Math.floor(sec));
-  const h = Math.floor(sec / 3600);
-  const m = Math.floor((sec % 3600) / 60);
-  const s = sec % 60;
-  if (h > 0) return `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-  return `${m}:${String(s).padStart(2,'0')}`;
-}
-
-function sid(str) {
-  return str.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9\-]/g, '').toLowerCase();
-}
-
-// ─── TOAST ────────────────────────────────────
+// ─── TOAST ───────────────────────────────────
 let toastTimer = null;
 function showToast(msg) {
   const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.remove('hidden');
+  el.textContent = msg; el.classList.remove('hidden');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => el.classList.add('hidden'), 2200);
 }
 
-// ─── KEYBOARD ─────────────────────────────────
+// ─── WEIGHT HINT CSS (injected once) ─────────
+function injectWeightHintStyle() {
+  const s = document.createElement('style');
+  s.textContent = `.weight-hint{font-family:var(--font-mono);font-size:10px;color:var(--accent);opacity:.7;margin-left:4px;}`;
+  document.head.appendChild(s);
+}
+
+// ─── BOOT ────────────────────────────────────
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeModal(); closeRulesModal(); }
+  if (e.key === 'Escape') { closeModal(); stopRestTimer(); }
 });
 
-// ─── BOOT ─────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   loadFromStorage();
   setHeaderDate();
+  injectWeightHintStyle();
+  await loadProgram();
   renderHome();
   renderHistory();
-  renderExerciseSelect();
+  populateExerciseSelect();
+  renderProgress();
 });

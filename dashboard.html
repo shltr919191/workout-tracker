@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workout Tracker — Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@300;400&family=Share+Tech+Mono&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#0c0c0c;
+  --bgc:#141414;
+  --bgc2:#1c1c1c;
+  --bd:#222;
+  --bdh:#2e2e2e;
+  --acc:#FFB347;
+  --accg:rgba(255,179,71,.12);
+  --ok:#4caf7d;
+  --okd:rgba(76,175,125,.12);
+  --err:#e05555;
+  --t1:#ffffff;
+  --t2:#d8d0c4;
+  --t3:#909090;
+  --fd:'Barlow Condensed',sans-serif;
+  --fb:'Barlow',sans-serif;
+  --fm:'Share Tech Mono',monospace;
+}
+
+body{background:var(--bg);color:var(--t1);font-family:var(--fb);min-height:100vh}
+
+/* ── TOPBAR ── */
+.topbar{
+  background:var(--bgc);
+  border-bottom:1px solid var(--bd);
+  padding:14px 32px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+.topbar-left{display:flex;align-items:center;gap:14px}
+.logo{font-family:var(--fd);font-weight:800;font-size:18px;letter-spacing:.12em;color:var(--t1)}
+.badge{font-family:var(--fm);font-size:10px;color:var(--acc);background:var(--accg);border:1px solid rgba(255,179,71,.3);padding:3px 9px;border-radius:3px;letter-spacing:.07em}
+.topbar-right{display:flex;align-items:center;gap:12px}
+.topbar-meta{font-family:var(--fm);font-size:11px;color:var(--t3)}
+
+/* import button */
+.btn-import{
+  font-family:var(--fm);
+  font-size:11px;
+  color:var(--t3);
+  background:var(--bgc2);
+  border:1px solid var(--bd);
+  padding:6px 14px;
+  border-radius:6px;
+  cursor:pointer;
+  transition:all .15s;
+  letter-spacing:.05em;
+}
+.btn-import:hover{background:var(--bdh);color:var(--t2);border-color:var(--bdh)}
+
+/* export button */
+.btn-export{
+  font-family:var(--fm);
+  font-size:11px;
+  color:#0c0c0c;
+  background:var(--acc);
+  border:none;
+  padding:6px 14px;
+  border-radius:6px;
+  cursor:pointer;
+  transition:all .15s;
+  letter-spacing:.05em;
+  font-weight:700;
+}
+.btn-export:hover{filter:brightness(1.1)}
+
+/* ── MAIN LAYOUT ── */
+.main{padding:28px 32px;display:flex;flex-direction:column;gap:28px;max-width:1600px;margin:0 auto}
+
+/* ── SECTION LABEL ── */
+.sec-lbl{font-family:var(--fm);font-size:10px;letter-spacing:.12em;color:var(--t3);margin-bottom:12px}
+
+/* ── KPI ROW ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+.kpi{background:var(--bgc);border:1px solid var(--bd);border-radius:10px;padding:18px 20px}
+.kpi-val{font-family:var(--fd);font-weight:800;font-size:36px;color:var(--acc);line-height:1;letter-spacing:.02em}
+.kpi-val.g{color:var(--ok)}
+.kpi-val.w{color:var(--t1)}
+.kpi-lbl{font-family:var(--fm);font-size:10px;color:var(--t3);letter-spacing:.08em;margin-top:6px}
+.kpi-sub{font-family:var(--fm);font-size:11px;color:var(--t3);margin-top:3px;opacity:.7}
+
+/* ── CARDS ── */
+.card{background:var(--bgc);border:1px solid var(--bd);border-radius:10px;overflow:hidden}
+.card-head{padding:14px 20px 12px;border-bottom:1px solid var(--bd);display:flex;align-items:baseline;justify-content:space-between}
+.card-title{font-family:var(--fm);font-size:11px;letter-spacing:.09em;color:var(--t2)}
+.card-hint{font-family:var(--fm);font-size:10px;color:var(--t3)}
+.card-body{padding:18px 20px}
+
+/* ── GRIDS ── */
+.grid-2-1{display:grid;grid-template-columns:1.6fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+
+/* ── CHART WRAP ── */
+.ch{position:relative}
+
+/* ── PHASE BAR ── */
+.phase-row{display:grid;grid-template-columns:130px 1fr 56px;align-items:center;gap:12px;margin-bottom:10px}
+.phase-row:last-child{margin-bottom:0}
+.phase-name{font-family:var(--fm);font-size:11px;color:var(--t2)}
+.phase-track{height:6px;background:var(--bgc2);border-radius:3px;overflow:hidden}
+.phase-fill{height:100%;border-radius:3px;transition:width .6s ease}
+.phase-val{font-family:var(--fm);font-size:11px;color:var(--t3);text-align:right}
+
+/* ── TABLE ── */
+.tbl{width:100%;border-collapse:collapse;font-family:var(--fm)}
+.tbl tr{border-bottom:1px solid #1c1c1c}
+.tbl tr:last-child{border-bottom:none}
+.tbl td{padding:9px 0;font-size:12px;vertical-align:middle}
+.td-ex{color:var(--t2)}
+.td-w{color:var(--acc);text-align:right;font-weight:500}
+.td-g{color:var(--ok);text-align:right}
+.td-d{color:var(--t3);font-size:10px}
+.td-up{color:var(--ok);text-align:right;font-size:11px}
+.td-dn{color:var(--err);text-align:right;font-size:11px}
+
+/* ── HEATMAP ── */
+.heatmap-wrap{overflow-x:auto}
+.heatmap-inner{min-width:700px}
+.hm-months{display:flex;margin-bottom:4px}
+.hm-month-lbl{font-family:var(--fm);font-size:9px;color:var(--t3);flex:1;text-align:center}
+.hm-grid{display:flex;gap:3px}
+.hm-col{display:flex;flex-direction:column;gap:3px;flex:1}
+.hm-cell{height:16px;border-radius:2px;cursor:default;transition:opacity .1s}
+.hm-cell:hover{opacity:.8}
+
+/* ── EX SELECTOR BTNS ── */
+.ex-btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+.ex-btn{font-family:var(--fm);font-size:10px;background:var(--bgc2);border:1px solid var(--bd);color:var(--t3);padding:4px 10px;border-radius:4px;cursor:pointer;transition:all .15s;letter-spacing:.04em}
+.ex-btn:hover{background:var(--bdh);color:var(--t2)}
+.ex-btn.active{background:var(--accg);border-color:rgba(255,179,71,.4);color:var(--acc)}
+
+/* ── WEEKDAY BARS ── */
+.wd-bars{display:flex;gap:4px;align-items:flex-end;height:56px}
+.wd-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
+.wd-bar{width:100%;border-radius:2px 2px 0 0}
+.wd-lbl{font-family:var(--fm);font-size:9px;color:var(--t3)}
+
+/* ── SPLIT DONUT ── */
+.split-row{display:flex;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--bd)}
+.split-card{flex:1;background:var(--bgc2);border-radius:7px;padding:12px;text-align:center}
+.split-num{font-family:var(--fd);font-weight:800;font-size:28px;color:var(--acc);line-height:1}
+.split-lbl{font-family:var(--fm);font-size:9px;color:var(--t3);margin-top:3px;text-transform:uppercase;letter-spacing:.06em}
+
+/* ── EMPTY STATE ── */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;gap:16px}
+.empty-icon{font-size:32px;color:var(--bd)}
+.empty p{font-family:var(--fm);font-size:13px;color:var(--t3);line-height:1.7}
+
+/* ── IMPORT OVERLAY ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px}
+.overlay.hidden{display:none}
+.import-modal{background:var(--bgc);border:1px solid var(--bdh);border-radius:12px;padding:28px;width:100%;max-width:500px;display:flex;flex-direction:column;gap:16px}
+.import-title{font-family:var(--fd);font-weight:800;font-size:22px;letter-spacing:.06em}
+.import-sub{font-family:var(--fm);font-size:12px;color:var(--t3);line-height:1.7}
+.import-modal textarea{width:100%;height:160px;background:var(--bgc2);border:1px solid var(--bd);border-radius:6px;color:var(--t2);font-family:var(--fm);font-size:11px;padding:10px 12px;resize:vertical;outline:none}
+.import-modal textarea:focus{border-color:var(--acc)}
+.import-btns{display:flex;gap:10px;justify-content:flex-end}
+.btn-cancel{font-family:var(--fm);font-size:11px;color:var(--t3);background:transparent;border:1px solid var(--bd);padding:8px 16px;border-radius:6px;cursor:pointer}
+.btn-confirm{font-family:var(--fm);font-size:11px;color:#0c0c0c;background:var(--acc);border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:700}
+
+/* ── LEGEND ── */
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px}
+.leg{display:flex;align-items:center;gap:5px;font-family:var(--fm);font-size:10px;color:var(--t3)}
+.leg-sq{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+
+/* ── PROGRESS BAR ── */
+.plan-prog-wrap{background:var(--bgc);border:1px solid var(--bd);border-radius:10px;padding:16px 20px}
+.plan-prog-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.plan-prog-lbl{font-family:var(--fm);font-size:10px;color:var(--t3);letter-spacing:.08em}
+.plan-prog-pct{font-family:var(--fm);font-size:13px;color:var(--acc)}
+.plan-prog-track{height:6px;background:var(--bgc2);border-radius:3px;overflow:hidden;margin-bottom:8px}
+.plan-prog-fill{height:100%;background:var(--acc);border-radius:3px;transition:width .6s ease}
+.phase-blocks{display:flex;gap:4px}
+.ph-block{flex:1;height:22px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:9px;letter-spacing:.04em;border:1px solid var(--bd);background:var(--bgc2);color:var(--t3);transition:all .2s}
+.ph-block.active{background:var(--accg);border-color:rgba(255,179,71,.4);color:var(--acc)}
+.ph-block.done{background:var(--okd);border-color:rgba(76,175,125,.3);color:var(--ok)}
+
+/* responsive */
+@media(max-width:1100px){.kpi-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.grid-2-1{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-3{grid-template-columns:1fr}.grid-2{grid-template-columns:1fr}.main{padding:16px}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <span class="logo">WORKOUT TRACKER</span>
+    <span class="badge">DASHBOARD</span>
+  </div>
+  <div class="topbar-right">
+    <span class="topbar-meta" id="topMeta">Lade Daten...</span>
+    <button class="btn-import" onclick="openImport()">↑ JSON importieren</button>
+    <button class="btn-export" onclick="exportJSON()">↓ Exportieren</button>
+  </div>
+</div>
+
+<div class="main" id="mainContent">
+  <div class="empty" id="emptyState">
+    <div class="empty-icon">◈</div>
+    <p>Keine Daten gefunden.<br>Öffne das Dashboard auf dem gleichen Gerät wie die App,<br>oder importiere eine JSON-Exportdatei.</p>
+    <button class="btn-import" onclick="openImport()" style="font-size:13px;padding:10px 20px">↑ JSON importieren</button>
+  </div>
+</div>
+
+<!-- Import Modal -->
+<div class="overlay hidden" id="importOverlay">
+  <div class="import-modal">
+    <div class="import-title">JSON IMPORTIEREN</div>
+    <div class="import-sub">Exportiere die Daten in der App (Einstellungen → Exportieren) und füge den JSON-Text hier ein.</div>
+    <textarea id="importTA" placeholder='{"sessionIndex":5,"history":[...]}'></textarea>
+    <div class="import-btns">
+      <button class="btn-cancel" onclick="closeImport()">Abbrechen</button>
+      <button class="btn-confirm" onclick="confirmImport()">Importieren</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const PROGRAM_PHASES = [
+  {name:'Technik & Volumen', sessions:6,  color:'#FFB347'},
+  {name:'Kraft & Progression',sessions:6, color:'#FFB347'},
+  {name:'Intensität',         sessions:6, color:'#e05555'},
+  {name:'Peak & Volumen',     sessions:4, color:'#8a64ff'},
+  {name:'Deload',             sessions:2, color:'#606060'},
+];
+const TOTAL_SESSIONS = 24;
+
+let DATA = null;
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem('wt_v5');
+    if (raw) {
+      DATA = JSON.parse(raw);
+      return true;
+    }
+  } catch(e){}
+  return false;
+}
+
+function fmtDur(s){if(!s)return'—';return`${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`;}
+function fmtVol(kg){return kg>=1000?(kg/1000).toFixed(1)+'t':Math.round(kg)+'kg';}
+function fmtDate(iso){return new Date(iso).toLocaleDateString('de-DE',{day:'numeric',month:'short',year:'numeric'});}
+function fmtDateShort(iso){return new Date(iso).toLocaleDateString('de-DE',{day:'numeric',month:'short'});}
+
+// ── CHARTS REGISTRY ───────────────────────────────────────────────────────────
+const charts = {};
+function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
+
+const TICK = {color:'#909090',font:{family:'Share Tech Mono',size:10}};
+const GRID = {color:'rgba(34,34,34,.8)',drawTicks:false};
+const BORD = {color:'#222'};
+const TT   = {backgroundColor:'#1c1c1c',borderColor:'#333',borderWidth:1,
+               titleColor:'#909090',bodyColor:'#fff',
+               titleFont:{family:'Share Tech Mono',size:10},
+               bodyFont:{family:'Share Tech Mono',size:12}};
+
+function baseOpts(yl=''){
+  return {
+    responsive:true, maintainAspectRatio:false,
+    interaction:{intersect:false,mode:'index'},
+    plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>` ${Math.round(c.parsed.y)}${yl}`}}},
+    scales:{
+      x:{grid:GRID,ticks:TICK,border:BORD},
+      y:{grid:GRID,ticks:{...TICK,callback:v=>Math.round(v)+(yl)},border:BORD,beginAtZero:true}
+    }
+  };
+}
+
+// ── RENDER ───────────────────────────────────────────────────────────────────
+function render() {
+  document.getElementById('emptyState').style.display = 'none';
+
+  const h = [...DATA.history].reverse(); // chronological
+  const idx = DATA.sessionIndex || 0;
+
+  // meta
+  const today = new Date().toLocaleDateString('de-DE',{weekday:'short',day:'numeric',month:'short',year:'numeric'}).toUpperCase();
+  document.getElementById('topMeta').textContent = today + ' · ' + h.length + ' Sessions geladen';
+
+  const main = document.getElementById('mainContent');
+  main.innerHTML = '';
+
+  // ── KPIs ──────────────────────────────────────────────────────────────────
+  let totalVol=0, totalSecs=0, prMap={};
+  h.forEach(log=>{
+    totalSecs += log.duration||0;
+    log.exercises.forEach(ex=>{
+      ex.sets.forEach(s=>{
+        if(s.done) totalVol += (s.weight||0)*(s.reps||0);
+        const mx = Math.max(...ex.sets.map(s=>s.weight||0));
+        if(!prMap[ex.name]||mx>prMap[ex.name]) prMap[ex.name]=mx;
+      });
+    });
+  });
+
+  const avgDurSec = h.length>0 ? Math.round(totalSecs/h.length) : 0;
+  const avgDurMin = Math.round(avgDurSec/60);
+  const pct = Math.round(idx/TOTAL_SESSIONS*100);
+
+  // streak
+  let streak=0;
+  const today0=new Date(); today0.setHours(0,0,0,0);
+  const datesSet=new Set(h.map(l=>l.date));
+  for(let i=0;i<60;i++){const d=new Date(today0);d.setDate(today0.getDate()-i);if(datesSet.has(d.toISOString().split('T')[0]))streak++;else if(i>0)break;}
+
+  // this week
+  const now=new Date(),mon=new Date(now);
+  mon.setDate(now.getDate()-((now.getDay()+6)%7));mon.setHours(0,0,0,0);
+  const thisWeek=[...DATA.history].filter(l=>new Date(l.date)>=mon);
+
+  const kpiSection = document.createElement('div');
+  kpiSection.innerHTML = `
+    <div class="sec-lbl">ÜBERSICHT</div>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kpi-val">${h.length}</div><div class="kpi-lbl">SESSIONS TOTAL</div><div class="kpi-sub">von ${TOTAL_SESSIONS*3} geplant (3×/Woche)</div></div>
+      <div class="kpi"><div class="kpi-val g">${pct}%</div><div class="kpi-lbl">PLAN-FORTSCHRITT</div><div class="kpi-sub">Session ${idx} von ${TOTAL_SESSIONS}</div></div>
+      <div class="kpi"><div class="kpi-val w">${avgDurMin}<span style="font-size:18px;color:var(--t3)"> min</span></div><div class="kpi-lbl">Ø DAUER</div><div class="kpi-sub">Ø pro Session</div></div>
+      <div class="kpi"><div class="kpi-val">${fmtVol(totalVol)}</div><div class="kpi-lbl">TOTAL VOLUMEN</div><div class="kpi-sub">kg × Wdh. kumuliert</div></div>
+      <div class="kpi"><div class="kpi-val ${streak>=3?'g':'w'}">${streak}</div><div class="kpi-lbl">AKTIVE TAGE (STREAK)</div><div class="kpi-sub">diese Woche: ${thisWeek.length} Sessions</div></div>
+    </div>`;
+  main.appendChild(kpiSection);
+
+  // ── PLAN PROGRESS BAR ────────────────────────────────────────────────────
+  const phases=[];let lp=null,si=0;
+  // build phases from history
+  const phaseVol={};
+  h.forEach(log=>{
+    let v=0;log.exercises.forEach(ex=>ex.sets.forEach(s=>{if(s.done)v+=(s.weight||0)*(s.reps||0);}));
+    phaseVol[log.phase]=(phaseVol[log.phase]||0)+v;
+  });
+
+  // figure out which phase blocks are done/active
+  const phaseNames=['Technik & Volumen','Kraft & Progression','Intensität','Peak & Volumen','Deload'];
+  const sessionsByPhase={};
+  h.forEach(l=>{sessionsByPhase[l.phase]=(sessionsByPhase[l.phase]||0)+1;});
+  const phaseDefs={
+    'Technik & Volumen':{total:6,short:'TECH'},
+    'Kraft & Progression':{total:6,short:'KRAFT'},
+    'Intensität':{total:6,short:'INT'},
+    'Peak & Volumen':{total:4,short:'PEAK'},
+    'Deload':{total:2,short:'DL'},
+  };
+
+  let phaseBlocksHtml='';
+  phaseNames.forEach(name=>{
+    const done=(sessionsByPhase[name]||0)>=(phaseDefs[name]?.total||4);
+    const active=(sessionsByPhase[name]||0)>0&&!done;
+    const cls=done?'done':active?'active':'';
+    phaseBlocksHtml+=`<div class="ph-block ${cls}">${phaseDefs[name]?.short||name.slice(0,4).toUpperCase()}</div>`;
+  });
+
+  const progSection = document.createElement('div');
+  progSection.innerHTML = `
+    <div class="plan-prog-wrap">
+      <div class="plan-prog-header">
+        <span class="plan-prog-lbl">PLAN PROGRESS — 12 WOCHEN</span>
+        <span class="plan-prog-pct">${pct}%</span>
+      </div>
+      <div class="plan-prog-track"><div class="plan-prog-fill" style="width:${pct}%"></div></div>
+      <div class="phase-blocks">${phaseBlocksHtml}</div>
+    </div>`;
+  main.appendChild(progSection);
+
+  // ── VOLUME + PHASE BREAKDOWN ─────────────────────────────────────────────
+  const volByWeek={};
+  h.forEach(log=>{
+    const k='W'+log.week;
+    let v=0;log.exercises.forEach(ex=>ex.sets.forEach(s=>{if(s.done)v+=(s.weight||0)*(s.reps||0);}));
+    volByWeek[k]=(volByWeek[k]||0)+v;
+  });
+  const wkLabels=Object.keys(volByWeek).sort((a,b)=>parseInt(a.slice(1))-parseInt(b.slice(1)));
+  const wkVals=wkLabels.map(k=>volByWeek[k]);
+  const maxVol=Math.max(...wkVals,1);
+
+  const phaseVolMax=Math.max(...Object.values(phaseVol),1);
+  let phaseRowsHtml='';
+  phaseNames.forEach(name=>{
+    const v=phaseVol[name]||0;
+    const pct2=Math.round(v/phaseVolMax*100);
+    const col=name==='Intensität'?'#e05555':name==='Peak & Volumen'?'#8a64ff':name==='Deload'?'#606060':'#FFB347';
+    phaseRowsHtml+=`
+      <div class="phase-row">
+        <span class="phase-name">${name.split(' & ')[0]}</span>
+        <div class="phase-track"><div class="phase-fill" style="width:${pct2}%;background:${col}"></div></div>
+        <span class="phase-val">${v>0?fmtVol(v):'—'}</span>
+      </div>`;
+  });
+
+  // A/B split counts
+  const aCount=h.filter(l=>l.workout==='A').length;
+  const bCount=h.filter(l=>l.workout==='B').length;
+
+  const row1 = document.createElement('div');
+  row1.className='grid-2-1';
+  row1.innerHTML=`
+    <div class="card">
+      <div class="card-head"><span class="card-title">WOCHENVOLUMEN (kg × Wdh.)</span><span class="card-hint">kumuliert pro Woche</span></div>
+      <div class="card-body"><div class="ch" style="height:200px"><canvas id="cVol"></canvas></div></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">VOLUMEN NACH PHASE</span></div>
+      <div class="card-body">
+        <div>${phaseRowsHtml}</div>
+        <div class="split-row">
+          <div class="split-card"><div class="split-num">${aCount}</div><div class="split-lbl">Workout A</div></div>
+          <div class="split-card"><div class="split-num">${bCount}</div><div class="split-lbl">Workout B</div></div>
+        </div>
+      </div>
+    </div>`;
+  main.appendChild(row1);
+
+  setTimeout(()=>{
+    destroyChart('cVol');
+    charts['cVol']=new Chart(document.getElementById('cVol'),{
+      type:'bar',
+      data:{labels:wkLabels,datasets:[{
+        data:wkVals,
+        backgroundColor:'rgba(255,179,71,.7)',
+        borderColor:'#FFB347',
+        borderWidth:1,borderRadius:4,borderSkipped:false
+      }]},
+      options:{...baseOpts(),scales:{...baseOpts().scales,
+        y:{...baseOpts().scales.y,ticks:{...TICK,callback:v=>v>=1000?Math.round(v/1000)+'t':v}}}}
+    });
+  },0);
+
+  // ── PRs + PROGRESSION + HEATMAP ─────────────────────────────────────────
+  // Build PR table with delta from start
+  const firstWeightMap={};
+  h.forEach(log=>{
+    log.exercises.forEach(ex=>{
+      if(!firstWeightMap[ex.name]){
+        const mx=Math.max(...ex.sets.map(s=>s.weight||0));
+        if(mx>0) firstWeightMap[ex.name]=mx;
+      }
+    });
+  });
+
+  let prHtml='';
+  const compoundEx=['Kniebeugen','Trap Bar Deadlift','KH-Bankdrücken','Seated Cable Row','Klimmzüge','Bulgarian Split Squats','Schrägbank KH-Drücken'];
+  const exOrder=[...compoundEx,...Object.keys(prMap).filter(k=>!compoundEx.includes(k))];
+  exOrder.filter(k=>prMap[k]).slice(0,10).forEach(name=>{
+    const cur=prMap[name]||0;
+    const first=firstWeightMap[name]||cur;
+    const delta=cur-first;
+    const deltaHtml=delta>0?`<span class="td-up">↑ +${delta}kg</span>`:delta<0?`<span class="td-dn">↓ ${delta}kg</span>`:`<span style="color:var(--t3);font-size:11px">—</span>`;
+    prHtml+=`<tr><td class="td-ex">${name}</td><td class="td-w">${cur} kg</td><td>${deltaHtml}</td></tr>`;
+  });
+  if(!prHtml) prHtml='<tr><td colspan="3" style="color:var(--t3);font-family:var(--fm);font-size:12px;padding:20px 0;text-align:center">Noch keine Daten</td></tr>';
+
+  // Exercise progression data
+  const exNames=[...new Set(h.flatMap(l=>l.exercises.map(e=>e.name)))].filter(n=>prMap[n]);
+  const firstEx=exNames[0]||'';
+  function getExData(name){
+    const pts=[];
+    h.forEach(log=>{
+      const ex=log.exercises.find(e=>e.name===name);
+      if(!ex)return;
+      const mx=Math.max(...ex.sets.map(s=>s.weight||0));
+      if(mx>0) pts.push({d:fmtDateShort(log.date),v:mx});
+    });
+    return pts;
+  }
+
+  // Weekday distribution
+  const wdCounts=[0,0,0,0,0,0,0]; // Mo-So
+  h.forEach(log=>{const d=new Date(log.date);const wd=(d.getDay()+6)%7;wdCounts[wd]++;});
+  const wdMax=Math.max(...wdCounts,1);
+  const wdLabels=['Mo','Di','Mi','Do','Fr','Sa','So'];
+  let wdBarsHtml='';
+  wdCounts.forEach((n,i)=>{
+    const pct3=Math.round(n/wdMax*100);
+    const col=pct3>60?'#FFB347':'rgba(255,179,71,.4)';
+    wdBarsHtml+=`<div class="wd-bar-col"><div class="wd-bar" style="height:${Math.max(pct3,4)}%;background:${col}"></div><span class="wd-lbl">${wdLabels[i]}</span></div>`;
+  });
+
+  const exBtnsHtml=exNames.slice(0,6).map(n=>`<button class="ex-btn${n===firstEx?' active':''}" onclick="switchEx(this,'${n}')">${n.split(' ').slice(0,2).join(' ')}</button>`).join('');
+
+  const row2 = document.createElement('div');
+  row2.className='grid-3';
+  row2.innerHTML=`
+    <div class="card">
+      <div class="card-head"><span class="card-title">PERSONAL RECORDS</span><span class="card-hint">Max-Gewicht je Übung</span></div>
+      <div class="card-body" style="padding:0 20px">
+        <table class="tbl">${prHtml}</table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">GEWICHTSPROGRESSION</span><span class="card-hint" id="progHint">${firstEx}</span></div>
+      <div class="card-body" style="padding-bottom:12px">
+        <div class="ch" style="height:180px"><canvas id="cProg"></canvas></div>
+        <div class="ex-btns">${exBtnsHtml}</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">AKTIVITÄTSMUSTER</span></div>
+      <div class="card-body">
+        <div style="font-family:var(--fm);font-size:10px;color:var(--t3);margin-bottom:8px;letter-spacing:.08em">SESSIONS PRO WOCHENTAG</div>
+        <div class="wd-bars">${wdBarsHtml}</div>
+        <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--bd)">
+          <div style="font-family:var(--fm);font-size:10px;color:var(--t3);margin-bottom:8px;letter-spacing:.08em">LETZTE 8 WOCHEN — AKTIVITÄT</div>
+          <div id="sparkRow" style="display:flex;gap:3px;flex-wrap:wrap"></div>
+          <div class="legend" style="margin-top:8px">
+            <div class="leg"><div class="leg-sq" style="background:#1c1c1c;border:1px solid #333"></div>0</div>
+            <div class="leg"><div class="leg-sq" style="background:rgba(255,179,71,.35)"></div>1</div>
+            <div class="leg"><div class="leg-sq" style="background:rgba(255,179,71,.7)"></div>2</div>
+            <div class="leg"><div class="leg-sq" style="background:#FFB347"></div>3+</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  main.appendChild(row2);
+
+  // spark dots — last 8 weeks × 7 days
+  setTimeout(()=>{
+    const sparkRow=document.getElementById('sparkRow');
+    const todayD=new Date();todayD.setHours(0,0,0,0);
+    for(let w=7;w>=0;w--){
+      const col=document.createElement('div');
+      col.style.cssText='display:flex;flex-direction:column;gap:2px';
+      for(let d=0;d<7;d++){
+        const dt=new Date(todayD);dt.setDate(todayD.getDate()-(w*7+(6-d)));
+        const iso=dt.toISOString().split('T')[0];
+        const n=h.filter(l=>l.date===iso).length;
+        const cell=document.createElement('div');
+        cell.style.cssText=`width:14px;height:14px;border-radius:2px;background:${n===0?'#1c1c1c':n===1?'rgba(255,179,71,.35)':n===2?'rgba(255,179,71,.7)':'#FFB347'};${n===0?'border:1px solid #2a2a2a':''}`;
+        cell.title=`${iso}: ${n} Session${n!==1?'s':''}`;
+        col.appendChild(cell);
+      }
+      sparkRow.appendChild(col);
+    }
+
+    // progression chart
+    destroyChart('cProg');
+    const initPts=getExData(firstEx);
+    window._progData={};
+    exNames.forEach(n=>{window._progData[n]=getExData(n);});
+
+    function buildProgChart(name){
+      destroyChart('cProg');
+      const pts=window._progData[name]||[];
+      document.getElementById('progHint').textContent=name;
+      charts['cProg']=new Chart(document.getElementById('cProg'),{
+        type:'line',
+        data:{labels:pts.map(p=>p.d),datasets:[{
+          data:pts.map(p=>p.v),
+          borderColor:'#FFB347',backgroundColor:'rgba(255,179,71,.06)',
+          borderWidth:2,pointBackgroundColor:'#FFB347',pointBorderColor:'#0c0c0c',
+          pointBorderWidth:2,pointRadius:pts.length>15?2:4,tension:.35,fill:true
+        }]},
+        options:baseOpts(' kg')
+      });
+    }
+    buildProgChart(firstEx);
+    window.switchEx=function(btn,name){
+      document.querySelectorAll('.ex-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      buildProgChart(name);
+    };
+  },0);
+
+  // ── DURATION TREND + RECENT SESSIONS ────────────────────────────────────
+  const durData=h.map((l,i)=>({x:'S'+(i+1),y:l.duration?Math.round(l.duration/60):null})).filter(p=>p.y);
+  const avgDurAll=durData.length>0?Math.round(durData.reduce((a,p)=>a+p.y,0)/durData.length):0;
+
+  const recentHtml=[...DATA.history].slice(0,8).map(log=>{
+    const dur=log.duration?Math.round(log.duration/60):null;
+    let v=0;log.exercises.forEach(ex=>ex.sets.forEach(s=>{if(s.done)v+=(s.weight||0)*(s.reps||0);}));
+    return`<tr>
+      <td class="td-d">${fmtDateShort(log.date)}</td>
+      <td class="td-ex">Workout ${log.workout} · ${log.phase.split(' ')[0]} W${log.week}</td>
+      <td class="td-g">${dur?dur+' min':'—'}</td>
+      <td class="td-w">${fmtVol(v)}</td>
+    </tr>`;
+  }).join('');
+
+  const row3=document.createElement('div');
+  row3.className='grid-2';
+  row3.innerHTML=`
+    <div class="card">
+      <div class="card-head"><span class="card-title">WORKOUT-DAUER (min)</span><span class="card-hint">Ø ${avgDurAll} min · alle Sessions</span></div>
+      <div class="card-body"><div class="ch" style="height:180px"><canvas id="cDur"></canvas></div></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">LETZTE SESSIONS</span><span class="card-hint">${DATA.history.length} total</span></div>
+      <div class="card-body" style="padding:0 20px">
+        <table class="tbl">
+          <tr style="border-bottom:1px solid #1c1c1c">
+            <td class="td-d" style="padding-bottom:8px">DATUM</td>
+            <td class="td-d" style="padding-bottom:8px">SESSION</td>
+            <td class="td-d" style="padding-bottom:8px;text-align:right">DAUER</td>
+            <td class="td-d" style="padding-bottom:8px;text-align:right">VOLUMEN</td>
+          </tr>
+          ${recentHtml||'<tr><td colspan="4" style="color:var(--t3);font-family:var(--fm);font-size:12px;padding:20px 0;text-align:center">Keine Sessions</td></tr>'}
+        </table>
+      </div>
+    </div>`;
+  main.appendChild(row3);
+
+  setTimeout(()=>{
+    destroyChart('cDur');
+    charts['cDur']=new Chart(document.getElementById('cDur'),{
+      type:'line',
+      data:{labels:durData.map(p=>p.x),datasets:[
+        {data:durData.map(p=>p.y),borderColor:'#4caf7d',backgroundColor:'rgba(76,175,125,.06)',
+          borderWidth:1.5,pointRadius:durData.length>20?1:3,pointBackgroundColor:'#4caf7d',
+          pointBorderColor:'#0c0c0c',pointBorderWidth:1,tension:.4,fill:true},
+        {data:durData.map(()=>avgDurAll),borderColor:'rgba(255,179,71,.35)',borderWidth:1,
+          borderDash:[5,4],pointRadius:0,fill:false}
+      ]},
+      options:{...baseOpts(' min'),plugins:{...baseOpts(' min').plugins,
+        tooltip:{...TT,callbacks:{label:c=>c.datasetIndex===0?` ${Math.round(c.parsed.y)} min`:` Ø ${Math.round(c.parsed.y)} min`}}}}
+    });
+  },0);
+}
+
+// ── IMPORT / EXPORT ──────────────────────────────────────────────────────────
+function openImport(){document.getElementById('importOverlay').classList.remove('hidden');}
+function closeImport(){document.getElementById('importOverlay').classList.add('hidden');}
+function confirmImport(){
+  const raw=document.getElementById('importTA').value.trim();
+  try{
+    const parsed=JSON.parse(raw);
+    if(!parsed.history)throw new Error('Kein history-Feld gefunden');
+    DATA=parsed;
+    localStorage.setItem('wt_v5',raw);
+    closeImport();
+    render();
+  }catch(e){alert('Ungültiges JSON: '+e.message);}
+}
+function exportJSON(){
+  const raw=localStorage.getItem('wt_v5');
+  if(!raw){alert('Keine Daten zum Exportieren.');return;}
+  const blob=new Blob([raw],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='workout-tracker-export-'+new Date().toISOString().split('T')[0]+'.json';
+  a.click();
+}
+
+// ── BOOT ─────────────────────────────────────────────────────────────────────
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeImport();});
+if(loadData()&&DATA.history&&DATA.history.length>0){
+  render();
+}else{
+  document.getElementById('topMeta').textContent='Keine Daten';
+}
+</script>
+</body>
+</html>
