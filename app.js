@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-//  IRONLOG — app.js
+//  WORKOUT TRACKER — app.js
 //  Stack: Vanilla JS + LocalStorage + Chart.js
 // ─────────────────────────────────────────────
 
@@ -10,7 +10,7 @@ const KEY_SETS    = 'ironlog_currentSets';
 
 // ─── WORKOUT PLAN ─────────────────────────────
 // Basiert auf deinen tatsächlichen Übungen aus dem Export.
-// Wadenheben wurde entfernt.
+// Wadenheben entfernt.
 const WORKOUTS = {
   A: [
     { name: 'Kniebeugen',       sets: 3, reps: 8,  defaultWeight: 70   },
@@ -48,7 +48,7 @@ function loadFromStorage() {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed)) state.history = parsed;
     }
-  } catch (e) { console.warn('History konnte nicht geladen werden:', e); }
+  } catch (e) { console.warn('History load failed:', e); }
 
   try {
     const raw = localStorage.getItem(KEY_WORKOUT);
@@ -57,7 +57,7 @@ function loadFromStorage() {
       if (parsed.currentWorkout) state.currentWorkout = parsed.currentWorkout;
       if (parsed.currentWeek)    state.currentWeek    = parsed.currentWeek;
     }
-  } catch (e) { console.warn('Workout-State konnte nicht geladen werden:', e); }
+  } catch (e) { console.warn('Workout state load failed:', e); }
 
   try {
     const raw = localStorage.getItem(KEY_SETS);
@@ -65,7 +65,7 @@ function loadFromStorage() {
       const parsed = JSON.parse(raw);
       if (parsed && typeof parsed === 'object') state.sets = parsed;
     }
-  } catch (e) { console.warn('Sets konnten nicht geladen werden:', e); }
+  } catch (e) { console.warn('Sets load failed:', e); }
 
   initSetsIfNeeded();
 }
@@ -84,18 +84,13 @@ function saveHistory() {
 
 // ─── MIGRATION AUS ALTEM EXPORT-FORMAT ────────
 //
-// Altes Format:
-//   { sessionIndex, sets: { "Übung__sessionIdx": [...] }, history: [...] }
-//
-// Neues Format:
-//   history: [{ id, date, workout, week, exercises: [{ name, sets }] }]
-//   currentWorkout / currentWeek / sets separat
+// Altes Format: { sessionIndex, sets: { "Übung__sessionIdx": [...] }, history: [...] }
+// Neues Format: ironlog_* keys
 //
 function importFromExport(exportData) {
   try {
     const data = typeof exportData === 'string' ? JSON.parse(exportData) : exportData;
 
-    // ── History migrieren ──
     if (Array.isArray(data.history)) {
       const migrated = data.history.map(log => ({
         id:        log.id  ?? Date.now() + Math.random(),
@@ -112,22 +107,15 @@ function importFromExport(exportData) {
           })),
         })),
       }));
-
-      // Chronologisch sortieren (älteste zuerst)
       migrated.sort((a, b) => new Date(a.date) - new Date(b.date));
       state.history = migrated;
     }
 
-    // ── Aktuellen Workout-Stand ableiten ──
-    // sessionIndex (gerade = A, ungerade = B)
     if (data.sessionIndex !== undefined) {
       state.currentWorkout = data.sessionIndex % 2 === 0 ? 'A' : 'B';
       state.currentWeek    = Math.floor(data.sessionIndex / 2) + 1;
     }
 
-    // ── Aktuelle Sets migrieren ──
-    // Altes Format: { "Übungsname__sessionIdx": [...] }
-    // Nur Sets des aktuellen sessionIndex übernehmen, Wadenheben ignorieren.
     const currentIdx = data.sessionIndex ?? 0;
     const newSets = {};
     if (data.sets && typeof data.sets === 'object') {
@@ -135,7 +123,6 @@ function importFromExport(exportData) {
         const lastDunder   = key.lastIndexOf('__');
         const sessionIdx   = parseInt(key.slice(lastDunder + 2), 10);
         const exerciseName = key.slice(0, lastDunder);
-
         if (sessionIdx === currentIdx && exerciseName !== 'Wadenheben') {
           newSets[exerciseName] = sets.map(s => ({
             weight: Number(s.weight) || 0,
@@ -150,10 +137,9 @@ function importFromExport(exportData) {
     initSetsIfNeeded();
     saveHistory();
     saveWorkoutState();
-
     return { success: true, sessions: state.history.length };
   } catch (e) {
-    console.error('Import fehlgeschlagen:', e);
+    console.error('Import failed:', e);
     return { success: false, error: e.message };
   }
 }
@@ -162,9 +148,7 @@ function importFromExport(exportData) {
 
 function initSetsIfNeeded() {
   WORKOUTS[state.currentWorkout].forEach(ex => {
-    if (!state.sets[ex.name]) {
-      state.sets[ex.name] = buildDefaultSets(ex);
-    }
+    if (!state.sets[ex.name]) state.sets[ex.name] = buildDefaultSets(ex);
   });
 }
 
@@ -187,18 +171,18 @@ function getLastWeight(exerciseName) {
 
 // ─── TAB NAVIGATION ──────────────────────────
 
-function switchTab(tab, btn) {
+function switchTab(tab) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('screen' + tab).classList.add('active');
-  btn.classList.add('active');
+  document.getElementById('nav' + tab).classList.add('active');
   if (tab === 'Progress') renderProgress();
 }
 
 // ─── HEADER DATE ─────────────────────────────
 
 function setHeaderDate() {
-  document.getElementById('headerDate').textContent = new Date().toLocaleDateString('de-DE', {
+  document.getElementById('headerDate').textContent = new Date().toLocaleDateString('en-GB', {
     weekday: 'short', day: 'numeric', month: 'short',
   });
 }
@@ -207,22 +191,37 @@ function setHeaderDate() {
 
 function renderHome() {
   const exercises = WORKOUTS[state.currentWorkout];
-  document.getElementById('homeContent').innerHTML = `
-    <div class="workout-header">
-      <div class="phase-badge">WOCHE ${state.currentWeek}</div>
-      <div class="workout-title">WORKOUT ${state.currentWorkout}</div>
-      <div class="workout-subtitle">${exercises.length} Übungen · ${totalSetsCount(exercises)} Sets</div>
-    </div>
-    ${exercises.map(ex => renderExerciseCard(ex)).join('')}
-    <button class="finish-btn" onclick="finishWorkout()">WORKOUT ABSCHLIESSEN</button>
-    <button class="import-btn" onclick="triggerImport()">↑ DATEN IMPORTIEREN</button>
-    <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="handleImportFile(this)" />
-  `;
-  updateAllRings();
-}
 
-function totalSetsCount(exercises) {
-  return exercises.reduce((sum, ex) => sum + ex.sets, 0);
+  // Badges & titles
+  document.getElementById('phaseBadge').textContent    = `WEEK ${state.currentWeek}`;
+  document.getElementById('workoutTitle').textContent  = `WORKOUT ${state.currentWorkout}`;
+  document.getElementById('workoutSubtitle').textContent =
+    `${exercises.length} exercises · ${exercises.reduce((s, e) => s + e.sets, 0)} sets`;
+
+  // Exercise list
+  document.getElementById('exerciseList').innerHTML =
+    exercises.map(ex => renderExerciseCard(ex)).join('');
+
+  // Inject import button into finish-zone if not yet there
+  let importBtn = document.getElementById('btnImport');
+  if (!importBtn) {
+    const zone = document.querySelector('.finish-zone');
+    importBtn = document.createElement('button');
+    importBtn.id = 'btnImport';
+    importBtn.className = 'btn-import';
+    importBtn.textContent = '↑ IMPORT DATA';
+    importBtn.onclick = triggerImport;
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.id = 'importFileInput';
+    fileInput.accept = '.json';
+    fileInput.style.display = 'none';
+    fileInput.onchange = e => handleImportFile(e.target);
+    zone.appendChild(importBtn);
+    zone.appendChild(fileInput);
+  }
+
+  updateAllRings();
 }
 
 function renderExerciseCard(exercise) {
@@ -230,15 +229,15 @@ function renderExerciseCard(exercise) {
   const doneCount = sets.filter(s => s.done).length;
   const circ      = 2 * Math.PI * 14;
   return `
-    <div class="exercise-card ${doneCount === sets.length ? 'completed' : ''}" id="card-${sanitizeId(exercise.name)}">
+    <div class="exercise-card ${doneCount === sets.length ? 'completed' : ''}" id="card-${sid(exercise.name)}">
       <div class="exercise-card-header">
         <div class="exercise-name">${exercise.name}</div>
         <div class="ring-wrap">
-          <div class="exercise-meta">${exercise.sets} × ${exercise.reps} Wdh</div>
+          <div class="exercise-meta">${exercise.sets} × ${exercise.reps} reps</div>
           <svg class="progress-ring" viewBox="0 0 32 32">
             <circle class="ring-bg"   cx="16" cy="16" r="14"/>
             <circle class="ring-fill" cx="16" cy="16" r="14"
-              id="ring-${sanitizeId(exercise.name)}"
+              id="ring-${sid(exercise.name)}"
               style="stroke-dasharray:${circ};stroke-dashoffset:${circ}"/>
           </svg>
         </div>
@@ -251,9 +250,9 @@ function renderExerciseCard(exercise) {
 }
 
 function renderSetRow(exerciseName, set, index) {
-  const sid = `${sanitizeId(exerciseName)}-${index}`;
+  const id = `${sid(exerciseName)}-${index}`;
   return `
-    <div class="set-row ${set.done ? 'done' : ''}" id="row-${sid}">
+    <div class="set-row ${set.done ? 'done' : ''}" id="row-${id}">
       <span class="set-num">${index + 1}</span>
       <div class="set-input-group">
         <input class="set-input" type="number" min="0" step="0.5"
@@ -267,10 +266,10 @@ function renderSetRow(exerciseName, set, index) {
           value="${set.reps}"
           onchange="updateSet('${exerciseName}', ${index}, 'reps', this.value)"
           inputmode="numeric" />
-        <span class="set-unit">Wdh</span>
+        <span class="set-unit">reps</span>
       </div>
       <button class="set-check ${set.done ? 'checked' : ''}"
-        id="chk-${sid}"
+        id="chk-${id}"
         onclick="toggleSet('${exerciseName}', ${index})">✓</button>
     </div>
   `;
@@ -296,15 +295,15 @@ function toggleSet(exerciseName, index) {
 }
 
 function patchSetRow(exerciseName, index) {
-  const set = state.sets[exerciseName][index];
-  const sid = `${sanitizeId(exerciseName)}-${index}`;
-  document.getElementById('row-' + sid)?.classList.toggle('done', set.done);
-  document.getElementById('chk-'  + sid)?.classList.toggle('checked', set.done);
+  const set  = state.sets[exerciseName][index];
+  const id   = `${sid(exerciseName)}-${index}`;
+  document.getElementById('row-' + id)?.classList.toggle('done', set.done);
+  document.getElementById('chk-'  + id)?.classList.toggle('checked', set.done);
 }
 
 function updateRing(exerciseName) {
   const sets = state.sets[exerciseName] ?? [];
-  const ring = document.getElementById('ring-' + sanitizeId(exerciseName));
+  const ring = document.getElementById('ring-' + sid(exerciseName));
   if (!ring) return;
   const circ = 2 * Math.PI * 14;
   ring.style.strokeDashoffset = circ - (sets.filter(s => s.done).length / sets.length) * circ;
@@ -316,7 +315,7 @@ function updateAllRings() {
 
 function updateCardComplete(exerciseName) {
   const sets = state.sets[exerciseName] ?? [];
-  document.getElementById('card-' + sanitizeId(exerciseName))
+  document.getElementById('card-' + sid(exerciseName))
     ?.classList.toggle('completed', sets.every(s => s.done));
 }
 
@@ -333,25 +332,25 @@ function handleImportFile(input) {
   reader.onload = e => {
     const result = importFromExport(e.target.result);
     if (result.success) {
-      showToast(`✓ ${result.sessions} Sessions importiert`);
+      showToast(`✓ ${result.sessions} sessions imported`);
       renderHome();
       renderHistory();
       renderProgress();
     } else {
-      showToast('Import fehlgeschlagen — ungültiges Format');
+      showToast('Import failed — invalid format');
     }
     input.value = '';
   };
   reader.readAsText(file);
 }
 
-// ─── FINISH WORKOUT ───────────────────────────
+// ─── FINISH / SKIP WORKOUT ───────────────────
 
 function finishWorkout() {
   const exercises = WORKOUTS[state.currentWorkout];
   const anyDone   = exercises.some(ex => (state.sets[ex.name] ?? []).some(s => s.done));
   if (!anyDone) {
-    showToast('Kein Set abgehakt — Workout nicht gespeichert.');
+    showToast('No sets checked — workout not saved.');
     return;
   }
 
@@ -370,7 +369,13 @@ function finishWorkout() {
   advanceWorkout();
   renderHome();
   renderHistory();
-  showToast('Workout gespeichert ✓');
+  showToast('Workout saved ✓');
+}
+
+function skipWorkout() {
+  advanceWorkout();
+  renderHome();
+  showToast('Skipped to next workout');
 }
 
 function advanceWorkout() {
@@ -391,22 +396,22 @@ function renderHistory() {
   if (state.history.length === 0) {
     list.innerHTML = '';
     empty.classList.remove('hidden');
-    count.textContent = '';
+    count.textContent = '0 sessions';
     return;
   }
 
   empty.classList.add('hidden');
-  count.textContent = `${state.history.length} Sessions`;
+  count.textContent = `${state.history.length} sessions`;
 
   list.innerHTML = [...state.history].reverse().map(log => {
     const vol = calcVolume(log);
     return `
-      <div class="history-item" onclick="openHistoryModal(${log.id})">
-        <div class="history-item-left">
-          <div class="history-tag">WOCHE ${log.week ?? '—'} · WORKOUT ${log.workout}${log.phase ? ' · ' + log.phase : ''}</div>
+      <div class="history-item" onclick="openModal(${log.id})">
+        <div>
+          <div class="history-tag">WEEK ${log.week ?? '—'} · WORKOUT ${log.workout}${log.phase ? ' · ' + log.phase : ''}</div>
           <div class="history-name">${formatDate(log.date)}</div>
           <div class="history-meta">${log.exercises?.map(e => e.name).join(', ') || ''}</div>
-          ${vol > 0 ? `<div class="history-meta" style="color:var(--accent);margin-top:2px">${vol.toLocaleString('de-DE')} kg Volumen</div>` : ''}
+          ${vol > 0 ? `<div class="history-meta" style="color:var(--accent);margin-top:2px">${vol.toLocaleString('en-GB')} kg volume</div>` : ''}
         </div>
         <span class="history-arrow">›</span>
       </div>
@@ -414,14 +419,12 @@ function renderHistory() {
   }).join('');
 }
 
-function openHistoryModal(id) {
+function openModal(id) {
   const log = state.history.find(l => l.id === id);
   if (!log) return;
 
-  document.getElementById('modalTag').textContent   = `WOCHE ${log.week ?? '—'} · WORKOUT ${log.workout}`;
+  document.getElementById('modalDate').textContent  = `WEEK ${log.week ?? '—'} · WORKOUT ${log.workout}`;
   document.getElementById('modalTitle').textContent = formatDate(log.date);
-  document.getElementById('modalSub').textContent   =
-    `${log.exercises?.length ?? 0} Übungen · ${calcVolume(log).toLocaleString('de-DE')} kg Volumen`;
 
   document.getElementById('modalBody').innerHTML = (log.exercises ?? []).map(ex => `
     <div class="modal-exercise">
@@ -430,7 +433,7 @@ function openHistoryModal(id) {
         <div class="modal-set-row">
           <span class="modal-set-num">${i + 1}</span>
           <span class="modal-set-weight">${s.weight} kg</span>
-          <span class="modal-set-reps">× ${s.reps} Wdh</span>
+          <span class="modal-set-reps">× ${s.reps} reps</span>
           <span class="modal-set-done" style="color:${s.done ? 'var(--success)' : 'var(--text-3)'}">
             ${s.done ? '✓' : '○'}
           </span>
@@ -449,13 +452,13 @@ function closeModal() {
 // ─── PROGRESS SCREEN ─────────────────────────
 
 let chartWeekly = null;
-let chartWeight = null;
+let chartExercise = null;
 
 function renderProgress() {
   renderStatTiles();
   renderWeeklyChart();
-  populateExerciseSelect();
-  renderWeightChart();
+  renderExerciseSelect();
+  renderExerciseChart();
 }
 
 function renderStatTiles() {
@@ -463,20 +466,23 @@ function renderStatTiles() {
   const thisWeek = workoutsThisWeek();
   const totalVol = state.history.reduce((s, l) => s + calcVolume(l), 0);
 
-  document.getElementById('statGrid').innerHTML = `
+  document.getElementById('statsRow').innerHTML = `
     <div class="stat-tile">
       <div class="stat-value">${total}</div>
-      <div class="stat-label">GESAMT</div>
+      <div class="stat-label">TOTAL</div>
     </div>
     <div class="stat-tile">
       <div class="stat-value">${thisWeek}</div>
-      <div class="stat-label">DIESE WOCHE</div>
+      <div class="stat-label">THIS WEEK</div>
     </div>
     <div class="stat-tile">
       <div class="stat-value">${formatVolume(totalVol)}</div>
-      <div class="stat-label">VOLUMEN</div>
+      <div class="stat-label">VOLUME</div>
     </div>
   `;
+
+  const isEmpty = state.history.length === 0;
+  document.getElementById('progressEmpty')?.classList.toggle('hidden', !isEmpty);
 }
 
 function workoutsThisWeek() {
@@ -485,19 +491,18 @@ function workoutsThisWeek() {
 }
 
 function renderWeeklyChart() {
-  const weeks    = last8Weeks();
-  const labels   = weeks.map(w => weekLabel(w.start));
-  const counts   = weeks.map(w => w.count);
+  const weeks  = last8Weeks();
+  const counts = weeks.map(w => w.count);
 
   if (chartWeekly) chartWeekly.destroy();
   chartWeekly = new Chart(document.getElementById('chartWeekly'), {
     type: 'bar',
     data: {
-      labels,
+      labels: weeks.map(w => weekLabel(w.start)),
       datasets: [{
         data:            counts,
-        backgroundColor: 'rgba(245,166,35,0.7)',
-        borderColor:     '#f5a623',
+        backgroundColor: 'rgba(255,179,71,0.7)',
+        borderColor:     '#FFB347',
         borderWidth:     1,
         borderRadius:    3,
       }],
@@ -506,7 +511,7 @@ function renderWeeklyChart() {
   });
 }
 
-function populateExerciseSelect() {
+function renderExerciseSelect() {
   const select  = document.getElementById('exerciseSelect');
   const current = select.value;
   const names   = new Set();
@@ -517,10 +522,9 @@ function populateExerciseSelect() {
   select.innerHTML = [...names].map(n =>
     `<option value="${n}" ${n === current ? 'selected' : ''}>${n}</option>`
   ).join('');
-  select.onchange = renderWeightChart;
 }
 
-function renderWeightChart() {
+function renderExerciseChart() {
   const exerciseName = document.getElementById('exerciseSelect').value;
   if (!exerciseName) return;
 
@@ -532,17 +536,17 @@ function renderWeightChart() {
       return { date: log.date, y: max };
     });
 
-  if (chartWeight) chartWeight.destroy();
-  chartWeight = new Chart(document.getElementById('chartWeight'), {
+  if (chartExercise) chartExercise.destroy();
+  chartExercise = new Chart(document.getElementById('chartExercise'), {
     type: 'line',
     data: {
       labels: points.map(p => formatDate(p.date)),
       datasets: [{
         data:                 points.map(p => p.y),
-        borderColor:          '#f5a623',
-        backgroundColor:      'rgba(245,166,35,0.08)',
+        borderColor:          '#FFB347',
+        backgroundColor:      'rgba(255,179,71,0.08)',
         borderWidth:          2,
-        pointBackgroundColor: '#f5a623',
+        pointBackgroundColor: '#FFB347',
         pointRadius:          4,
         tension:              0.3,
         fill:                 true,
@@ -561,11 +565,11 @@ function chartOptions(yLabel, yMax) {
     plugins: {
       legend: { display: false },
       tooltip: {
-        backgroundColor: '#1f1f1f',
-        borderColor:     '#3a3a3a',
+        backgroundColor: '#1c1c1c',
+        borderColor:     '#383838',
         borderWidth:     1,
-        titleColor:      '#999',
-        bodyColor:       '#f0f0f0',
+        titleColor:      '#909090',
+        bodyColor:       '#ffffff',
         titleFont:       { family: 'Share Tech Mono', size: 10 },
         bodyFont:        { family: 'Share Tech Mono', size: 12 },
         callbacks: { label: ctx => ctx.parsed.y + (yLabel ? ' ' + yLabel : '') },
@@ -574,12 +578,12 @@ function chartOptions(yLabel, yMax) {
     scales: {
       x: {
         grid:   { color: 'rgba(42,42,42,0.5)', drawTicks: false },
-        ticks:  { color: '#555', font: { family: 'Share Tech Mono', size: 10 }, maxRotation: 45 },
+        ticks:  { color: '#909090', font: { family: 'Share Tech Mono', size: 10 }, maxRotation: 45 },
         border: { color: '#2a2a2a' },
       },
       y: {
         grid:        { color: 'rgba(42,42,42,0.5)', drawTicks: false },
-        ticks:       { color: '#555', font: { family: 'Share Tech Mono', size: 10 }, stepSize: 1 },
+        ticks:       { color: '#909090', font: { family: 'Share Tech Mono', size: 10 }, stepSize: 1 },
         border:      { color: '#2a2a2a' },
         max:         yMax || undefined,
         beginAtZero: true,
@@ -618,12 +622,12 @@ function startOfWeek(date) {
 }
 
 function weekLabel(date) {
-  return date.toLocaleDateString('de-DE', { day: 'numeric', month: 'short' });
+  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
 }
 
 function formatDate(isoDate) {
   if (!isoDate) return '—';
-  return new Date(isoDate + 'T12:00:00').toLocaleDateString('de-DE', {
+  return new Date(isoDate + 'T12:00:00').toLocaleDateString('en-GB', {
     weekday: 'short', day: 'numeric', month: 'short',
   });
 }
@@ -632,7 +636,8 @@ function formatVolume(vol) {
   return vol >= 1000 ? (vol / 1000).toFixed(1) + 't' : vol + 'kg';
 }
 
-function sanitizeId(str) {
+// CSS-sicherer Bezeichner
+function sid(str) {
   return str.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9\-]/g, '').toLowerCase();
 }
 
@@ -655,6 +660,6 @@ document.addEventListener('DOMContentLoaded', () => {
   setHeaderDate();
   renderHome();
   renderHistory();
-  populateExerciseSelect();
+  renderExerciseSelect();
   renderProgress();
 });

@@ -1,115 +1,134 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#0f0f0f" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>IRONLOG</title>
+  <meta name="apple-mobile-web-app-title" content="Workout" />
+  <title>Workout Tracker</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="stylesheet" href="style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800&family=Barlow:wght@300;400;500&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
 </head>
 <body>
 
-  <!-- ── HEADER ── -->
+  <!-- HEADER -->
   <header class="app-header">
     <div class="header-inner">
       <div class="header-logo">
-        <span class="logo-mark">⬡</span>
-        <span class="logo-text">IRONLOG</span>
+        <span class="logo-text">WORKOUT TRACKER</span>
       </div>
-      <span class="header-date" id="headerDate"></span>
+      <div class="header-meta" id="headerMeta">
+        <span class="header-date" id="headerDate"></span>
+      </div>
     </div>
   </header>
 
-  <!-- ── MAIN ── -->
+  <!-- MAIN -->
   <main class="app-main" id="appMain">
 
-    <!-- HOME -->
+    <!-- HOME SCREEN -->
     <section class="screen active" id="screenHome">
-      <div class="screen-inner" id="homeContent"></div>
-    </section>
-
-    <!-- HISTORY -->
-    <section class="screen" id="screenHistory">
       <div class="screen-inner">
-        <div class="section-header">
-          <h2 class="section-title">VERLAUF</h2>
-          <span class="section-count" id="historyCount"></span>
+
+        <div class="workout-header">
+          <div class="phase-badge" id="phaseBadge">PHASE 1 · WEEK 1</div>
+          <h1 class="workout-title" id="workoutTitle">WORKOUT A</h1>
+          <p class="workout-subtitle" id="workoutSubtitle">Strength Block</p>
         </div>
-        <div id="historyList"></div>
-        <p class="empty-state hidden" id="historyEmpty">Noch keine Workouts gespeichert.</p>
+
+        <div class="exercise-list" id="exerciseList">
+          <!-- Rendered by JS -->
+        </div>
+
+        <div class="finish-zone">
+          <button class="btn-finish" id="btnFinish" onclick="finishWorkout()">
+            <span class="btn-finish-icon">✓</span>
+            <span class="btn-finish-label">FINISH WORKOUT</span>
+          </button>
+          <button class="btn-skip" onclick="skipWorkout()">Skip to next workout →</button>
+        </div>
+
       </div>
     </section>
 
-    <!-- PROGRESS -->
+    <!-- HISTORY SCREEN -->
+    <section class="screen" id="screenHistory">
+      <div class="screen-inner">
+
+        <div class="page-header">
+          <h2 class="page-title">HISTORY</h2>
+          <span class="page-count" id="historyCount">0 sessions</span>
+        </div>
+
+        <div class="history-list" id="historyList">
+          <!-- Rendered by JS -->
+        </div>
+
+        <div class="empty-state hidden" id="historyEmpty">
+          <div class="empty-icon">◈</div>
+          <p>No workouts logged yet.<br/>Finish your first session to see it here.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- PROGRESS SCREEN -->
     <section class="screen" id="screenProgress">
       <div class="screen-inner">
-        <div class="section-header">
-          <h2 class="section-title">FORTSCHRITT</h2>
+
+        <div class="page-header">
+          <h2 class="page-title">PROGRESS</h2>
         </div>
 
-        <!-- stat tiles -->
-        <div class="stat-grid" id="statGrid"></div>
+        <div class="chart-section">
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <span class="chart-label">WORKOUTS / WEEK</span>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="chartWeekly"></canvas>
+            </div>
+          </div>
 
-        <!-- weekly volume chart -->
-        <div class="chart-card">
-          <div class="chart-label">WORKOUTS / WOCHE</div>
-          <div class="chart-wrap">
-            <canvas id="chartWeekly"></canvas>
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <span class="chart-label">EXERCISE PROGRESS</span>
+              <select class="chart-select" id="exerciseSelect" onchange="renderExerciseChart()">
+              </select>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="chartExercise"></canvas>
+            </div>
+          </div>
+
+          <div class="stats-row" id="statsRow">
+            <!-- Rendered by JS -->
           </div>
         </div>
 
-        <!-- weight progression chart -->
-        <div class="chart-card">
-          <div class="chart-label-row">
-            <span class="chart-label">GEWICHTSPROGRESSION</span>
-            <select class="chart-select" id="exerciseSelect"></select>
-          </div>
-          <div class="chart-wrap">
-            <canvas id="chartWeight"></canvas>
-          </div>
+        <div class="empty-state hidden" id="progressEmpty">
+          <div class="empty-icon">◈</div>
+          <p>Complete workouts to track progress.</p>
         </div>
+
       </div>
     </section>
 
   </main>
 
-  <!-- ── BOTTOM NAV ── -->
-  <nav class="app-nav">
-    <div class="nav-inner">
-      <button class="nav-btn active" data-tab="Home" onclick="switchTab('Home', this)">
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
-        </svg>
-        <span class="nav-label">HOME</span>
-      </button>
-      <button class="nav-btn" data-tab="History" onclick="switchTab('History', this)">
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-        </svg>
-        <span class="nav-label">VERLAUF</span>
-      </button>
-      <button class="nav-btn" data-tab="Progress" onclick="switchTab('Progress', this)">
-        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
-        </svg>
-        <span class="nav-label">FORTSCHRITT</span>
-      </button>
-    </div>
-  </nav>
-
-  <!-- ── MODAL ── -->
+  <!-- WORKOUT DETAIL MODAL -->
   <div class="modal-overlay hidden" id="modalOverlay" onclick="closeModal()">
-    <div class="modal-card" onclick="event.stopPropagation()">
+    <div class="modal" onclick="event.stopPropagation()">
       <div class="modal-header">
         <div>
-          <div class="modal-tag" id="modalTag"></div>
+          <div class="modal-date" id="modalDate"></div>
           <div class="modal-title" id="modalTitle"></div>
-          <div class="modal-sub" id="modalSub"></div>
         </div>
         <button class="modal-close" onclick="closeModal()">✕</button>
       </div>
@@ -117,10 +136,34 @@
     </div>
   </div>
 
-  <!-- ── TOAST ── -->
+  <!-- TOAST -->
   <div class="toast hidden" id="toast"></div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" id="navHome" onclick="switchTab('Home')">
+      <span class="nav-icon">⊞</span>
+      <span class="nav-label">HOME</span>
+    </button>
+    <button class="nav-btn" id="navHistory" onclick="switchTab('History')">
+      <span class="nav-icon">◷</span>
+      <span class="nav-label">HISTORY</span>
+    </button>
+    <button class="nav-btn" id="navProgress" onclick="switchTab('Progress')">
+      <span class="nav-icon">↗</span>
+      <span class="nav-label">PROGRESS</span>
+    </button>
+  </nav>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
   <script src="app.js"></script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/workout-tracker/sw.js');
+      });
+    }
+  </script>
 </body>
 </html>
