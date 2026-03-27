@@ -17,118 +17,111 @@
 </head>
 <body>
 
-  <!-- HEADER -->
   <header class="app-header">
     <div class="header-inner">
-      <div class="header-logo">
-        <span class="logo-text">WORKOUT TRACKER</span>
-      </div>
-      <div class="header-meta" id="headerMeta">
-        <span class="header-date" id="headerDate"></span>
-      </div>
+      <span class="logo-text">WORKOUT TRACKER</span>
+      <span class="header-date" id="headerDate"></span>
     </div>
   </header>
 
-  <!-- MAIN -->
-  <main class="app-main" id="appMain">
+  <main class="app-main">
 
-    <!-- HOME SCREEN -->
+    <!-- HOME -->
     <section class="screen active" id="screenHome">
       <div class="screen-inner">
-
         <div class="workout-header">
-          <div class="phase-badge" id="phaseBadge">PHASE 1 · WEEK 1</div>
-          <h1 class="workout-title" id="workoutTitle">WORKOUT A</h1>
-          <p class="workout-subtitle" id="workoutSubtitle">Strength Block</p>
+          <div class="phase-badge" id="phaseBadge"></div>
+          <h1 class="workout-title" id="workoutTitle"></h1>
+          <p class="workout-subtitle" id="workoutSubtitle"></p>
         </div>
 
-        <div class="exercise-list" id="exerciseList">
-          <!-- Rendered by JS -->
+        <div class="plan-progress-card" id="planProgressCard">
+          <div class="plan-progress-top">
+            <span class="plan-progress-label">PLAN PROGRESS</span>
+            <span class="plan-progress-pct" id="planProgressPct">0%</span>
+          </div>
+          <div class="plan-progress-bar"><div class="plan-progress-fill" id="planProgressFill"></div></div>
+          <div class="phase-pills" id="phasePills"></div>
         </div>
+
+        <div id="exerciseList"></div>
 
         <div class="finish-zone">
-          <button class="btn-finish" id="btnFinish" onclick="finishWorkout()">
+          <button class="btn-finish" onclick="finishWorkout()">
             <span class="btn-finish-icon">✓</span>
-            <span class="btn-finish-label">FINISH WORKOUT</span>
+            <span>FINISH WORKOUT</span>
           </button>
-          <button class="btn-skip" onclick="skipWorkout()">Skip to next workout →</button>
+          <button class="btn-secondary" onclick="skipWorkout()">Skip to next workout →</button>
+          <button class="btn-secondary" id="btnImport" onclick="triggerImport()">↑ IMPORT DATA</button>
+          <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="handleImportFile(this)" />
         </div>
-
       </div>
     </section>
 
-    <!-- HISTORY SCREEN -->
+    <!-- HISTORY -->
     <section class="screen" id="screenHistory">
       <div class="screen-inner">
-
         <div class="page-header">
           <h2 class="page-title">HISTORY</h2>
           <span class="page-count" id="historyCount">0 sessions</span>
         </div>
-
-        <div class="history-list" id="historyList">
-          <!-- Rendered by JS -->
-        </div>
-
+        <div class="week-summary-card hidden" id="weekSummary"></div>
+        <div id="historyList"></div>
         <div class="empty-state hidden" id="historyEmpty">
           <div class="empty-icon">◈</div>
-          <p>No workouts logged yet.<br/>Finish your first session to see it here.</p>
+          <p>No workouts logged yet.</p>
         </div>
-
       </div>
     </section>
 
-    <!-- PROGRESS SCREEN -->
+    <!-- PLAN -->
+    <section class="screen" id="screenPlan">
+      <div class="screen-inner">
+        <div class="page-header">
+          <h2 class="page-title">PLAN</h2>
+          <button class="btn-rules" onclick="openRulesModal()">ⓘ REGELN</button>
+        </div>
+        <div id="planList"></div>
+      </div>
+    </section>
+
+    <!-- PROGRESS -->
     <section class="screen" id="screenProgress">
       <div class="screen-inner">
-
         <div class="page-header">
           <h2 class="page-title">PROGRESS</h2>
         </div>
-
-        <div class="chart-section">
-          <div class="chart-card">
-            <div class="chart-card-header">
-              <span class="chart-label">WORKOUTS / WEEK</span>
-            </div>
-            <div class="chart-wrap">
-              <canvas id="chartWeekly"></canvas>
-            </div>
+        <div class="stats-row" id="statsRow"></div>
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <span class="chart-label">WORKOUTS / WEEK</span>
           </div>
-
-          <div class="chart-card">
-            <div class="chart-card-header">
-              <span class="chart-label">EXERCISE PROGRESS</span>
-              <select class="chart-select" id="exerciseSelect" onchange="renderExerciseChart()">
-              </select>
-            </div>
-            <div class="chart-wrap">
-              <canvas id="chartExercise"></canvas>
-            </div>
-          </div>
-
-          <div class="stats-row" id="statsRow">
-            <!-- Rendered by JS -->
-          </div>
+          <div class="chart-wrap"><canvas id="chartWeekly"></canvas></div>
         </div>
-
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <span class="chart-label">EXERCISE PROGRESS</span>
+            <select class="chart-select" id="exerciseSelect" onchange="renderExerciseChart()"></select>
+          </div>
+          <div class="chart-wrap"><canvas id="chartExercise"></canvas></div>
+        </div>
         <div class="empty-state hidden" id="progressEmpty">
           <div class="empty-icon">◈</div>
           <p>Complete workouts to track progress.</p>
         </div>
-
       </div>
     </section>
 
   </main>
 
-  <!-- WORKOUT DETAIL MODAL -->
+  <!-- MODAL: workout detail -->
   <div class="modal-overlay hidden" id="modalOverlay" onclick="closeModal()">
     <div class="modal" onclick="event.stopPropagation()">
       <div class="modal-header">
         <div>
           <div class="modal-date" id="modalDate"></div>
           <div class="modal-title" id="modalTitle"></div>
+          <div class="modal-sub" id="modalSub"></div>
         </div>
         <button class="modal-close" onclick="closeModal()">✕</button>
       </div>
@@ -136,10 +129,30 @@
     </div>
   </div>
 
-  <!-- TOAST -->
+  <!-- MODAL: progression rules -->
+  <div class="modal-overlay hidden" id="rulesOverlay" onclick="closeRulesModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <div class="modal-date">PROGRESSIONSREGELN</div>
+          <div class="modal-title">Wie du stärker wirst</div>
+        </div>
+        <button class="modal-close" onclick="closeRulesModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="rules-body">
+          <div class="rule-item"><span class="rule-phase">Technik & Volumen</span><p>Fokus auf saubere Bewegungsausführung. Leichte Progression von Woche zu Woche. RIR 3-4.</p></div>
+          <div class="rule-item"><span class="rule-phase">Kraft</span><p>Gewicht erhöhen wenn alle Sets im Rep-Range abgeschlossen. RIR 2-3.</p></div>
+          <div class="rule-item"><span class="rule-phase">Intensität</span><p>Höhere Intensität, weniger Reps. Progressive Überlastung. RIR 1-2.</p></div>
+          <div class="rule-item"><span class="rule-phase">Peak</span><p>Maximale Intensität. Nur wenn technisch sauber erhöhen. RIR 0-1.</p></div>
+          <div class="rule-item"><span class="rule-phase">Deload</span><p>Gewicht -40%, Reps normal. Aktive Erholung.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="toast hidden" id="toast"></div>
 
-  <!-- BOTTOM NAV -->
   <nav class="bottom-nav">
     <button class="nav-btn active" id="navHome" onclick="switchTab('Home')">
       <span class="nav-icon">⊞</span>
@@ -149,6 +162,10 @@
       <span class="nav-icon">◷</span>
       <span class="nav-label">HISTORY</span>
     </button>
+    <button class="nav-btn" id="navPlan" onclick="switchTab('Plan')">
+      <span class="nav-icon">≡</span>
+      <span class="nav-label">PLAN</span>
+    </button>
     <button class="nav-btn" id="navProgress" onclick="switchTab('Progress')">
       <span class="nav-icon">↗</span>
       <span class="nav-label">PROGRESS</span>
@@ -157,7 +174,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
   <script src="app.js"></script>
-
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
