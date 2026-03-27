@@ -518,3 +518,38 @@ body {
   .bottom-nav { display: flex; }
   .bottom-nav > * { max-width: 100%; }
 }
+
+/* ── PLAN PHASE COLORS ── */
+.plan-phase-card.phase-orange .plan-phase-name { color: #FFB347; }
+.plan-phase-card.phase-orange.active-phase     { border-color: rgba(255,179,71,0.35); background: rgba(255,179,71,0.04); }
+
+.plan-phase-card.phase-green .plan-phase-name  { color: #4caf7d; }
+.plan-phase-card.phase-green.active-phase      { border-color: rgba(76,175,125,0.35); background: rgba(76,175,125,0.04); }
+
+.plan-phase-card.phase-red .plan-phase-name    { color: #e05555; }
+.plan-phase-card.phase-red.active-phase        { border-color: rgba(224,85,85,0.35); background: rgba(224,85,85,0.04); }
+
+.plan-phase-card.phase-purple .plan-phase-name { color: #9b6dff; }
+.plan-phase-card.phase-purple.active-phase     { border-color: rgba(155,109,255,0.35); background: rgba(155,109,255,0.04); }
+
+.plan-phase-card.phase-gray .plan-phase-name   { color: var(--text-3); }
+.plan-phase-card.phase-gray.active-phase       { border-color: var(--border-hi); }
+
+/* ── PLAN WEEK BADGE: AUSSTEHEND ── */
+.plan-week-badge.pending {
+  border: 1px solid var(--border);
+  color: var(--text-3);
+  font-family: var(--fm);
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: transparent;
+  white-space: nowrap;
+}
+
+/* Current week card: orange border */
+.plan-week-card.current-week {
+  border-color: var(--acc-bdr);
+  background: rgba(255,179,71,0.03);
+}

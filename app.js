@@ -17,26 +17,31 @@ const PHASES = [
     id: 'TEC', name: 'Technik & Volumen', weeks: [1,2,3],
     desc: 'Bewegungsmuster einschleifen, Basisvolumen aufbauen',
     rir: '3-4', progression: 'Leichte Progression',
+    color: 'phase-orange',
   },
   {
     id: 'KRA', name: 'Kraft & Progression', weeks: [4,5,6],
-    desc: 'Progressiv schwerer werden, Kraftbasis aufbauen',
+    desc: 'Laststeigerung bei Compound-Übungen, 4 Sätze',
     rir: '2-3', progression: 'Moderate Progression',
+    color: 'phase-green',
   },
   {
     id: 'INT', name: 'Intensität', weeks: [7,8,9],
-    desc: 'Höhere Intensität, maximale Anpassung',
+    desc: 'Maximale Intensität, reduzierte Wiederholungen',
     rir: '1-2', progression: 'Starke Progression',
+    color: 'phase-red',
   },
   {
     id: 'PEA', name: 'Peak & Volumen', weeks: [10,11],
-    desc: 'Maximale Leistung abrufen',
+    desc: 'Kombination Stärke + Hypertrophie, höchste Last',
     rir: '0-1', progression: 'Nur wenn technisch sauber',
+    color: 'phase-purple',
   },
   {
     id: 'DEL', name: 'Deload', weeks: [12],
-    desc: 'Aktive Erholung, Gewicht -40%',
+    desc: '60–70% Volumen, aktive Regeneration',
     rir: '4-5', progression: 'Gewicht reduzieren',
+    color: 'phase-gray',
   },
 ];
 
@@ -810,70 +815,45 @@ function closeRulesModal() { document.getElementById('rulesOverlay').classList.a
 // ─── PLAN TAB ─────────────────────────────────
 
 function renderPlan() {
-  const week    = currentWeek();
-  const workout = currentWorkout();
-  const phase   = currentPhase();
+  const week  = currentWeek();
+  const phase = currentPhase();
 
   document.getElementById('planList').innerHTML = PHASES.map(p => {
-    const isActive = p.id === phase.id;
-    const isDone   = p.weeks[p.weeks.length - 1] < week;
+    const isActivePhase = p.id === phase.id;
+    const isPhaseDone   = p.weeks[p.weeks.length - 1] < week;
 
     const weeksHTML = p.weeks.map(w => {
-      const isCurrent = w === week;
+      const isCurrent  = w === week;
       const isWeekDone = w < week;
-      const weekSessions = state.history.filter(l => l.week === w);
+      const weekStart  = (w - 1) * 3;
+      const wkPattern  = [0,1,2].map(i => sessionPattern(weekStart + i));
 
-      // Which workouts in this week?
-      const weekStart = (w - 1) * 3;
-      const wkPattern = [0,1,2].map(i => sessionPattern(weekStart + i));
-
-      let badge = '';
-      if (isWeekDone)  badge = `<span class="plan-week-badge done">✓ DONE</span>`;
-      if (isCurrent)   badge = `<span class="plan-week-badge current">AKTUELL</span>`;
-
-      const bodyHTML = (isCurrent || isWeekDone) ? `
-        <div class="plan-week-body">
-          <div class="plan-rir-row">
-            <span class="plan-rir-badge">RIR ${p.rir}</span>
-            <span class="plan-rir-label">${p.progression}</span>
-          </div>
-          ${['A','B'].map(wo => `
-            <div class="plan-workout-section">
-              <div class="plan-workout-label">WORKOUT ${wo}</div>
-              ${exercisesFor(w, wo).map(ex => `
-                <div class="plan-exercise-row">
-                  <span class="plan-exercise-name">${ex.name}</span>
-                  <span class="plan-exercise-range">${ex.sets} × ${ex.repRange}</span>
-                </div>
-              `).join('')}
-            </div>
-          `).join('')}
-        </div>
-      ` : '';
+      let badge = `<span class="plan-week-badge pending">AUSSTEHEND</span>`;
+      if (isWeekDone) badge = `<span class="plan-week-badge done">✓ DONE</span>`;
+      if (isCurrent)  badge = `<span class="plan-week-badge current">AKTUELL</span>`;
 
       return `
         <div class="plan-week-card ${isCurrent ? 'current-week' : ''}">
           <div class="plan-week-header">
             <div>
-              <div class="plan-week-title">WOCHE ${w}</div>
+              <div class="plan-week-title ${isCurrent ? 'current-title' : ''}">${isCurrent ? `<span style="color:var(--acc)">WOCHE ${w}</span>` : `WOCHE ${w}`}</div>
               <div class="plan-week-sub">3 Workouts · ${wkPattern.map(x => 'Workout ' + x).join(', ')}</div>
             </div>
             ${badge}
           </div>
-          ${bodyHTML}
         </div>
       `;
     }).join('');
 
     return `
-      <div class="plan-phase-card ${isActive ? 'active-phase' : ''}">
+      <div class="plan-phase-card ${isActivePhase ? 'active-phase' : ''} ${p.color}">
         <div class="plan-phase-header">
-          <div class="plan-phase-name ${isActive ? 'active-color' : ''}">${p.name.toUpperCase()}</div>
+          <div class="plan-phase-name">${p.name.toUpperCase()}</div>
           <div class="plan-phase-weeks">Wochen ${p.weeks[0]}–${p.weeks[p.weeks.length-1]}</div>
         </div>
         <div class="plan-phase-desc">${p.desc}</div>
         ${weeksHTML}
-        <div style="height:8px"></div>
+        <div style="height:6px"></div>
       </div>
     `;
   }).join('');
