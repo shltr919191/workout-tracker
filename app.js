@@ -16,32 +16,49 @@ const PHASES = [
   {
     id: 'TEC', name: 'Technik & Volumen', weeks: [1,2,3],
     desc: 'Bewegungsmuster einschleifen, Basisvolumen aufbauen',
-    rir: '3-4', progression: 'Leichte Progression',
     color: 'phase-orange',
+    weekMeta: {
+      1: { rir: '3-4', progression: 'Bewegungsmuster, konservativ' },
+      2: { rir: '3-4', progression: 'Leichte Progression' },
+      3: { rir: '3-4', progression: 'Leichte Progression' },
+    },
   },
   {
     id: 'KRA', name: 'Kraft & Progression', weeks: [4,5,6],
     desc: 'Laststeigerung bei Compound-Übungen, 4 Sätze',
-    rir: '2-3', progression: 'Moderate Progression',
     color: 'phase-green',
+    weekMeta: {
+      4: { rir: '2-3', progression: 'Gewicht erhöhen wenn möglich' },
+      5: { rir: '2-3', progression: 'Moderate Progression' },
+      6: { rir: '2-3', progression: 'Moderate Progression' },
+    },
   },
   {
     id: 'INT', name: 'Intensität', weeks: [7,8,9],
     desc: 'Maximale Intensität, reduzierte Wiederholungen',
-    rir: '1-2', progression: 'Starke Progression',
     color: 'phase-red',
+    weekMeta: {
+      7: { rir: '1-2', progression: 'Starke Progression' },
+      8: { rir: '1-2', progression: 'Starke Progression' },
+      9: { rir: '1-2', progression: 'Nahe Muskelversagen' },
+    },
   },
   {
     id: 'PEA', name: 'Peak & Volumen', weeks: [10,11],
     desc: 'Kombination Stärke + Hypertrophie, höchste Last',
-    rir: '0-1', progression: 'Nur wenn technisch sauber',
     color: 'phase-purple',
+    weekMeta: {
+      10: { rir: '0-1', progression: 'Maximale Last' },
+      11: { rir: '0-1', progression: 'Nur wenn technisch sauber' },
+    },
   },
   {
     id: 'DEL', name: 'Deload', weeks: [12],
-    desc: '60–70% Volumen, aktive Regeneration',
-    rir: '4-5', progression: 'Gewicht reduzieren',
+    desc: '60–70 % Volumen, aktive Regeneration',
     color: 'phase-gray',
+    weekMeta: {
+      12: { rir: '4+', progression: '-30–40 % Last, Regeneration' },
+    },
   },
 ];
 
@@ -814,33 +831,69 @@ function closeRulesModal() { document.getElementById('rulesOverlay').classList.a
 
 // ─── PLAN TAB ─────────────────────────────────
 
+// Tracks which weeks are expanded in the plan tab
+const expandedWeeks = new Set();
+
 function renderPlan() {
   const week  = currentWeek();
   const phase = currentPhase();
 
+  // Auto-expand current week and done weeks on first render
+  if (expandedWeeks.size === 0) {
+    for (let w = 1; w < week; w++) expandedWeeks.add(w);  // all done weeks
+    expandedWeeks.add(week);                               // current week
+  }
+
   document.getElementById('planList').innerHTML = PHASES.map(p => {
     const isActivePhase = p.id === phase.id;
-    const isPhaseDone   = p.weeks[p.weeks.length - 1] < week;
 
     const weeksHTML = p.weeks.map(w => {
       const isCurrent  = w === week;
       const isWeekDone = w < week;
       const weekStart  = (w - 1) * 3;
       const wkPattern  = [0,1,2].map(i => sessionPattern(weekStart + i));
+      const isOpen     = expandedWeeks.has(w);
+      const meta       = p.weekMeta[w] || { rir: '—', progression: '' };
 
       let badge = `<span class="plan-week-badge pending">AUSSTEHEND</span>`;
       if (isWeekDone) badge = `<span class="plan-week-badge done">✓ DONE</span>`;
       if (isCurrent)  badge = `<span class="plan-week-badge current">AKTUELL</span>`;
 
+      const bodyHTML = isOpen ? `
+        <div class="plan-week-body">
+          <div class="plan-rir-row">
+            <span class="plan-rir-badge">RIR ${meta.rir}</span>
+            <span class="plan-rir-label">${meta.progression}</span>
+          </div>
+          ${['A','B'].map(wo => `
+            <div class="plan-workout-section">
+              <div class="plan-workout-label">WORKOUT ${wo}</div>
+              ${exercisesFor(w, wo).map(ex => `
+                <div class="plan-exercise-row">
+                  <span class="plan-exercise-name">${ex.name}</span>
+                  <span class="plan-exercise-range">${ex.sets} × ${ex.repRange}</span>
+                </div>
+              `).join('')}
+            </div>
+          `).join('')}
+        </div>
+      ` : '';
+
+      const titleHTML = isCurrent
+        ? `<span style="color:var(--acc);font-family:var(--fd),sans-serif;font-weight:800;font-size:16px;letter-spacing:.06em">WOCHE ${w}</span>`
+        : `WOCHE ${w}`;
+
       return `
-        <div class="plan-week-card ${isCurrent ? 'current-week' : ''}">
+        <div class="plan-week-card ${isCurrent ? 'current-week' : ''} ${isOpen ? 'open' : ''}"
+             onclick="toggleWeek(${w})">
           <div class="plan-week-header">
             <div>
-              <div class="plan-week-title ${isCurrent ? 'current-title' : ''}">${isCurrent ? `<span style="color:var(--acc)">WOCHE ${w}</span>` : `WOCHE ${w}`}</div>
+              <div class="plan-week-title">${titleHTML}</div>
               <div class="plan-week-sub">3 Workouts · ${wkPattern.map(x => 'Workout ' + x).join(', ')}</div>
             </div>
             ${badge}
           </div>
+          ${bodyHTML}
         </div>
       `;
     }).join('');
@@ -857,6 +910,15 @@ function renderPlan() {
       </div>
     `;
   }).join('');
+}
+
+function toggleWeek(w) {
+  if (expandedWeeks.has(w)) {
+    expandedWeeks.delete(w);
+  } else {
+    expandedWeeks.add(w);
+  }
+  renderPlan();
 }
 
 // ─── PROGRESS ─────────────────────────────────

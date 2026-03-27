@@ -553,3 +553,39 @@ body {
   border-color: var(--acc-bdr);
   background: rgba(255,179,71,0.03);
 }
+
+/* ── PLAN WEEK ACCORDION ── */
+.plan-week-card { cursor: pointer; }
+.plan-week-card:active { opacity: 0.85; }
+
+.plan-week-body {
+  padding: 0 12px 12px;
+  border-top: 1px solid var(--border);
+  margin-top: 2px;
+}
+.plan-rir-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 0 10px;
+}
+.plan-rir-badge {
+  font-family: var(--fm); font-size: 9px; letter-spacing: .06em;
+  padding: 3px 8px; border-radius: 3px;
+  border: 1px solid var(--acc-bdr); color: var(--acc);
+  white-space: nowrap;
+}
+.plan-rir-label {
+  font-family: var(--fm); font-size: 11px;
+  color: var(--text-3); font-style: italic;
+}
+.plan-workout-section { margin-bottom: 10px; }
+.plan-workout-label {
+  font-family: var(--fm); font-size: 9px; letter-spacing: .1em;
+  color: var(--acc); margin-bottom: 5px;
+}
+.plan-exercise-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 5px 0; border-bottom: 1px solid var(--border);
+}
+.plan-exercise-row:last-child { border-bottom: none; }
+.plan-exercise-name { font-size: 14px; color: var(--text-2); }
+.plan-exercise-range { font-family: var(--fm); font-size: 11px; color: var(--text-3); }
