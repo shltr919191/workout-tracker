@@ -12,7 +12,7 @@ const DEFAULT_WEIGHTS = {
   'Kniebeugen':               60,
   'KH-Bankdrücken':           24,
   'Klimmzüge':                 0,
-  'Seitheben Kabel':           8,
+  'Schulterdrücken KH':       16,
   'Leg Curls':                30,
   'Incline KH-Curls':         12,
   'Face Pulls':               15,
@@ -21,8 +21,8 @@ const DEFAULT_WEIGHTS = {
   'Seated Cable Row':         50,
   'Schrägbank KH-Drücken':   20,
   'Bulgarian Split Squats':   20,
+  'Seitheben Kabel':           8,
   'Trizeps Pushdowns':        20,
-  'Wadenheben':               40,
 };
 const REST_DEFAULT = 90; // seconds
 
@@ -739,6 +739,41 @@ function chartOpts({ yMax, yLabel } = {}) {
       y: { grid: { color: 'rgba(42,42,42,.5)', drawTicks: false }, ticks: { color: '#555', font: { family: 'Share Tech Mono', size: 10 }, stepSize: 1 }, border: { color: '#2a2a2a' }, max: yMax || undefined, beginAtZero: true },
     },
   };
+}
+
+
+// ─── IMPORT ──────────────────────────────────
+function openImportModal() {
+  document.getElementById('importModalOverlay').classList.remove('hidden');
+  document.getElementById('importTextarea').value = '';
+  document.getElementById('importError').textContent = '';
+}
+
+function closeImportModal() {
+  document.getElementById('importModalOverlay').classList.add('hidden');
+}
+
+function confirmImport() {
+  const raw = document.getElementById('importTextarea').value.trim();
+  const errEl = document.getElementById('importError');
+  errEl.textContent = '';
+  try {
+    const parsed = JSON.parse(raw);
+    if (typeof parsed.sessionIndex === 'undefined' || !Array.isArray(parsed.history)) {
+      throw new Error('Ungültiges Format — sessionIndex oder history fehlt.');
+    }
+    state.sessionIndex = parsed.sessionIndex || 0;
+    state.sets         = parsed.sets || {};
+    state.history      = parsed.history || [];
+    saveToStorage();
+    closeImportModal();
+    renderHome();
+    renderHistory();
+    renderProgress();
+    showToast('DATEN IMPORTIERT ✓');
+  } catch(e) {
+    errEl.textContent = 'Fehler: ' + e.message;
+  }
 }
 
 // ─── EXPORT ──────────────────────────────────

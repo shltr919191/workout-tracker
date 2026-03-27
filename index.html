@@ -82,7 +82,10 @@
 
         <div class="page-header">
           <h2 class="page-title">HISTORY</h2>
-          <span class="page-count" id="historyCount">0 sessions</span>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="page-count" id="historyCount">0 sessions</span>
+            <button class="info-btn" onclick="openImportModal()">↑ IMPORT</button>
+          </div>
         </div>
 
         <!-- Weekly Summary Card -->
@@ -205,6 +208,37 @@
         <button class="modal-close" onclick="closeInfoModal()">✕</button>
       </div>
       <div class="modal-body" id="infoModalBody"></div>
+    </div>
+  </div>
+
+
+  <!-- IMPORT MODAL -->
+  <div class="modal-overlay hidden" id="importModalOverlay" onclick="closeImportModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <div class="modal-date">DATEN</div>
+          <div class="modal-title">IMPORT</div>
+        </div>
+        <button class="modal-close" onclick="closeImportModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-family:var(--font-mono);font-size:11px;color:var(--text-3);margin-bottom:12px;line-height:1.6">
+          Exportierte JSON-Datei öffnen, den gesamten Inhalt kopieren und hier einfügen.
+        </p>
+        <textarea id="importTextarea"
+          placeholder='{"sessionIndex":5,"sets":{},"history":[...]}'
+          style="width:100%;height:140px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-1);font-family:var(--font-mono);font-size:11px;padding:10px 12px;resize:none;outline:none;box-sizing:border-box;"
+          onfocus="this.style.borderColor='var(--accent)'"
+          onblur="this.style.borderColor='var(--border)'"></textarea>
+        <div id="importError" style="font-family:var(--font-mono);font-size:11px;color:#e05555;margin-top:6px;min-height:16px;"></div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px">
+          <button class="btn-skip" onclick="closeImportModal()">Abbrechen</button>
+          <button class="btn-finish" style="width:auto;padding:12px 24px;font-size:14px;" onclick="confirmImport()">
+            <span>↑</span><span>IMPORTIEREN</span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
