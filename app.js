@@ -701,42 +701,77 @@ function chartOpts({ yMax, yLabel } = {}) {
 
 
 // ─── IMPORT ──────────────────────────────────
+let _importParsed = null; // staged data, waiting for confirm
+
 function openImportModal() {
+  _importParsed = null;
   document.getElementById('importModalOverlay').classList.remove('hidden');
   document.getElementById('importFileInput').value = '';
+  document.getElementById('importFileName').textContent = '';
   document.getElementById('importError').textContent = '';
+  _setImportBtnEnabled(false);
 }
 
 function closeImportModal() {
+  _importParsed = null;
   document.getElementById('importModalOverlay').classList.add('hidden');
+}
+
+function _setImportBtnEnabled(enabled) {
+  const btn = document.getElementById('importConfirmBtn');
+  if (!btn) return;
+  btn.style.opacity        = enabled ? '1'    : '.4';
+  btn.style.pointerEvents  = enabled ? 'auto' : 'none';
 }
 
 function handleImportFile(input) {
   const file = input.files[0];
+  const errEl      = document.getElementById('importError');
+  const nameEl     = document.getElementById('importFileName');
+  errEl.textContent  = '';
+  nameEl.textContent = '';
+  _importParsed      = null;
+  _setImportBtnEnabled(false);
+
   if (!file) return;
-  document.getElementById('importError').textContent = '';
-  document.getElementById('importFileName').textContent = file.name;
+
   const reader = new FileReader();
-  reader.onload = e => {
+  reader.onerror = () => {
+    errEl.textContent = 'Datei konnte nicht gelesen werden.';
+  };
+  reader.onload = function(e) {
     try {
       const parsed = JSON.parse(e.target.result);
       if (typeof parsed.sessionIndex === 'undefined' || !Array.isArray(parsed.history)) {
         throw new Error('Ungültiges Format — sessionIndex oder history fehlt.');
       }
-      state.sessionIndex = parsed.sessionIndex || 0;
-      state.sets         = parsed.sets || {};
-      state.history      = parsed.history || [];
-      saveToStorage();
-      closeImportModal();
-      renderHome();
-      renderHistory();
-      renderProgress();
-      showToast('DATEN IMPORTIERT ✓');
+      _importParsed      = parsed;
+      nameEl.textContent = file.name + ' · ' + parsed.history.length + ' Sessions';
+      _setImportBtnEnabled(true);
     } catch(err) {
-      document.getElementById('importError').textContent = 'Fehler: ' + err.message;
+      errEl.textContent = 'Fehler: ' + err.message;
     }
   };
   reader.readAsText(file);
+}
+
+function confirmImport() {
+  if (!_importParsed) return;
+  const errEl = document.getElementById('importError');
+  try {
+    state.sessionIndex = _importParsed.sessionIndex || 0;
+    state.sets         = _importParsed.sets         || {};
+    state.history      = _importParsed.history      || [];
+    saveToStorage();
+    closeImportModal();
+    renderHome();
+    renderHistory();
+    populateExerciseSelect();
+    renderProgress();
+    showToast('DATEN IMPORTIERT ✓');
+  } catch(err) {
+    errEl.textContent = 'Import fehlgeschlagen: ' + err.message;
+  }
 }
 
 // ─── EXPORT ──────────────────────────────────
