@@ -24,7 +24,6 @@ const DEFAULT_WEIGHTS = {
   'Seitheben Kabel':           8,
   'Trizeps Pushdowns':        20,
 };
-const REST_DEFAULT = 90; // seconds
 
 // ─── GLOBALS ─────────────────────────────────
 let SESSIONS = [];
@@ -39,10 +38,6 @@ let state = {
 // Timer state
 let durationStart   = null;
 let durationTimer   = null;
-let restTotal       = REST_DEFAULT;
-let restRemaining   = REST_DEFAULT;
-let restInterval    = null;
-
 let chartWeekly  = null;
 let chartExercise = null;
 
@@ -169,39 +164,6 @@ function fmtDuration(secs) {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-// ─── REST TIMER ──────────────────────────────
-function startRestTimer(duration = REST_DEFAULT) {
-  stopRestTimer();
-  restTotal     = duration;
-  restRemaining = duration;
-  document.getElementById('restTimerOverlay').classList.remove('hidden');
-  updateRestDisplay();
-  restInterval = setInterval(() => {
-    restRemaining--;
-    updateRestDisplay();
-    if (restRemaining <= 0) stopRestTimer();
-  }, 1000);
-}
-function updateRestDisplay() {
-  document.getElementById('restTimerDisplay').textContent = restRemaining;
-  const circ   = 2 * Math.PI * 54; // r=54
-  const offset = circ * (1 - restRemaining / restTotal);
-  document.getElementById('restRingFill').style.strokeDashoffset = offset;
-  // Pulse colour when low
-  const fill = document.getElementById('restRingFill');
-  if (restRemaining <= 10) fill.style.stroke = '#e05555';
-  else                      fill.style.stroke = '#FFB347';
-}
-function stopRestTimer() {
-  clearInterval(restInterval);
-  restInterval = null;
-  document.getElementById('restTimerOverlay').classList.add('hidden');
-}
-function adjustRestTimer(delta) {
-  restRemaining = Math.max(5, restRemaining + delta);
-  restTotal     = Math.max(restTotal, restRemaining);
-  updateRestDisplay();
-}
 
 // ─── PLAN PROGRESS ───────────────────────────
 function renderPlanProgress() {
@@ -359,8 +321,6 @@ function toggleSet(btn) {
   row.classList.toggle('completed', isDone);
   btn.textContent = isDone ? '✓' : '';
 
-  // Start rest timer after completing a set
-  if (isDone) startRestTimer(REST_DEFAULT);
 
   const all  = state.sets[k];
   const done = all.filter(s => s.done).length;
@@ -392,7 +352,6 @@ function finishWorkout() {
   });
 
   if (state.sessionIndex < SESSIONS.length - 1) state.sessionIndex++;
-  stopRestTimer();
   saveToStorage();
   showToast('WORKOUT SAVED ✓');
   renderHome();
@@ -401,7 +360,6 @@ function finishWorkout() {
 function skipWorkout() {
   if (!confirm('Skip this workout?')) return;
   stopDurationTimer();
-  stopRestTimer();
   if (state.sessionIndex < SESSIONS.length - 1) state.sessionIndex++;
   saveToStorage();
   renderHome();
@@ -745,7 +703,7 @@ function chartOpts({ yMax, yLabel } = {}) {
 // ─── IMPORT ──────────────────────────────────
 function openImportModal() {
   document.getElementById('importModalOverlay').classList.remove('hidden');
-  document.getElementById('importTextarea').value = '';
+  document.getElementById('importFileInput').value = '';
   document.getElementById('importError').textContent = '';
 }
 
@@ -753,27 +711,32 @@ function closeImportModal() {
   document.getElementById('importModalOverlay').classList.add('hidden');
 }
 
-function confirmImport() {
-  const raw = document.getElementById('importTextarea').value.trim();
-  const errEl = document.getElementById('importError');
-  errEl.textContent = '';
-  try {
-    const parsed = JSON.parse(raw);
-    if (typeof parsed.sessionIndex === 'undefined' || !Array.isArray(parsed.history)) {
-      throw new Error('Ungültiges Format — sessionIndex oder history fehlt.');
+function handleImportFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  document.getElementById('importError').textContent = '';
+  document.getElementById('importFileName').textContent = file.name;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      if (typeof parsed.sessionIndex === 'undefined' || !Array.isArray(parsed.history)) {
+        throw new Error('Ungültiges Format — sessionIndex oder history fehlt.');
+      }
+      state.sessionIndex = parsed.sessionIndex || 0;
+      state.sets         = parsed.sets || {};
+      state.history      = parsed.history || [];
+      saveToStorage();
+      closeImportModal();
+      renderHome();
+      renderHistory();
+      renderProgress();
+      showToast('DATEN IMPORTIERT ✓');
+    } catch(err) {
+      document.getElementById('importError').textContent = 'Fehler: ' + err.message;
     }
-    state.sessionIndex = parsed.sessionIndex || 0;
-    state.sets         = parsed.sets || {};
-    state.history      = parsed.history || [];
-    saveToStorage();
-    closeImportModal();
-    renderHome();
-    renderHistory();
-    renderProgress();
-    showToast('DATEN IMPORTIERT ✓');
-  } catch(e) {
-    errEl.textContent = 'Fehler: ' + e.message;
-  }
+  };
+  reader.readAsText(file);
 }
 
 // ─── EXPORT ──────────────────────────────────
@@ -806,7 +769,7 @@ function injectWeightHintStyle() {
 
 // ─── BOOT ────────────────────────────────────
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeModal(); stopRestTimer(); }
+  if (e.key === 'Escape') { closeModal(); }
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
