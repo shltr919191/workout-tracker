@@ -336,6 +336,18 @@ body {
 }
 .btn-finish:hover::after { opacity: 1; }
 .btn-finish:active { transform: scale(0.98); }
+
+/* START WORKOUT — outlined style, distinct from FINISH */
+.btn-start {
+  background: transparent;
+  border: 2px solid var(--accent);
+  color: var(--accent);
+}
+.btn-start:hover::after { opacity: 0; }
+.btn-start:hover {
+  background: var(--accent-glow);
+}
+
 .btn-finish-icon {
   font-size: 18px;
   line-height: 1;

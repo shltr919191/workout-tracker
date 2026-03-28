@@ -30,9 +30,10 @@ let SESSIONS = [];
 let PHASE_INFO = {};
 let PROG_RULES = [];
 let state = {
-  sessionIndex: 0,
-  sets:         {},
-  history:      [],
+  sessionIndex:   0,
+  sets:           {},
+  history:        [],
+  workoutStarted: false,
 };
 
 // Timer state
@@ -45,9 +46,10 @@ let chartExercise = null;
 function saveToStorage() {
   try {
     localStorage.setItem('wt_v5', JSON.stringify({
-      sessionIndex: state.sessionIndex,
-      sets:         state.sets,
-      history:      state.history,
+      sessionIndex:   state.sessionIndex,
+      sets:           state.sets,
+      history:        state.history,
+      workoutStarted: state.workoutStarted,
     }));
   } catch(e) {}
 }
@@ -56,9 +58,10 @@ function loadFromStorage() {
     const saved = localStorage.getItem('wt_v5');
     if (saved) {
       const p = JSON.parse(saved);
-      state.sessionIndex = p.sessionIndex || 0;
-      state.sets         = p.sets         || {};
-      state.history      = p.history      || [];
+      state.sessionIndex   = p.sessionIndex   || 0;
+      state.sets           = p.sets           || {};
+      state.history        = p.history        || [];
+      state.workoutStarted = p.workoutStarted || false;
     }
   } catch(e) {}
 }
@@ -239,6 +242,9 @@ function renderHome() {
     exercises.map((ex, ei) => renderCard(ex, ei)).join('');
 
   renderPlanProgress();
+  renderFinishZone();
+  // Resume timer if workout was already started (e.g. after page reload)
+  if (state.workoutStarted && !durationTimer) startDurationTimer();
   attachListeners();
 }
 
@@ -313,8 +319,7 @@ function toggleSet(btn) {
   state.sets[k][si].done = !state.sets[k][si].done;
   saveToStorage();
 
-  // Start duration timer on first set check
-  if (state.sets[k][si].done && !durationTimer) startDurationTimer();
+  // Timer is started via START WORKOUT button, not on first set
 
   const row    = document.getElementById(`row-${ei}-${si}`);
   const isDone = state.sets[k][si].done;
@@ -331,7 +336,34 @@ function toggleSet(btn) {
   card.classList.toggle('all-done', done === all.length);
 }
 
-// ─── FINISH ──────────────────────────────────
+// ─── START / FINISH ──────────────────────────
+function startWorkout() {
+  state.workoutStarted = true;
+  saveToStorage();
+  startDurationTimer();
+  renderFinishZone();
+}
+
+function renderFinishZone() {
+  const zone = document.getElementById('finishZone');
+  if (!zone) return;
+  if (state.workoutStarted) {
+    zone.innerHTML = `
+      <button class="btn-finish" onclick="finishWorkout()">
+        <span class="btn-finish-icon">✓</span>
+        <span class="btn-finish-label">FINISH WORKOUT</span>
+      </button>
+      <button class="btn-skip" onclick="skipWorkout()">Skip to next workout →</button>`;
+  } else {
+    zone.innerHTML = `
+      <button class="btn-finish btn-start" onclick="startWorkout()">
+        <span class="btn-finish-icon">▶</span>
+        <span class="btn-finish-label">START WORKOUT</span>
+      </button>
+      <button class="btn-skip" onclick="skipWorkout()">Skip to next workout →</button>`;
+  }
+}
+
 function finishWorkout() {
   const { phase, week, workout, exercises } = currentSession();
   const duration = stopDurationTimer();
@@ -352,6 +384,7 @@ function finishWorkout() {
   });
 
   if (state.sessionIndex < SESSIONS.length - 1) state.sessionIndex++;
+  state.workoutStarted = false;
   saveToStorage();
   showToast('WORKOUT SAVED ✓');
   renderHome();
@@ -360,6 +393,7 @@ function finishWorkout() {
 function skipWorkout() {
   if (!confirm('Skip this workout?')) return;
   stopDurationTimer();
+  state.workoutStarted = false;
   if (state.sessionIndex < SESSIONS.length - 1) state.sessionIndex++;
   saveToStorage();
   renderHome();
