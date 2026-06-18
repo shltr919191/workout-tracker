@@ -130,6 +130,29 @@ function setHeaderDate() {
     .toUpperCase();
 }
 
+// ─── THEME ───────────────────────────────────
+function applyTheme(theme) {
+  if (theme === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+  }
+  const moonIcon = document.getElementById('themeIconMoon');
+  const sunIcon  = document.getElementById('themeIconSun');
+  if (moonIcon) moonIcon.style.display = theme === 'light' ? 'none' : '';
+  if (sunIcon)  sunIcon.style.display  = theme === 'light' ? '' : 'none';
+}
+function initTheme() {
+  const saved = localStorage.getItem('wt_theme') || 'dark';
+  applyTheme(saved);
+  const btn = document.getElementById('themeToggle');
+  if (btn) btn.addEventListener('click', () => {
+    const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    localStorage.setItem('wt_theme', next);
+    applyTheme(next);
+  });
+}
+
 // ─── WEIGHT SUGGESTION ───────────────────────
 // Returns the last logged weight for an exercise, or defaultWeight
 function suggestedWeight(exName, defaultWeight) {
@@ -850,6 +873,7 @@ document.addEventListener('keydown', e => {
 document.addEventListener('DOMContentLoaded', async () => {
   loadFromStorage();
   setHeaderDate();
+  initTheme();
   injectWeightHintStyle();
   await loadProgram();
   renderHome();
