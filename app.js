@@ -8,21 +8,30 @@
 
 // ─── CONFIG ──────────────────────────────────
 const DEFAULT_WEIGHTS = {
-  // Workout A
-  'Kniebeugen':               60,
-  'KH-Bankdrücken':           24,
-  'Klimmzüge':                 0,
-  'Schulterdrücken KH':       16,
-  'Leg Curls':                30,
-  'Incline KH-Curls':         12,
-  'Face Pulls':               15,
-  // Workout B
-  'Trap Bar Deadlift':       100,
-  'Seated Cable Row':         50,
-  'Schrägbank KH-Drücken':   20,
-  'Bulgarian Split Squats':   20,
-  'Seitheben Kabel':           8,
-  'Trizeps Pushdowns':        20,
+  // Oberkörper A
+  'KH-Bankdrücken (Flachbank)':   22,
+  'Rudern vorgebeugt (LH/Kabel)': 40,
+  'Schulterdrücken (Kurzhantel)': 16,
+  'Klimmzüge / Latzug':            0,
+  'Bizeps-Curl':                  12,
+  'Trizeps-Pushdown':             20,
+  // Unterkörper A
+  'Kniebeuge':                    60,
+  'Trapbar-Kreuzheben':           80,
+  'Bulgarian Split Squat':        16,
+  'Wadenheben':                   30,
+  // Oberkörper B
+  'KH-Schrägbankdrücken':         20,
+  'Latzug breit':                 45,
+  'Seitheben':                     8,
+  'Face Pulls':                   15,
+  'Hammer-Curl':                  12,
+  'Dips / Trizeps':                0,
+  // Unterkörper B
+  'Frontkniebeuge':               40,
+  'Beinpresse':                   80,
+  'Reverse Lunge (Rückwärts-Ausfallschritt)': 14,
+  'Beinbeuger (liegend/sitzend)': 30,
 };
 
 // ─── GLOBALS ─────────────────────────────────
@@ -220,7 +229,7 @@ function renderHome() {
   const { phase, week, workout, exercises } = sess;
 
   document.getElementById('phaseBadge').textContent     = `${phase.toUpperCase()} · WEEK ${week}`;
-  document.getElementById('workoutTitle').textContent    = `WORKOUT ${workout}`;
+  document.getElementById('workoutTitle').textContent    = workout.toUpperCase();
   document.getElementById('workoutSubtitle').textContent =
     `Session ${state.sessionIndex + 1} of ${SESSIONS.length}`;
 
@@ -418,7 +427,7 @@ function renderHistory() {
     <div class="history-item" id="hist-${i}">
       <div class="history-item-left" onclick="openHistoryModal(${i})" style="flex:1;cursor:pointer;">
         <div class="history-item-date">${formatDate(log.date)}</div>
-        <div class="history-item-name">WORKOUT ${log.workout}</div>
+        <div class="history-item-name">${log.workout.toUpperCase()}</div>
         <div class="history-item-meta">${log.exercises.length} exercises · ${log.phase}, Wk ${log.week}</div>
         ${dur}
       </div>
@@ -479,7 +488,7 @@ function openHistoryModal(idx) {
   const log = state.history[idx]; if (!log) return;
   document.getElementById('modalDate').textContent  = formatDate(log.date);
   document.getElementById('modalTitle').textContent =
-    `WORKOUT ${log.workout} · ${log.phase}, Wk ${log.week}`;
+    `${log.workout.toUpperCase()} · ${log.phase}, Wk ${log.week}`;
   const durLine = log.duration
     ? `<div style="font-family:var(--font-mono);font-size:11px;color:var(--text-3);margin-bottom:12px">◷ ${fmtDuration(log.duration)}</div>`
     : '';
@@ -530,10 +539,7 @@ function renderPlan() {
   const currentIdx    = state.sessionIndex;
 
   const phaseClass = p =>
-    p === 'Technik & Volumen'  ? 'hyp'  :
-    p === 'Kraft & Progression'? 'str'  :
-    p === 'Intensität'         ? 'int'  :
-    p === 'Peak & Volumen'     ? 'peak' : 'deload';
+    p === 'Fettabbau-Block' ? 'str' : 'deload';
 
   container.innerHTML = phases.map(p => {
     const info     = PHASE_INFO[p.phase] || {};
@@ -559,7 +565,7 @@ function renderPlan() {
 
       const workoutSections = sessions.map(s => `
         <div class="plan-workout-section">
-          <div class="plan-workout-label">WORKOUT ${s.workout}</div>
+          <div class="plan-workout-label">${s.workout.toUpperCase()}</div>
           ${s.exercises.map(ex =>
             `<div class="plan-ex-row">
               <span class="plan-ex-name">${ex.name}</span>
@@ -570,7 +576,7 @@ function renderPlan() {
 
       const metaRow = (rir || focus) ? `
         <div class="plan-week-meta-row">
-          ${rir   ? `<span class="plan-meta-pill rir">RIR ${rir}</span>` : ''}
+          ${rir   ? `<span class="plan-meta-pill rir">${rir}</span>` : ''}
           ${focus ? `<span class="plan-meta-focus">${focus}</span>` : ''}
         </div>` : '';
 
@@ -579,7 +585,7 @@ function renderPlan() {
           <div class="plan-week-header" onclick="togglePlanWeek(this)">
             <div>
               <div class="plan-week-label">WOCHE ${week}</div>
-              <div class="plan-week-meta">${sessions.length} Workouts · ${sessions.map(s => 'Workout ' + s.workout).join(', ')}</div>
+              <div class="plan-week-meta">${sessions.length} Workouts · ${sessions.map(s => s.workout).join(', ')}</div>
             </div>
             <span class="plan-week-badge ${badgeCls}">${badgeTxt}</span>
           </div>
