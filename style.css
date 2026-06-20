@@ -15,6 +15,9 @@
   --accent-glow:rgba(255,179,71,0.12);
   --success:    #4caf7d;
   --success-dim:rgba(76,175,125,0.12);
+  --superset:     #34c9dd;
+  --superset-dim: #1f96a8;
+  --superset-glow:rgba(52,201,221,0.12);
   --text-1:     #ffffff;
   --text-2:     #d8d0c4;
   --text-3:     #909090;
@@ -44,6 +47,9 @@
   --accent-glow:rgba(156,92,0,0.10);
   --success:    #267a4e;
   --success-dim:rgba(38,122,78,0.10);
+  --superset:     #0e7c86;
+  --superset-dim: #0a5d65;
+  --superset-glow:rgba(14,124,134,0.10);
   --text-1:     #18140f;
   --text-2:     #4a443c;
   --text-3:     #756e62;
@@ -224,6 +230,22 @@ body {
 }
 .exercise-card.all-done {
   border-color: rgba(76,175,125,0.35);
+}
+.exercise-card.superset {
+  border-left: 3px solid var(--superset);
+}
+.superset-tag {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--superset);
+  background: var(--superset-glow);
+  border: 1px solid var(--superset-dim);
+  border-radius: 3px;
+  padding: 1px 5px;
+  vertical-align: middle;
 }
 .exercise-card-header {
   display: flex;
@@ -989,6 +1011,7 @@ body {
   border-bottom: 1px solid rgba(42,42,42,.6);
 }
 .plan-ex-row:last-child { border-bottom: none; }
+.plan-ex-row.superset { border-left: 2px solid var(--superset); padding-left: 8px; }
 .plan-ex-name {
   font-family: var(--font-body);
   font-size: 13px;

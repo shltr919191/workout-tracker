@@ -10,19 +10,25 @@
     }
   },
   "progression_rules": [
+    "Wochenstruktur: Mo Oberkörper A · Di Unterkörper A (Squat-Tag + HIIT) · Do Oberkörper B · Fr Unterkörper B (Deadlift-Tag + HIIT).",
+    "Beide Drucktage laufen über Kurzhantel (nie Langhantel), Kreuzheben über die Trapbar.",
     "Progressive Overload: Hauptübungen +2,5 kg oder +1 Wdh./Satz, wenn die obere Wiederholungsgrenze sauber bei RPE ≤7 erreicht wird.",
-    "Woche 1: 4×8 Hauptübungen RPE 7, 3×12 Nebenübungen RPE 7 — Lasten festlegen, technisch saubere Ausführung.",
-    "Woche 2: 4×8 Hauptübungen RPE 8, 3×12 Nebenübungen RPE 8 — Last steigern (+2,5 kg oder +1 Wdh./Satz).",
-    "Woche 3: 4×6 Hauptübungen RPE 8–9, 3×10 Nebenübungen + Drop-Set auf der letzten Übung RPE 8–9 — schwerste Woche.",
-    "Woche 4 (Deload): 2×6 Hauptübungen RPE 6, 2×12 Nebenübungen RPE 6 — Volumen halbiert, locker.",
+    "RPE/RIR: RPE 7 ≈ 3 Wdh. in Reserve · RPE 8 ≈ 2 · RPE 8–9 ≈ 1 — Last über das Reservepolster steuern.",
+    "Woche 1: Hauptübungen 4×8 RPE 7, Nebenübungen 3×12 RPE 7 — Lasten festlegen, technisch saubere Ausführung.",
+    "Woche 2: Hauptübungen 4×8 RPE 8, Nebenübungen 3×12 RPE 8 — Last steigern (+2,5 kg oder +1 Wdh./Satz).",
+    "Woche 3: Hauptübungen 4×5–6 RPE 8–9 (~3 min Pause), Nebenübungen 3×10 + Drop-Set auf der letzten Übung RPE 8–9 — schwerste Woche.",
+    "Woche 4 (Deload): Hauptübungen 2×6 RPE 6, Nebenübungen 2×12 RPE 6 — Volumen halbiert, locker.",
+    "Bei Oberkörper zählen die ersten zwei Übungen als Hauptübungen (Kurzhantel-Drücken + Zug/Rudern), bei Unterkörper nur der schwere Anker (Kniebeuge bzw. Trapbar-Kreuzheben).",
+    "Box Jump Squats (Unterkörper A) sind fixes Plyo-Pensum 3×4, explosiv, frisch direkt vor den Kniebeugen ausgeführt — keine RPE-Progression, in der Deload-Woche auf 2×4 reduziert.",
+    "Supersets: Bizeps-Curl + Trizeps-Pushdown (Oberkörper A), Hammer-Curl + Dips (Oberkörper B) — Pause dazwischen kurz halten.",
     "HIIT-Finisher nur an den Beintagen (Di/Fr): W1 8min 15s/45s · W2 10min 15s/45s · W3 10min 20s/40s (härter) · W4 6min 15s/60s locker.",
     "Pausen: Hauptübungen 2–3 min, Nebenübungen/Supersets 60–90 s.",
     "Tempo: Exzentrik (ablassen) kontrolliert ~2–3 s – schützt die Muskeln und erhöht den Reiz ohne mehr Gewicht.",
-    "Rad-Hinweis: Lange Touren nicht direkt nach einem Beintag. Bei großer Tour am Wochenende: Unterkörper B auf Donnerstag schieben oder lockerer fahren.",
+    "Rad-Hinweis: Beide Beintage sind axial belastend – möglichst weit auseinander legen. Deadlift-Tag (UK B) von der längsten Tour fernhalten (Rückenermüdung); bei langem Klettertag stattdessen den Squat-Tag (UK A) verschieben. Lifts nur an leichten Radtagen, nie direkt vor einer Schlüsselausfahrt.",
     "Eiweiß zu jeder Hauptmahlzeit priorisieren – wichtigster Hebel im Defizit, um Muskeln zu halten.",
     "7–8h Schlaf und Alltagsschritte wirken stärker auf den Fettabbau als jedes Extra-Cardio.",
     "Defizit moderat halten – zu aggressiv kostet Kraft, Regeneration und Muskeln, gerade neben dem Radvolumen.",
-    "Nach den 4 Wochen: Bei stabiler Kraft und sichtbarer Definition den Block 1:1 wiederholen (höhere Startlasten) oder auf 3× Ganzkörper wechseln, falls das Radvolumen im Hochsommer steigt."
+    "Nach den 4 Wochen: Bei stabiler Kraft und sichtbarer Definition den Block 1:1 wiederholen (höhere Startlasten) oder im Hochsommer bei viel Radvolumen auf 3× Ganzkörper wechseln. Der schwere Kraft- und Plyo-Block für maximale Pedalleistung gehört in den Winter, wenn die Radlast niedrig ist."
   ],
   "weeks": [
     {
@@ -34,19 +40,20 @@
         {
           "name": "Oberkörper A",
           "exercises": [
+            { "exercise": "Klimmzüge", "sets_reps": "4x8" },
             { "exercise": "KH-Bankdrücken (Flachbank)", "sets_reps": "4x8" },
-            { "exercise": "Rudern vorgebeugt (LH/Kabel)", "sets_reps": "4x8" },
+            { "exercise": "Rudern vorgebeugt (LH/Kabel)", "sets_reps": "3x12" },
             { "exercise": "Schulterdrücken (Kurzhantel)", "sets_reps": "3x12" },
-            { "exercise": "Klimmzüge / Latzug", "sets_reps": "3x12" },
-            { "exercise": "Bizeps-Curl", "sets_reps": "3x12" },
-            { "exercise": "Trizeps-Pushdown", "sets_reps": "3x12" }
+            { "exercise": "Bizeps-Curl", "sets_reps": "3x12", "superset": "A" },
+            { "exercise": "Trizeps-Pushdown", "sets_reps": "3x12", "superset": "A" }
           ]
         },
         {
-          "name": "Unterkörper A + HIIT",
+          "name": "Unterkörper A · Squat-Tag + HIIT",
           "exercises": [
+            { "exercise": "Box Jump Squats", "sets_reps": "3x4" },
             { "exercise": "Kniebeuge", "sets_reps": "4x8" },
-            { "exercise": "Trapbar-Kreuzheben", "sets_reps": "4x8" },
+            { "exercise": "Beinpresse", "sets_reps": "3x12" },
             { "exercise": "Bulgarian Split Squat", "sets_reps": "3x12" },
             { "exercise": "Wadenheben", "sets_reps": "3x12" },
             { "exercise": "HIIT-Finisher (Bike/Rudergerät) · 15s hart/45s locker", "sets_reps": "1x8min" }
@@ -59,17 +66,17 @@
             { "exercise": "Latzug breit", "sets_reps": "4x8" },
             { "exercise": "Seitheben", "sets_reps": "3x12" },
             { "exercise": "Face Pulls", "sets_reps": "3x12" },
-            { "exercise": "Hammer-Curl", "sets_reps": "3x12" },
-            { "exercise": "Dips / Trizeps", "sets_reps": "3x12" }
+            { "exercise": "Hammer-Curl", "sets_reps": "3x12", "superset": "A" },
+            { "exercise": "Dips / Trizeps", "sets_reps": "3x12", "superset": "A" }
           ]
         },
         {
-          "name": "Unterkörper B + HIIT",
+          "name": "Unterkörper B · Deadlift-Tag + HIIT",
           "exercises": [
-            { "exercise": "Frontkniebeuge", "sets_reps": "4x8" },
-            { "exercise": "Beinpresse", "sets_reps": "4x8" },
-            { "exercise": "Reverse Lunge (Rückwärts-Ausfallschritt)", "sets_reps": "3x12" },
+            { "exercise": "Trapbar-Kreuzheben", "sets_reps": "4x8" },
             { "exercise": "Beinbeuger (liegend/sitzend)", "sets_reps": "3x12" },
+            { "exercise": "Step-up", "sets_reps": "3x12" },
+            { "exercise": "Wadenheben", "sets_reps": "3x12" },
             { "exercise": "HIIT-Finisher (Sprints/Bike) · 15s hart/45s locker", "sets_reps": "1x8min" }
           ]
         }
@@ -84,19 +91,20 @@
         {
           "name": "Oberkörper A",
           "exercises": [
+            { "exercise": "Klimmzüge", "sets_reps": "4x8" },
             { "exercise": "KH-Bankdrücken (Flachbank)", "sets_reps": "4x8" },
-            { "exercise": "Rudern vorgebeugt (LH/Kabel)", "sets_reps": "4x8" },
+            { "exercise": "Rudern vorgebeugt (LH/Kabel)", "sets_reps": "3x12" },
             { "exercise": "Schulterdrücken (Kurzhantel)", "sets_reps": "3x12" },
-            { "exercise": "Klimmzüge / Latzug", "sets_reps": "3x12" },
-            { "exercise": "Bizeps-Curl", "sets_reps": "3x12" },
-            { "exercise": "Trizeps-Pushdown", "sets_reps": "3x12" }
+            { "exercise": "Bizeps-Curl", "sets_reps": "3x12", "superset": "A" },
+            { "exercise": "Trizeps-Pushdown", "sets_reps": "3x12", "superset": "A" }
           ]
         },
         {
-          "name": "Unterkörper A + HIIT",
+          "name": "Unterkörper A · Squat-Tag + HIIT",
           "exercises": [
+            { "exercise": "Box Jump Squats", "sets_reps": "3x4" },
             { "exercise": "Kniebeuge", "sets_reps": "4x8" },
-            { "exercise": "Trapbar-Kreuzheben", "sets_reps": "4x8" },
+            { "exercise": "Beinpresse", "sets_reps": "3x12" },
             { "exercise": "Bulgarian Split Squat", "sets_reps": "3x12" },
             { "exercise": "Wadenheben", "sets_reps": "3x12" },
             { "exercise": "HIIT-Finisher (Bike/Rudergerät) · 15s hart/45s locker", "sets_reps": "1x10min" }
@@ -109,17 +117,17 @@
             { "exercise": "Latzug breit", "sets_reps": "4x8" },
             { "exercise": "Seitheben", "sets_reps": "3x12" },
             { "exercise": "Face Pulls", "sets_reps": "3x12" },
-            { "exercise": "Hammer-Curl", "sets_reps": "3x12" },
-            { "exercise": "Dips / Trizeps", "sets_reps": "3x12" }
+            { "exercise": "Hammer-Curl", "sets_reps": "3x12", "superset": "A" },
+            { "exercise": "Dips / Trizeps", "sets_reps": "3x12", "superset": "A" }
           ]
         },
         {
-          "name": "Unterkörper B + HIIT",
+          "name": "Unterkörper B · Deadlift-Tag + HIIT",
           "exercises": [
-            { "exercise": "Frontkniebeuge", "sets_reps": "4x8" },
-            { "exercise": "Beinpresse", "sets_reps": "4x8" },
-            { "exercise": "Reverse Lunge (Rückwärts-Ausfallschritt)", "sets_reps": "3x12" },
+            { "exercise": "Trapbar-Kreuzheben", "sets_reps": "4x8" },
             { "exercise": "Beinbeuger (liegend/sitzend)", "sets_reps": "3x12" },
+            { "exercise": "Step-up", "sets_reps": "3x12" },
+            { "exercise": "Wadenheben", "sets_reps": "3x12" },
             { "exercise": "HIIT-Finisher (Sprints/Bike) · 15s hart/45s locker", "sets_reps": "1x10min" }
           ]
         }
@@ -134,19 +142,20 @@
         {
           "name": "Oberkörper A",
           "exercises": [
-            { "exercise": "KH-Bankdrücken (Flachbank)", "sets_reps": "4x6" },
-            { "exercise": "Rudern vorgebeugt (LH/Kabel)", "sets_reps": "4x6" },
+            { "exercise": "Klimmzüge", "sets_reps": "4x5-6" },
+            { "exercise": "KH-Bankdrücken (Flachbank)", "sets_reps": "4x5-6" },
+            { "exercise": "Rudern vorgebeugt (LH/Kabel)", "sets_reps": "3x10" },
             { "exercise": "Schulterdrücken (Kurzhantel)", "sets_reps": "3x10" },
-            { "exercise": "Klimmzüge / Latzug", "sets_reps": "3x10" },
-            { "exercise": "Bizeps-Curl", "sets_reps": "3x10" },
-            { "exercise": "Trizeps-Pushdown", "sets_reps": "3x10 +Dropset" }
+            { "exercise": "Bizeps-Curl", "sets_reps": "3x10", "superset": "A" },
+            { "exercise": "Trizeps-Pushdown", "sets_reps": "3x10 +Dropset", "superset": "A" }
           ]
         },
         {
-          "name": "Unterkörper A + HIIT",
+          "name": "Unterkörper A · Squat-Tag + HIIT",
           "exercises": [
-            { "exercise": "Kniebeuge", "sets_reps": "4x6" },
-            { "exercise": "Trapbar-Kreuzheben", "sets_reps": "4x6" },
+            { "exercise": "Box Jump Squats", "sets_reps": "3x4" },
+            { "exercise": "Kniebeuge", "sets_reps": "4x5-6" },
+            { "exercise": "Beinpresse", "sets_reps": "3x10" },
             { "exercise": "Bulgarian Split Squat", "sets_reps": "3x10" },
             { "exercise": "Wadenheben", "sets_reps": "3x10 +Dropset" },
             { "exercise": "HIIT-Finisher (Bike/Rudergerät) · 20s hart/40s locker (härter)", "sets_reps": "1x10min" }
@@ -155,21 +164,21 @@
         {
           "name": "Oberkörper B",
           "exercises": [
-            { "exercise": "KH-Schrägbankdrücken", "sets_reps": "4x6" },
-            { "exercise": "Latzug breit", "sets_reps": "4x6" },
+            { "exercise": "KH-Schrägbankdrücken", "sets_reps": "4x5-6" },
+            { "exercise": "Latzug breit", "sets_reps": "4x5-6" },
             { "exercise": "Seitheben", "sets_reps": "3x10" },
             { "exercise": "Face Pulls", "sets_reps": "3x10" },
-            { "exercise": "Hammer-Curl", "sets_reps": "3x10" },
-            { "exercise": "Dips / Trizeps", "sets_reps": "3x10 +Dropset" }
+            { "exercise": "Hammer-Curl", "sets_reps": "3x10", "superset": "A" },
+            { "exercise": "Dips / Trizeps", "sets_reps": "3x10 +Dropset", "superset": "A" }
           ]
         },
         {
-          "name": "Unterkörper B + HIIT",
+          "name": "Unterkörper B · Deadlift-Tag + HIIT",
           "exercises": [
-            { "exercise": "Frontkniebeuge", "sets_reps": "4x6" },
-            { "exercise": "Beinpresse", "sets_reps": "4x6" },
-            { "exercise": "Reverse Lunge (Rückwärts-Ausfallschritt)", "sets_reps": "3x10" },
-            { "exercise": "Beinbeuger (liegend/sitzend)", "sets_reps": "3x10 +Dropset" },
+            { "exercise": "Trapbar-Kreuzheben", "sets_reps": "4x5-6" },
+            { "exercise": "Beinbeuger (liegend/sitzend)", "sets_reps": "3x10" },
+            { "exercise": "Step-up", "sets_reps": "3x10" },
+            { "exercise": "Wadenheben", "sets_reps": "3x10 +Dropset" },
             { "exercise": "HIIT-Finisher (Sprints/Bike) · 20s hart/40s locker (härter)", "sets_reps": "1x10min" }
           ]
         }
@@ -184,19 +193,20 @@
         {
           "name": "Oberkörper A",
           "exercises": [
+            { "exercise": "Klimmzüge", "sets_reps": "2x6" },
             { "exercise": "KH-Bankdrücken (Flachbank)", "sets_reps": "2x6" },
-            { "exercise": "Rudern vorgebeugt (LH/Kabel)", "sets_reps": "2x6" },
+            { "exercise": "Rudern vorgebeugt (LH/Kabel)", "sets_reps": "2x12" },
             { "exercise": "Schulterdrücken (Kurzhantel)", "sets_reps": "2x12" },
-            { "exercise": "Klimmzüge / Latzug", "sets_reps": "2x12" },
-            { "exercise": "Bizeps-Curl", "sets_reps": "2x12" },
-            { "exercise": "Trizeps-Pushdown", "sets_reps": "2x12" }
+            { "exercise": "Bizeps-Curl", "sets_reps": "2x12", "superset": "A" },
+            { "exercise": "Trizeps-Pushdown", "sets_reps": "2x12", "superset": "A" }
           ]
         },
         {
-          "name": "Unterkörper A + HIIT",
+          "name": "Unterkörper A · Squat-Tag + HIIT",
           "exercises": [
+            { "exercise": "Box Jump Squats", "sets_reps": "2x4" },
             { "exercise": "Kniebeuge", "sets_reps": "2x6" },
-            { "exercise": "Trapbar-Kreuzheben", "sets_reps": "2x6" },
+            { "exercise": "Beinpresse", "sets_reps": "2x12" },
             { "exercise": "Bulgarian Split Squat", "sets_reps": "2x12" },
             { "exercise": "Wadenheben", "sets_reps": "2x12" },
             { "exercise": "HIIT-Finisher (Bike/Rudergerät) · 15s hart/60s locker", "sets_reps": "1x6min" }
@@ -209,17 +219,17 @@
             { "exercise": "Latzug breit", "sets_reps": "2x6" },
             { "exercise": "Seitheben", "sets_reps": "2x12" },
             { "exercise": "Face Pulls", "sets_reps": "2x12" },
-            { "exercise": "Hammer-Curl", "sets_reps": "2x12" },
-            { "exercise": "Dips / Trizeps", "sets_reps": "2x12" }
+            { "exercise": "Hammer-Curl", "sets_reps": "2x12", "superset": "A" },
+            { "exercise": "Dips / Trizeps", "sets_reps": "2x12", "superset": "A" }
           ]
         },
         {
-          "name": "Unterkörper B + HIIT",
+          "name": "Unterkörper B · Deadlift-Tag + HIIT",
           "exercises": [
-            { "exercise": "Frontkniebeuge", "sets_reps": "2x6" },
-            { "exercise": "Beinpresse", "sets_reps": "2x6" },
-            { "exercise": "Reverse Lunge (Rückwärts-Ausfallschritt)", "sets_reps": "2x12" },
+            { "exercise": "Trapbar-Kreuzheben", "sets_reps": "2x6" },
             { "exercise": "Beinbeuger (liegend/sitzend)", "sets_reps": "2x12" },
+            { "exercise": "Step-up", "sets_reps": "2x12" },
+            { "exercise": "Wadenheben", "sets_reps": "2x12" },
             { "exercise": "HIIT-Finisher (Sprints/Bike) · 15s hart/60s locker", "sets_reps": "1x6min" }
           ]
         }

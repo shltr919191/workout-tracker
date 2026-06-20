@@ -9,15 +9,16 @@
 // ─── CONFIG ──────────────────────────────────
 const DEFAULT_WEIGHTS = {
   // Oberkörper A
+  'Klimmzüge':                     0,
   'KH-Bankdrücken (Flachbank)':   22,
   'Rudern vorgebeugt (LH/Kabel)': 40,
   'Schulterdrücken (Kurzhantel)': 16,
-  'Klimmzüge / Latzug':            0,
   'Bizeps-Curl':                  12,
   'Trizeps-Pushdown':             20,
   // Unterkörper A
+  'Box Jump Squats':               0,
   'Kniebeuge':                    60,
-  'Trapbar-Kreuzheben':           80,
+  'Beinpresse':                   80,
   'Bulgarian Split Squat':        16,
   'Wadenheben':                   30,
   // Oberkörper B
@@ -28,10 +29,9 @@ const DEFAULT_WEIGHTS = {
   'Hammer-Curl':                  12,
   'Dips / Trizeps':                0,
   // Unterkörper B
-  'Frontkniebeuge':               40,
-  'Beinpresse':                   80,
-  'Reverse Lunge (Rückwärts-Ausfallschritt)': 14,
+  'Trapbar-Kreuzheben':           80,
   'Beinbeuger (liegend/sitzend)': 30,
+  'Step-up':                      14,
 };
 
 // ─── GLOBALS ─────────────────────────────────
@@ -104,7 +104,7 @@ async function loadProgram() {
         focus:    week.focus || '',
         exercises: workout.exercises.map(ex => {
           const { sets, reps, repRange } = parseSetsReps(ex.sets_reps);
-          return { name: ex.exercise, sets, reps, repRange,
+          return { name: ex.exercise, sets, reps, repRange, superset: ex.superset || null,
                    defaultWeight: DEFAULT_WEIGHTS[ex.exercise] ?? 0 };
         }),
       });
@@ -310,11 +310,14 @@ function renderCard(ex, ei) {
         onclick="toggleSet(this)">${s.done ? '✓' : ''}</button>
     </div>`).join('');
 
+  const supersetTag = ex.superset
+    ? `<span class="superset-tag">SUPERSET ${ex.superset}</span>` : '';
+
   return `
-    <div class="exercise-card${doneCount === sets.length ? ' all-done' : ''}" id="card-${ei}">
+    <div class="exercise-card${doneCount === sets.length ? ' all-done' : ''}${ex.superset ? ' superset' : ''}" id="card-${ei}">
       <div class="exercise-card-header">
         <div>
-          <div class="exercise-name">${ex.name}</div>
+          <div class="exercise-name">${ex.name} ${supersetTag}</div>
           <div class="exercise-schema">${ex.sets} × ${ex.repRange} ${hintHtml}</div>
         </div>
         <div class="exercise-progress-ring">
@@ -590,8 +593,8 @@ function renderPlan() {
         <div class="plan-workout-section">
           <div class="plan-workout-label">${s.workout.toUpperCase()}</div>
           ${s.exercises.map(ex =>
-            `<div class="plan-ex-row">
-              <span class="plan-ex-name">${ex.name}</span>
+            `<div class="plan-ex-row${ex.superset ? ' superset' : ''}">
+              <span class="plan-ex-name">${ex.name}${ex.superset ? ` <span class="superset-tag">SUPERSET ${ex.superset}</span>` : ''}</span>
               <span class="plan-ex-scheme">${ex.sets} × ${ex.repRange}</span>
             </div>`
           ).join('')}
