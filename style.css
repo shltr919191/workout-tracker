@@ -36,27 +36,56 @@
 }
 
 :root[data-theme="light"] {
-  --bg:         #f6f4f0;
+  --bg:         linear-gradient(160deg, #f5f3ff 0%, #eef2ff 45%, #fdf2f8 100%);
   --bg-card:    #ffffff;
-  --bg-card2:   #efece5;
+  --bg-card2:   #f6f3fc;
   --bg-input:   #ffffff;
-  --border:     #ddd8cd;
-  --border-hi:  #c7c0b2;
-  --accent:     #9c5c00;
-  --accent-dim: #7a4700;
-  --accent-glow:rgba(156,92,0,0.10);
-  --success:    #267a4e;
-  --success-dim:rgba(38,122,78,0.10);
-  --superset:     #0e7c86;
-  --superset-dim: #0a5d65;
-  --superset-glow:rgba(14,124,134,0.10);
-  --text-1:     #18140f;
-  --text-2:     #4a443c;
-  --text-3:     #756e62;
-  --header-bg:  rgba(255,255,255,0.92);
-  --nav-bg:     rgba(255,255,255,0.94);
-  --overlay-bg: rgba(20,17,12,0.45);
+  --border:     #ece6fa;
+  --border-hi:  #d8cdf0;
+  --accent:     #7c3aed;
+  --accent-dim: #6d28d9;
+  --accent-glow:rgba(124,58,237,0.14);
+  --success:    #059669;
+  --success-dim:rgba(5,150,105,0.12);
+  --superset:     #db2777;
+  --superset-dim: #be185d;
+  --superset-glow:rgba(219,39,119,0.12);
+  --text-1:     #241b3d;
+  --text-2:     #5b5170;
+  --text-3:     #948aa8;
+  --header-bg:  rgba(255,255,255,0.78);
+  --nav-bg:     rgba(255,255,255,0.85);
+  --overlay-bg: rgba(36,27,61,0.45);
+  --radius:     20px;
+  --radius-sm:  12px;
   color-scheme: light;
+}
+
+:root[data-theme="light"] .app-header,
+:root[data-theme="light"] .bottom-nav {
+  backdrop-filter: blur(14px);
+}
+:root[data-theme="light"] .exercise-card,
+:root[data-theme="light"] .history-item,
+:root[data-theme="light"] .chart-card,
+:root[data-theme="light"] .stat-card,
+:root[data-theme="light"] .modal,
+:root[data-theme="light"] .plan-progress-wrap,
+:root[data-theme="light"] .week-summary-card,
+:root[data-theme="light"] .plan-week-card {
+  border-color: transparent;
+  box-shadow: 0 2px 6px rgba(124,58,237,0.08), 0 12px 28px -10px rgba(124,58,237,0.18);
+}
+:root[data-theme="light"] .plan-progress-fill {
+  background: linear-gradient(90deg, var(--accent), var(--superset));
+}
+:root[data-theme="light"] .btn-finish {
+  background: linear-gradient(135deg, var(--accent), var(--superset));
+  color: #ffffff;
+  box-shadow: 0 10px 24px -8px rgba(124,58,237,0.4);
+}
+:root[data-theme="light"] .btn-start {
+  border-color: var(--accent);
 }
 
 :root[data-theme="light"] .plan-phase-header.hyp    .plan-phase-name { color: var(--accent); }
